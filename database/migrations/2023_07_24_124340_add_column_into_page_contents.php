@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::table('page_contents', function (Blueprint $table) {
+            if (!Schema::hasColumn('page_contents', 'video_iframe')) {
+                $table->longText('video_iframe')->nullable();
+            }
+            if (!Schema::hasColumn('page_contents', 'video_iframe_1')) {
+                $table->longText('video_iframe_1')->nullable();
+            }
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::table('page_contents', function (Blueprint $table) {
+            //
+        });
+    }
+};

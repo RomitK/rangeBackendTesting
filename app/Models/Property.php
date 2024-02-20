@@ -1,0 +1,432 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Manipulations;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
+use Carbon\Carbon;
+use App\Observers\PropertyObserver;
+
+class Property extends Model implements HasMedia
+{
+    use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText, HasSlug;
+    const PROPERTY_REFERENCE_PREFIX = "RIPI_";
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $primaryKey = "id";
+    protected $fillable = [
+        'name',
+        'sub_title',
+        'status',
+        'bathrooms',
+        'built_area',
+        'unit_measure',
+        'slug',
+        'is_feature',
+        'user_id',
+        'offer_type_id',
+        'developer_id',
+        'completion_status_id',
+        'category_id',
+        'reference_number',
+        'permit_number',
+        'parking',
+        'price',
+        'address_longitude',
+        'address_latitude',
+        'property_source',
+        'emirate',
+        'rating',
+        'project_id',
+    ];
+    /**
+     * The dates attributes
+     *
+     * @var array
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+    /**
+     * The richtext attributes
+     *
+     * @var array
+     */
+    protected $richTextFields = [
+        'description',
+        'features_description',
+        'amenties_description'
+    ];
+
+    /**
+     * The attributes that should be append with arrays.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'qr',
+        'video',
+        'mainImage',
+        'floorplans',
+        'saleoffer',
+        'subImages',
+        'brochure',
+        'formattedCreatedAt',
+        'formattedUpdatedAt'
+    ];
+      /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions() : SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
+    }
+    /**
+     * SET Attributes
+     */
+     
+    public function getInvoiceNumAttribute()
+    {
+        $position = $this->strposX($this->reference_number, "-", 1) + 1;
+        return substr($this->reference_number, $position);
+    }
+    public function getInvoicePrefixAttribute()
+    {
+        $prefix = explode("-", $this->new_reference_number)[0];
+        return $prefix;
+    }
+    public static function getNextReferenceNumber($value)
+    {
+        // Get the last created order
+        $lastOrder = Property::where('reference_number', 'LIKE', $value . '_%')
+            ->orderBy('id', 'desc')
+            ->first();
+
+
+        if (!$lastOrder) {
+            // We get here if there is no order at all
+            // If there is no number set it to 0, which will be 1 at the end.
+            $number = 0;
+        } else {
+            $number = explode("_", $lastOrder->reference_number);
+            $number = $number[1];
+        }
+        // If we have ORD000001 in the database then we only want the number
+        // So the substr returns this 000001
+
+        // Add the string in front and higher up the number.
+        // the %06d part makes sure that there are always 6 numbers in the string.
+        // so it adds the missing zero's when needed.
+
+        return sprintf('%07d', intval($number) + 1);
+    }
+    
+    /**
+     * GET Attributes
+     */
+     
+     public function getVideoAttribute()
+    {
+        return $this->getFirstMediaUrl('videos');
+    }
+    
+    public function getQrAttribute()
+    {
+        return $this->getFirstMediaUrl('qrs', 'resize_qr_images');
+    }
+    
+    
+    
+    public function getFloorplansAttribute()
+    {
+        $floorplans = array();
+        foreach($this->getMedia('floorplans') as $image){
+           
+            array_push($floorplans, ['id'=> $image->id, 'path'=>$image->getUrl()]);
+           
+        }
+       return $floorplans;
+    }
+    
+    
+    public function getMainImageAttribute()
+    {
+        // $mediaItems = $this->getMedia('mainImages');
+
+        // if ($mediaItems->isNotEmpty()) {
+        //     $lastMediaItem = $mediaItems->last();
+        //     if (url_exists($lastMediaItem->getUrl('resize'))) {
+        //         return $lastMediaItem->getUrl('resize');
+        //     }
+        // }
+        
+        // return asset('frontend/assets/images/no-image.webp');
+    
+        if(url_exists($this->getFirstMediaUrl('mainImages', 'resize'))){
+            return $this->getFirstMediaUrl('mainImages', 'resize');
+        }else{
+            return asset('frontend/assets/images/no-image.webp');
+        }
+        
+        //return $this->getFirstMediaUrl('mainImages', 'resize');
+    }
+    public function getSubImagesAttribute()
+    {
+    //     $subImages = array();
+    //     foreach($this->getMedia('subImages') as $image){
+    //         array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
+    //     }
+    //   return $subImages;
+       
+       $gallery = array();
+        foreach($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {  $order = $mediaItem->getCustomProperty('order'); return $order ?? PHP_INT_MAX; }) as $image){
+            if($image->hasGeneratedConversion('resize_images')){
+                array_push($gallery, 
+                ['id'=> $image->id, 
+                'path'=>$image->getUrl('resize_images'),
+                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                ]);
+            }else{
+                array_push($gallery, 
+                ['id'=> $image->id, 
+                'path'=>$image->getUrl(),
+                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                ]);
+            }
+        }
+       return $gallery;
+       
+    }
+    public function registerMediaConversions(Media $media = null) : void
+    {
+        $this->addMediaConversion('resize')
+            ->format(Manipulations::FORMAT_WEBP)
+            //->height(300)
+            // ->watermark(public_path('frontend/assets/images/range-r.png'))
+            // ->watermarkPosition(Manipulations::POSITION_CENTER)
+            // ->watermarkHeight(20, Manipulations::UNIT_PERCENT)
+            // ->watermarkOpacity(60)
+            
+            // ->watermark(public_path('frontend/assets/images/range_blue.png'))
+            // ->watermarkPosition(Manipulations::POSITION_CENTER)
+            // ->watermarkHeight(15, Manipulations::UNIT_PERCENT)
+            // ->watermarkOpacity(50)
+            ->performOnCollections('mainImages')
+            ->nonQueued();
+            
+            
+        $this->addMediaConversion('resize_images')
+            ->format(Manipulations::FORMAT_WEBP)
+            ->height(400)
+            ->watermark(public_path('frontend/assets/images/range_blue.png'))
+            ->watermarkPosition(Manipulations::POSITION_CENTER)
+            ->watermarkHeight(10, Manipulations::UNIT_PERCENT)
+            ->watermarkOpacity(50)
+            ->performOnCollections('subImages')
+            ->nonQueued();
+            
+            
+        
+        // $this->addMediaConversion('resize')
+        //     ->format(Manipulations::FORMAT_WEBP)
+        //     //->width(800)
+        //     ->height(300)
+        //     ->watermark(public_path('frontend/assets/images/logo_white.png'))
+        //   // 20 pixels padding from the right, 10 pixels from the bottom
+        //     ->watermarkPadding(140, 10, Manipulations::UNIT_PIXELS, Manipulations::POSITION_BOTTOM_RIGHT)
+        //     ->watermarkHeight(8, Manipulations::UNIT_PERCENT)
+        //     ->watermarkOpacity(60)
+        //     ->performOnCollections('mainImages')
+        //     ->nonQueued();
+
+        // $this->addMediaConversion('resize_images')
+        //     ->format(Manipulations::FORMAT_WEBP)
+        //     //->width(800)
+        //     ->height(800)
+        //     ->performOnCollections('subImages')
+        //     ->nonQueued();
+        
+        
+        
+        // $this->addMediaConversion('resize_images')
+        //     ->format(Manipulations::FORMAT_WEBP)
+        //     //->width(800)
+        //     ->height(400)
+        //     ->watermark(public_path('frontend/assets/images/logo_white.png'))
+        //      ->watermarkPosition(Manipulations::POSITION_TOP_LEFT) 
+        //     ->watermarkPadding(80, 20, Manipulations::UNIT_PIXELS) 
+        //     ->watermarkHeight(8, Manipulations::UNIT_PERCENT)
+        //     ->watermarkOpacity(60)
+            
+        //     ->performOnCollections('subImages')
+        //     ->nonQueued();
+
+            // $this->addMediaConversion('resize_qr_images')
+            // ->format(Manipulations::FORMAT_WEBP)
+            // ->performOnCollections('qrs')
+            // ->nonQueued();
+    }
+    // public function getFloorPlanAttribute()
+    // {
+    //     return $this->getFirstMediaUrl('floorPlans');
+    // }
+    public function getBrochureAttribute()
+    {
+        return $this->getFirstMediaUrl('brochures');
+    }
+    public function getSaleOfferAttribute()
+    {
+        return $this->getFirstMediaUrl('saleOffers');
+    }
+    
+    public function getFormattedCreatedAtAttribute($value)
+    {
+        return Carbon::parse($this->created_at)->format('d m Y');
+    }
+    
+    public function getFormattedUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($this->updated_at)->format('d m Y');
+    }
+    /**
+     * FIND Relationship
+     */
+    public function approval(){
+        return $this->belongsTo(User::class,'approval_id');
+    }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function offerType()
+    {
+        return $this->belongsTo(OfferType::class, 'offer_type_id', 'id');
+    }
+    public function developer()
+    {
+        return $this->belongsTo(Developer::class, 'developer_id', 'id');
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+    public function subProject()
+    {
+        return $this->belongsTo(Project::class, 'sub_project_id', 'id');
+    }
+    
+    
+    public function communities()
+    {
+        return $this->belongsTo(Community::class, 'community_id', 'id');
+    }
+    public function subcommunities()
+    {
+        return $this->belongsTo(Subcommunity::class, 'subcommunity_id', 'id');
+    }
+    public function completionStatus()
+    {
+        return $this->belongsTo(CompletionStatus::class, 'completion_status_id', 'id');
+    }
+    public function accommodations()
+    {
+        return $this->belongsTo(Accommodation::class, 'accommodation_id', 'id');
+    }
+
+    public function amenities()
+    {
+        return $this->belongsToMany(Amenity::class, 'property_amenities', 'property_id', 'amenity_id');
+    }
+    public function propertygallery()
+    {
+        return $this->hasMany(PropertyGallery::class,'property_id', 'id');
+    }
+
+    // public function propertygallery()
+    // {
+    //     return $this->belongsToMany(PropertyGallery::class, 'propertygallery', 'property_id', 'galleryimage');
+    // }
+
+
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class, 'agent_id', 'id');
+    }
+    public function details()
+    {
+        return $this->hasMany(PropertyDetail::class);
+    }
+    public function bedroomss()
+    {
+        return $this->hasMany(PropertyBedroom::class, 'property_id', 'id');
+    }
+    public function propertyDetails()
+    {
+        return $this->hasMany(PropertyDetail::class, 'property_id', 'id');
+    }
+    public function imagegalleries(){
+        return $this->hasMany(Imagegallery::class, 'property_id', 'id');
+    }
+     /**
+     * FIND local scope
+     */
+     
+     public function scopeApproved($query)
+    {
+        return $query->where('is_approved', config('constants.approved'));
+    }
+    public function scopeActive($query)
+    {
+        return $query->where('status', config('constants.active'));
+    }
+    public function scopeDeactive($query)
+    {
+        return $query->where('status',  config('constants.Inactive'));
+    }
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+    /**
+     *
+     * Filters
+     */
+    public function scopeApplyFilters($query, array $filters)
+    {
+        $filters = collect($filters);
+        if ($filters->get('status')) {
+            $query->whereStatus($filters->get('status'));
+        }
+    }
+    public static function boot()
+    {
+        parent::boot();
+        Property::observe(PropertyObserver::class);
+    }
+}
