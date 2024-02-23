@@ -700,7 +700,10 @@ class PropertyController extends Controller
                 $videoName =  Str::slug($request->name).'.'.$ext;
                 $property->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'propertyFiles');
             }
-             if(in_array(Auth::user()->role, config('constants.isAdmin'))){
+            if($property->project_id == 803){
+                
+            }else{
+                if(in_array(Auth::user()->role, config('constants.isAdmin'))){
                 $property->approval_id = Auth::user()->id;
                 
                 if(in_array($request->is_approved, ["approved", "rejected"]) ){
@@ -710,6 +713,8 @@ class PropertyController extends Controller
                 $property->is_approved = "requested";
                 $property->approval_id = null;
             }
+            }
+             
             $property->updated_by = Auth::user()->id;
             $property->save();
             $property->property_banner = $property->mainImage;
