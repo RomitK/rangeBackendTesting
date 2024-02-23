@@ -57,7 +57,7 @@ Route::get('cronjob/property/addxml', 'App\Http\Controllers\CronController@prope
 
 
 Route::namespace('App\Http\Controllers\Frontend')->group(function(){
-    Route::any('/', 'HomeController@home')->name('home');
+    Route::any('/', 'HomeController@showLoginPage')->name('home');
     Route::any('communities', 'HomeController@communities')->name('communities');
     Route::any('off-plan', 'HomeController@offPlan')->name('off-plan');
     Route::any('properties', 'HomeController@properties')->name('properties');

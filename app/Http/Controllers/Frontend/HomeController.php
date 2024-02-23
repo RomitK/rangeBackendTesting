@@ -18,9 +18,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use PDF;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    public function showLoginPage()
+    {
+        if (Auth::check()) {
+            // If the user is already authenticated, redirect them to a different page
+            return redirect()->route('dashboard');
+        } else {
+            // If the user is not authenticated, show the login page
+            return view('auth.login');
+        }
+    }
+
     public function singlePropertyBrochure($slug)
     {
         $property = Property::where('slug', $slug)->first();
