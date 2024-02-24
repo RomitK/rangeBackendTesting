@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:9999', 'https://range-frontend-omega.vercel.app'],
+    'allowed_origins' => ['*'],
 
     'allowed_origins_patterns' => [],
 
