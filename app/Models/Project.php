@@ -19,6 +19,7 @@ class Project extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText, HasSlug;
 
+    public $timestamps = false; // Set to false to disable automatic timestamping
     /**
      * The dates attributes
      *
@@ -65,7 +66,7 @@ class Project extends Model implements HasMedia
     /**
      * GET Attributes
      */
-     public static function getNextReferenceNumber($value)
+    public static function getNextReferenceNumber($value)
     {
         // Get the last created order
         $lastOrder = Project::where('reference_number', 'LIKE', $value . '_%')
@@ -92,13 +93,13 @@ class Project extends Model implements HasMedia
     }
     public function getMainImageAttribute()
     {
-        
-        if(url_exists($this->getFirstMediaUrl('mainImages', 'resize'))){
+
+        if (url_exists($this->getFirstMediaUrl('mainImages', 'resize'))) {
             return $this->getFirstMediaUrl('mainImages', 'resize');
-        }else{
+        } else {
             return asset('frontend/assets/images/no-image.webp');
         }
-        
+
         //return $this->getFirstMediaUrl('mainImages', 'resize');
     }
     public function getClusterPlanAttribute()
@@ -109,93 +110,109 @@ class Project extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('videos');
     }
-    
+
     public function getSaleOfferAttribute()
     {
         return $this->getFirstMediaUrl('saleOffers', 'resize');
     }
     public function getInteriorGalleryAttribute()
     {
-    //     $interiorGallery = array();
-    //     foreach($this->getMedia('interiorGallery') as $image){
-    //         if($image->hasGeneratedConversion('resize_images')){
-    //             array_push($interiorGallery, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
-    //         }else{
-    //             array_push($interiorGallery, ['id'=> $image->id, 'path'=>$image->getUrl()]);
-    //         }
-    //     }
-    //   return $interiorGallery;
-       
+        //     $interiorGallery = array();
+        //     foreach($this->getMedia('interiorGallery') as $image){
+        //         if($image->hasGeneratedConversion('resize_images')){
+        //             array_push($interiorGallery, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
+        //         }else{
+        //             array_push($interiorGallery, ['id'=> $image->id, 'path'=>$image->getUrl()]);
+        //         }
+        //     }
+        //   return $interiorGallery;
+
         $gallery = array();
-        foreach($this->getMedia('interiorGallery')->sortBy(function ($mediaItem, $key) { $order = $mediaItem->getCustomProperty('order'); return $order ?? PHP_INT_MAX; }) as $image){
-            if($image->hasGeneratedConversion('resize_gallery')){
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl('resize_gallery'),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
-            }else{
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl(),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
+        foreach ($this->getMedia('interiorGallery')->sortBy(function ($mediaItem, $key) {
+            $order = $mediaItem->getCustomProperty('order');
+            return $order ?? PHP_INT_MAX;
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_gallery')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_gallery'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
             }
         }
-       return $gallery;
-       
+        return $gallery;
     }
     public function getExteriorGalleryAttribute()
     {
-    //     $exteriorGallery = array();
-    //     foreach($this->getMedia('exteriorGallery') as $image){
-    //         if($image->hasGeneratedConversion('resize_images')){
-    //             array_push($exteriorGallery, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
-    //         }else{
-    //             array_push($exteriorGallery, ['id'=> $image->id, 'path'=>$image->getUrl()]);
-    //         }
-    //     }
-    //   return $exteriorGallery;
-       
-       $gallery = array();
-        foreach($this->getMedia('exteriorGallery')->sortBy(function ($mediaItem, $key) { return $mediaItem->getCustomProperty('order'); }) as $image){
-            if($image->hasGeneratedConversion('resize_gallery')){
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl('resize_gallery'),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
-            }else{
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl(),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
+        //     $exteriorGallery = array();
+        //     foreach($this->getMedia('exteriorGallery') as $image){
+        //         if($image->hasGeneratedConversion('resize_images')){
+        //             array_push($exteriorGallery, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
+        //         }else{
+        //             array_push($exteriorGallery, ['id'=> $image->id, 'path'=>$image->getUrl()]);
+        //         }
+        //     }
+        //   return $exteriorGallery;
+
+        $gallery = array();
+        foreach ($this->getMedia('exteriorGallery')->sortBy(function ($mediaItem, $key) {
+            return $mediaItem->getCustomProperty('order');
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_gallery')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_gallery'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
             }
         }
-       return $gallery;
+        return $gallery;
     }
-    
+
     public function getFloorPlanAttribute()
     {
         $floorPlans = array();
-        foreach($this->getMedia('floorPlans') as $image){
-            if($image->hasGeneratedConversion('resize_images')){
-                array_push($floorPlans, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
-            }else{
-                array_push($floorPlans, ['id'=> $image->id, 'path'=>$image->getUrl()]);
+        foreach ($this->getMedia('floorPlans') as $image) {
+            if ($image->hasGeneratedConversion('resize_images')) {
+                array_push($floorPlans, ['id' => $image->id, 'path' => $image->getUrl('resize_images')]);
+            } else {
+                array_push($floorPlans, ['id' => $image->id, 'path' => $image->getUrl()]);
             }
         }
-       return $floorPlans;
-       
-       // return $this->getFirstMediaUrl('floorPlans');
+        return $floorPlans;
+
+        // return $this->getFirstMediaUrl('floorPlans');
     }
-    
-    public function registerMediaConversions(Media $media = null) : void
+
+    public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
@@ -203,7 +220,7 @@ class Project extends Model implements HasMedia
             ->height(300)
             ->performOnCollections('mainImages')
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             //->width(800)
@@ -226,7 +243,7 @@ class Project extends Model implements HasMedia
             //->width(800)
             ->height(800)
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize_images')
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('floorPlans')
@@ -234,10 +251,10 @@ class Project extends Model implements HasMedia
             ->height(400)
             ->nonQueued();
     }
-  /**
+    /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('title')
@@ -255,8 +272,8 @@ class Project extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('brochures');
     }
-    
-    
+
+
     public function getFormattedCreatedAtAttribute($value)
     {
         return Carbon::parse($this->created_at)->format('d m Y');
@@ -294,8 +311,9 @@ class Project extends Model implements HasMedia
     {
         return $this->belongsTo(Project::class, 'parent_project_id');
     }
-    public function approval(){
-        return $this->belongsTo(User::class,'approval_id');
+    public function approval()
+    {
+        return $this->belongsTo(User::class, 'approval_id');
     }
     public function user()
     {
@@ -305,8 +323,8 @@ class Project extends Model implements HasMedia
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
-    
-    
+
+
     public function developer()
     {
         return $this->belongsTo(Developer::class, 'developer_id', 'id');
@@ -321,26 +339,26 @@ class Project extends Model implements HasMedia
     }
     public function accommodation()
     {
-         return $this->belongsTo(Accommodation::class, 'accommodation_id', 'id');
-       // return $this->belongsToMany(Accommodation::class, 'project_accommodations', 'project_id' , 'accommodation_id');
+        return $this->belongsTo(Accommodation::class, 'accommodation_id', 'id');
+        // return $this->belongsToMany(Accommodation::class, 'project_accommodations', 'project_id' , 'accommodation_id');
     }
     public function highlights()
     {
         return $this->belongsToMany(Highlight::class, 'project_highlights', 'project_id', 'highlight_id');
     }
- 
+
     public function amenities()
     {
 
-        return $this->belongsToMany(Amenity::class, 'project_amenities', 'project_id' , 'amenity_id');
+        return $this->belongsToMany(Amenity::class, 'project_amenities', 'project_id', 'amenity_id');
     }
     public function highlighted_amenities()
     {
-        return $this->amenities()->where('highlighted','=', 1);
+        return $this->amenities()->where('highlighted', '=', 1);
     }
     public function unhighlighted_amenities()
     {
-        return $this->amenities()->where('highlighted','=', 0);
+        return $this->amenities()->where('highlighted', '=', 0);
     }
     public function agent()
     {
@@ -362,14 +380,15 @@ class Project extends Model implements HasMedia
     {
         return $this->hasMany(ProjectDetail::class, 'project_id', 'id');
     }
-    public function mPaymentPlans(){
-        return $this->hasMany(ProjectDetail::class, 'project_id', 'id')->where('key','payment',);
+    public function mPaymentPlans()
+    {
+        return $this->hasMany(ProjectDetail::class, 'project_id', 'id')->where('key', 'payment',);
     }
     public function paymentPlans()
     {
         return $this->morphMany(MetaDetail::class, 'detailable');
     }
-     /**
+    /**
      * FIND local scope
      */
     public function scopeApproved($query)
@@ -396,7 +415,8 @@ class Project extends Model implements HasMedia
     {
         return $query->where('is_display_home', 1);
     }
-     public function scopeNewLunch($query){
+    public function scopeNewLunch($query)
+    {
         return $query->where('is_new_launch', '1');
     }
     /**
