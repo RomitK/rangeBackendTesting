@@ -17,7 +17,7 @@
 		padding: 0px;
 		margin: 0px;
 		overflow-x: hidden;
-		font-family: 'Poppins', sans-serif;
+		font-family: 'Poppins';
 	}
 
 	p,
@@ -32,7 +32,7 @@
 	th {
 		margin: 0px;
 		padding: 0px;
-		font-family: 'Poppins', sans-serif;
+		font-family: 'Poppins';
 	}
 
 	table tr td {
