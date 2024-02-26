@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Dashboard\Project\{
     ProjectRequest,
     ProjectPaymentRequest
@@ -836,6 +837,7 @@ class ProjectController extends Controller
             }
 
             if (in_array($request->is_approved, ["approved"])) {
+                Log::info("project update for brochue");
                 StoreProjectBrochure::dispatch($project->id);
             }
 
