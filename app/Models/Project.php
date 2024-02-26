@@ -19,7 +19,7 @@ class Project extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText, HasSlug;
 
-    public $timestamps = false; // Set to false to disable automatic timestamping
+    // public $timestamps = false; // Set to false to disable automatic timestamping
     /**
      * The dates attributes
      *
