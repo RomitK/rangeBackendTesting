@@ -345,7 +345,7 @@
           <td>
             <h4>Handover</h4>
           </td>
-          @if(project->permit_number)
+          @if($project->permit_number)
           <td>
             <h4>Permit Number</h4>
           </td>
@@ -372,7 +372,7 @@
               <h3 class="text-primary">{{$handOver }}</h3>
             </div>
           </td>
-          @if(project->permit_number)
+          @if($project->permit_number)
           <td>
             <div class="vtTextBXox">
               <h3 class="text-primary">{{$project->permit_number }}</h3>
