@@ -27,10 +27,12 @@
     padding: 0px;
     font-family: "Poppins", sans-serif;
   }
-p{
+
+  p {
     font-size: 14px;
-     color: #6f6d71 !important;
-}
+    color: #6f6d71 !important;
+  }
+
   .header {
     position: relative !important;
   }
@@ -288,27 +290,26 @@ p{
         initial);
     box-sizing: content-box;
   }
-  
-  .webText{
-	color: #4c4c4c;
-	font-weight: 400;
-	display: block;
-	text-align: center;
-	font-size: 30px;
-}
 
+  .webText {
+    color: #4c4c4c;
+    font-weight: 400;
+    display: block;
+    text-align: center;
+    font-size: 30px;
+  }
 </style>
 
 <body>
   @php
-    $exteriorGallery = $project->exteriorGallery; 
-    $interiorGallery = $project->interiorGallery; 
-    $gallery = array_merge($exteriorGallery,$interiorGallery); 
-    $bannerImage = $gallery[0];
-    $exteriorGallery = $exteriorGallery;
-    array_shift($gallery);
-    $amenities = $project->amenities()->get()->toArray();
-    list($amenitiePieces2, $amenitiePieces1) = array_chunk($amenities, ceil(count($amenities) / 2));
+  $exteriorGallery = $project->exteriorGallery;
+  $interiorGallery = $project->interiorGallery;
+  $gallery = array_merge($exteriorGallery,$interiorGallery);
+  $bannerImage = $gallery[0];
+  $exteriorGallery = $exteriorGallery;
+  array_shift($gallery);
+  $amenities = $project->amenities()->get()->toArray();
+  list($amenitiePieces2, $amenitiePieces1) = array_chunk($amenities, ceil(count($amenities) / 2));
   @endphp
   <header class="header">
     <img src="{{ $bannerImage['path'] }}" class="headerbannerImg" />
@@ -336,16 +337,21 @@ p{
       <thead>
         <tr>
           <td>
-              <h4>Starting Price</h4>
+            <h4>Starting Price</h4>
           </td>
           <td>
-              <h4>Available Units</h4>
+            <h4>Available Units</h4>
           </td>
           <td>
-              <h4>Handover</h4>
+            <h4>Handover</h4>
           </td>
+          @if(project->permit_number)
           <td>
-              <h4>Location</h4>
+            <h4>Permit Number</h4>
+          </td>
+          @endif
+          <td>
+            <h4>Location</h4>
           </td>
         </tr>
       </thead>
@@ -366,6 +372,15 @@ p{
               <h3 class="text-primary">{{$handOver }}</h3>
             </div>
           </td>
+          @if(project->permit_number)
+          <td>
+            <div class="vtTextBXox">
+              <h3 class="text-primary">{{$project->permit_number }}</h3>
+            </div>
+          </td>
+          @endif
+
+
           <td>
             <div class="vtTextBXox">
               <h3 class="text-primary">{{$communityName}}</h3>
@@ -373,7 +388,7 @@ p{
           </td>
         </tr>
       </tbody>
-    </table><br/>
+    </table><br />
   </section>
 
   <section class="" style="margin-top:10px; margin-bottom:10px">
@@ -388,23 +403,22 @@ p{
           <!--  </td>-->
           <!--  @endif-->
           <!--  @endforeach-->
-            
-            <div style="display: inline-block;">
-                @foreach($exteriorGallery as $key=>$image)
-                    @if($key < 3 )
-                        <div class="vtTextBXox" style="padding:2px; display: inline-block;">
-                            <img src="{{$image['path']}}"  height="110" style="display: inline-block;">
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-            
+
+          <div style="display: inline-block;">
+            @foreach($exteriorGallery as $key=>$image)
+            @if($key < 3 ) <div class="vtTextBXox" style="padding:2px; display: inline-block;">
+              <img src="{{$image['path']}}" height="110" style="display: inline-block;">
+          </div>
+          @endif
+          @endforeach
+          </div>
+
 
         </tr>
       </thead>
     </table>
   </section>
-  
+
   <section class="">
     <table style="width:100%;">
       <thead>
@@ -419,19 +433,19 @@ p{
       <thead>
         <tr>
           <td>
-              <h4>Unit Type </h4>
+            <h4>Unit Type </h4>
           </td>
           <td>
-              <h4>Property Type </h4>
+            <h4>Property Type </h4>
           </td>
           <td>
-              <h4>Size </h4>
+            <h4>Size </h4>
           </td>
           <td>
-              <h4>Bedroom</h4>
+            <h4>Bedroom</h4>
           </td>
           <td>
-              <h4>Price </h4>
+            <h4>Price </h4>
           </td>
         </tr>
       </thead>
@@ -459,24 +473,24 @@ p{
       </tbody>
     </table>
   </section>
-    <section class="">
-        @foreach($project->mPaymentPlans as $paymentPlan)
-       
+  <section class="">
+    @foreach($project->mPaymentPlans as $paymentPlan)
+
     <table style="width:100%">
       <thead>
-         <tr>
-            <td colspan="3">
-                <div class="vtTextBXox">
-                  <h4 class="text-primary sctionMdTitle" style="text-transform: uppercase;">{{ $paymentPlan->value }}</h4>
-                </div>
-            </td>
-         </tr>
+        <tr>
+          <td colspan="3">
+            <div class="vtTextBXox">
+              <h4 class="text-primary sctionMdTitle" style="text-transform: uppercase;">{{ $paymentPlan->value }}</h4>
+            </div>
+          </td>
+        </tr>
         <tr>
           <td>
-              <h4>Payments</h4>
+            <h4>Payments</h4>
           </td>
           <td>
-              <h4>Percentage (%)</h4>
+            <h4>Percentage (%)</h4>
           </td>
           <!--<td>-->
           <!--    <h4>Milestones</h4>-->
@@ -484,27 +498,27 @@ p{
         </tr>
       </thead>
       <tbody>
-          @foreach($paymentPlan->paymentPlans as $row)
+        @foreach($paymentPlan->paymentPlans as $row)
         <tr>
           <td>
-            <p class="tblTdText text-secondary">{{  $row->value }}</p> 
-              <!--<p class="tblTdText text-secondary">{{  $row->name }}</p> -->
-            
+            <p class="tblTdText text-secondary">{{ $row->value }}</p>
+            <!--<p class="tblTdText text-secondary">{{  $row->name }}</p> -->
+
           </td>
           <td>
-              <p class="tblTdText text-secondary">{{  $row->key }}</p> 
-            
+            <p class="tblTdText text-secondary">{{ $row->key }}</p>
+
           </td>
           <!--<td>-->
           <!--    <p class="tblTdText text-secondary">{{  $row->value }}</p> -->
-            
+
           <!--</td>-->
-          
+
         </tr>
         @endforeach
       </tbody>
     </table>
-        @endforeach
+    @endforeach
   </section>
   <section class>
     <table style="width:100%;">
@@ -519,25 +533,25 @@ p{
 
     <table style="width:100%;">
       <thead>
-          @foreach($amenitiePieces1 as $key=> $amenitiePiece1)
-          
-          <tr>
-                <td>
-                  <p class="tblTdText text-secondary">&bull;{{ $amenitiePiece1['name'] }}
-                  </p>
-                  </td>
-                <td>
-                  <p class="tblTdText text-secondary">&bull;{{ $amenitiePieces2[$key]['name'] }}
-                  </p>
-                </td>
-          </tr>
-          @endforeach
+        @foreach($amenitiePieces1 as $key=> $amenitiePiece1)
+
+        <tr>
+          <td>
+            <p class="tblTdText text-secondary">&bull;{{ $amenitiePiece1['name'] }}
+            </p>
+          </td>
+          <td>
+            <p class="tblTdText text-secondary">&bull;{{ $amenitiePieces2[$key]['name'] }}
+            </p>
+          </td>
+        </tr>
+        @endforeach
       </thead>
     </table>
   </section>
-  
+
   <section>
-      <br/><br/>
+    <br /><br />
     <table style="width:100%;">
       <thead>
         <tr>
@@ -551,36 +565,35 @@ p{
           <!--  @endforeach-->
 
 
-            <div style="display: inline-block;">
-                @foreach($interiorGallery as $key=>$image)
-                    @if($key < 3 )
-                        <div class="vtTextBXox" style="padding:2px; display: inline-block;">
-                            <img src="{{$image['path']}}" height="230" style="display: inline-block;">
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-            
+          <div style="display: inline-block;">
+            @foreach($interiorGallery as $key=>$image)
+            @if($key < 3 ) <div class="vtTextBXox" style="padding:2px; display: inline-block;">
+              <img src="{{$image['path']}}" height="230" style="display: inline-block;">
+          </div>
+          @endif
+          @endforeach
+          </div>
+
         </tr>
       </thead>
     </table>
   </section>
-  
+
   <section>
-      <table style="width:100%;">
-          <tr>
-              <td style="width:70%">
-                  {!! $project->developer->short_description !!}
-              </td>
-              <td style="width:30%">
-                  <img src="{{ $project->developer->logo }}" width="200">
-              </td>
-          </tr>
-      </table>
+    <table style="width:100%;">
+      <tr>
+        <td style="width:70%">
+          {!! $project->developer->short_description !!}
+        </td>
+        <td style="width:30%">
+          <img src="{{ $project->developer->logo }}" width="200">
+        </td>
+      </tr>
+    </table>
   </section>
   <section>
     <h5 class="pText mdText">For more info contact</h5>
-    <h1 class="h1Title mdText mb-20" style="text-align:center">Toll Free 800 72 888  <span>sales@range.ae</span></h1>
+    <h1 class="h1Title mdText mb-20" style="text-align:center">Toll Free 800 72 888 <span>sales@range.ae</span></h1>
     <span class="webText" style="text-align:center">www.range.ae</span>
   </section>
 </body>

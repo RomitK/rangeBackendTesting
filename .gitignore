@@ -5,6 +5,7 @@
 /public/storage
 /storage/media-library/
 /storage/*.key
+/storage/fonts
 /vendor
 .env
 .env.backup
