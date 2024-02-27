@@ -33,15 +33,15 @@ return [
         'media' => [
             'driver' => 'local',
             'root' => public_path('uploads/frontend'),
-            'url' => env('APP_URL').'/uploads/frontend',
+            'url' => env('APP_URL') . '/uploads/frontend',
             'visibility' => 'public',
         ],
-        'floorPlanFiles'=>[
+        'floorPlanFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/floorPlans'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/floorPlans',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -52,15 +52,15 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'floorPlans'
-            
+            'root' => 'floorPlans'
+
         ],
-        'highlightFiles'=> [
+        'highlightFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/highlights'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/highlights',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -71,20 +71,35 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'highlights'
-            
+            'root' => 'highlights'
+
         ],
-        'partnerFiles'=>[
+        'partnerFiles' => [
             'driver' => 'local',
             'root'   => public_path('uploads/frontend/partners'),
             'url'        => env('APP_URL') . '/uploads/frontend/partners',
             'visibility' => 'public'
         ],
-        'pageContentFiles'=> [
-            'driver' => 'local',
-            'root'   => public_path('uploads/frontend/contents'),
-            'url'        => env('APP_URL') . '/uploads/frontend/contents',
-            'visibility' => 'public'
+        'pageContentFiles' => [
+
+
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'visibility' => 'public',
+            'root' => 'contents'
+
+
+            // 'driver' => 'local',
+            // 'root'   => public_path('uploads/frontend/contents'),
+            // 'url'        => env('APP_URL') . '/uploads/frontend/contents',
+            // 'visibility' => 'public'
         ],
         'bannerFiles' => [
             'driver' => 'local',
@@ -97,7 +112,7 @@ return [
             // 'root'   => public_path('uploads/frontend/agents'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/agents',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -108,15 +123,15 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'agents'
-            
+            'root' => 'agents'
+
         ],
         'awardFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/awards'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/awards',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -127,9 +142,9 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'awards'
+            'root' => 'awards'
         ],
-       
+
         'developerFiles' => [
             //     'driver' => 'local',
             //     'root'   => public_path('uploads/frontend/developers'),
@@ -145,14 +160,14 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'developers'
+            'root' => 'developers'
         ],
         'commnityFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/commnities'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/commnities',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -163,15 +178,15 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'commnities'
-            
+            'root' => 'commnities'
+
         ],
         'projectFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/projects'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/projects',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -182,15 +197,15 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'projects'
-            
+            'root' => 'projects'
+
         ],
         'propertyFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/properties'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/properties',
             // 'visibility' => 'public'
-            
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -201,16 +216,16 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'properties'
-            
+            'root' => 'properties'
+
         ],
         'amenityFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/amenities'),
             // 'url'        => env('APP_URL') . '/uploads/frontend/amenities',
             // 'visibility' => 'public'
-            
-            
+
+
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -221,8 +236,8 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'visibility' => 'public',
-            'root'=>'amenities'
-            
+            'root' => 'amenities'
+
         ],
         'articleFiles' => [
             'driver' => 'local',
@@ -257,7 +272,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
