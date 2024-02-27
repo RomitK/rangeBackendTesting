@@ -14,6 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+Route::get('/phpinfo', function () {
+    phpinfo();
+});
+
 Route::get('/delete/logs', function () {
     exec('rm ' . storage_path('logs/*.log'));
     return "clear successfully";
@@ -35,35 +40,35 @@ Route::get('/read/logs', function () {
 });
 
 // clear chache route
-Route::get('/clear-cache', function() {
+Route::get('/clear-cache', function () {
     $exitCode    = Artisan::call('cache:clear');
     // $config      = Artisan::call('config:cache');
     // $view        = Artisan::call('view:clear');
     // $route        = Artisan::call('route:clear');
     // $optimize        = Artisan::call('optimize:clear');
     return "Cache is cleared";
- });
+});
 
- /*******************
+/*******************
  * FRONTEND ROUTES  *
  *******************/
- Route::get('makeRequest', 'App\Http\Controllers\CronController@makeRequest');
+Route::get('makeRequest', 'App\Http\Controllers\CronController@makeRequest');
 Route::get('cronjob/propertyBanner', 'App\Http\Controllers\CronController@propertyBanner');
-Route::get('cronjob/propertyUpdate','App\Http\Controllers\CronController@propertyUpdate');
-Route::get('cronjob/projectBrochure','App\Http\Controllers\CronController@projectBrochure');
+Route::get('cronjob/propertyUpdate', 'App\Http\Controllers\CronController@propertyUpdate');
+Route::get('cronjob/projectBrochure', 'App\Http\Controllers\CronController@projectBrochure');
 Route::get('cronjob/propertyWaterMark', 'App\Http\Controllers\CronController@propertyWaterMark');
 Route::get('cronjob/property/addxml', 'App\Http\Controllers\CronController@propertyWaterMark');
 
 
 
-Route::namespace('App\Http\Controllers\Frontend')->group(function(){
+Route::namespace('App\Http\Controllers\Frontend')->group(function () {
     Route::any('/', 'HomeController@showLoginPage')->name('home');
     Route::any('communities', 'HomeController@communities')->name('communities');
     Route::any('off-plan', 'HomeController@offPlan')->name('off-plan');
     Route::any('properties', 'HomeController@properties')->name('properties');
     Route::any('properties-demo', 'HomeController@propertiesDemo')->name('properties-demo');
     Route::any('properties-demos', 'HomeController@propertiesDemoS')->name('properties-demos');
-    
+
     Route::any('buy', 'HomeController@buy')->name('buy');
     Route::any('ready', 'HomeController@buy')->name('ready');
     Route::any('rent', 'HomeController@rent')->name('rent');
@@ -76,17 +81,16 @@ Route::namespace('App\Http\Controllers\Frontend')->group(function(){
     Route::any('privacy-policy', 'HomeController@privacyPolicy')->name('privacy-policy');
     Route::any('terms-conditions', 'HomeController@termsConditions')->name('terms-conditions');
     Route::any('thank-you', 'HomeController@thankYou')->name('thank-you');
-    
+
     Route::any('developer/{slug}', 'HomeController@singleDeveloperPage')->name('developer.view');
     Route::any('community/{slug}', 'HomeController@singleCommunityPage')->name('community.view');
     Route::any('property/{slug}', 'HomeController@singlePropertyPage')->name('property.view');
-    
+
     Route::get('project/{slug}/brochure', 'HomeController@singleProjectBrochure');
     Route::get('project/{slug}/saleOffer', 'HomeController@singleProjectSaleOffer');
-    
+
     Route::get('property/{slug}/brochure', 'HomeController@singlePropertyBrochure');
     Route::get('property/{slug}/saleOffer', 'HomeController@singlePropertySaleOffer');
-    
 });
 
 
@@ -94,15 +98,15 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('home');
 
-Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dashboard', 'middleware' => 'auth'], function() {
+Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dashboard', 'middleware' => 'auth'], function () {
     Route::resource('roles', RoleController::class, ['as' => 'dashboard']);
     Route::resource('tags', TagController::class, ['as' => 'dashboard']);
     Route::resource('offer-types', OfferTypeController::class, ['as' => 'dashboard']);
     Route::resource('developers', DeveloperController::class, ['as' => 'dashboard']);
-    
+
     Route::get('developers/{developer}/media/{media}', 'DeveloperController@mediaDestroy')->name('dashboard.developers.media.delete');
     Route::get('developers/{developer}/medias', 'DeveloperController@mediasDestroy')->name('dashboard.developers.medias.delete');
-    
+
     Route::resource('defaultStats', DefaultStatController::class, ['as' => 'dashboard']);
 
     Route::get('developer/{developer}/details', 'DeveloperController@details')->name('dashboard.developer.details');
@@ -112,7 +116,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::put('developer/{developer}/details/{detail}', 'DeveloperController@updateDetail')->name('dashboard.developer.details.update');
     Route::delete('developer/{developer}/details/{detail}', 'DeveloperController@destroyDetail')->name('dashboard.developer.details.destroy');
     Route::get('developer/mainImage', 'DeveloperController@mainImage');
-    
+
 
     Route::resource('agents', AgentController::class, ['as' => 'dashboard']);
     Route::resource('completion-statuses', CompletionStatusController::class, ['as' => 'dashboard']);
@@ -122,10 +126,10 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::resource('subCommunities', SubCommunityController::class, ['as' => 'dashboard']);
     Route::resource('features', FeatureController::class, ['as' => 'dashboard']);
     Route::resource('accommodations', AccommodationController::class, ['as' => 'dashboard']);
-    
-   // Route::get('communities/{community}/edit',  'CommunityController@edit');
+
+    // Route::get('communities/{community}/edit',  'CommunityController@edit');
     Route::resource('communities', CommunityController::class, ['as' => 'dashboard']);
-    
+
     Route::get('community/mainImage', 'CommunityController@mainImage');
     Route::get('communities/{community}/media/{media}', 'CommunityController@mediaDestroy')->name('dashboard.communities.media.delete');
     Route::get('communities/{community}/medias', 'CommunityController@mediasDestroy')->name('dashboard.communities.medias.delete');
@@ -158,7 +162,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
 
 
     Route::get('properties/{property}/updateBrochure', 'PropertyController@updateBrochure')->name('dashboard.properties.updateBrochure');
-    
+
     Route::resource('properties', PropertyController::class, ['as' => 'dashboard']);
     Route::get('properties/{property}/duplicate', 'PropertyController@duplicateProperty')->name('dashboard.properties.duplicate');
     Route::get('properties/{property}/media/{media}', 'PropertyController@mediaDestroy')->name('dashboard.properties.media.delete');
@@ -169,11 +173,11 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::get('projects/{project}/media/{media}', 'ProjectController@mediaDestroy')->name('dashboard.projects.media.delete');
     Route::get('projects/{project}/interiorMediasDestroy', 'ProjectController@interiorMediasDestroy')->name('dashboard.projects.interiorMediasDestroy');
     Route::get('projects/{project}/exteriorMediasDestroy', 'ProjectController@exteriorMediasDestroy')->name('dashboard.projects.exteriorMediasDestroy');
-    
-    
+
+
     Route::get('projects/{project}/updateBrochure', 'ProjectController@updateBrochure')->name('dashboard.projects.updateBrochure');
     Route::get('projects/{project}/viewBrochure', 'ProjectController@viewBrochure')->name('dashboard.projects.viewBrochure');
-    
+
     Route::any('singleProjectDetail', 'ProjectController@singleProjectDetail')->name('dashboard.project.ajax');
     Route::any('projects/subProjects', 'ProjectController@subProjects')->name('dashboard.project.subprojects');
     Route::get('projects/{project}/paymentPlans', 'ProjectController@payments')->name('dashboard.projects.paymentPlans');
@@ -194,18 +198,18 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::get('about/gallery/{gallery}', 'PageContentController@aboutGalleryDestroy')->name('dashboard.about.gallery.destroy');
 
 
-    Route::get('{page}/contents/create','PageContentController@create')->name('dashboard.contents.create');
+    Route::get('{page}/contents/create', 'PageContentController@create')->name('dashboard.contents.create');
     Route::post('contents', 'PageContentController@store')->name('dashboard.contents.store');
-    Route::get('{page}/contents/{content}/edit','PageContentController@edit')->name('dashboard.contents.edit');
-    Route::put('{page}/contents/{content}','PageContentController@update')->name('dashboard.contents.update');
-    Route::delete('{page}/contents/{content}','PageContentController@destroy')->name('dashboard.contents.destroy');
+    Route::get('{page}/contents/{content}/edit', 'PageContentController@edit')->name('dashboard.contents.edit');
+    Route::put('{page}/contents/{content}', 'PageContentController@update')->name('dashboard.contents.update');
+    Route::delete('{page}/contents/{content}', 'PageContentController@destroy')->name('dashboard.contents.destroy');
 
 
-    Route::get('{page}/faqs/create','FaqController@create')->name('dashboard.faqs.create');
+    Route::get('{page}/faqs/create', 'FaqController@create')->name('dashboard.faqs.create');
     Route::post('faqs', 'FaqController@store')->name('dashboard.faqs.store');
-    Route::get('{page}/faqs/{faq}/edit','FaqController@edit')->name('dashboard.faqs.edit');
-    Route::put('{page}/faqs/{faq}','FaqController@update')->name('dashboard.faqs.update');
-    Route::delete('{page}/faqs/{faq}','FaqController@destroy')->name('dashboard.faqs.destroy');
+    Route::get('{page}/faqs/{faq}/edit', 'FaqController@edit')->name('dashboard.faqs.edit');
+    Route::put('{page}/faqs/{faq}', 'FaqController@update')->name('dashboard.faqs.update');
+    Route::delete('{page}/faqs/{faq}', 'FaqController@destroy')->name('dashboard.faqs.destroy');
 
     Route::resource('dynamicPages', DynamicPageController::class, ['as' => 'dashboard']);
     Route::get('pageContents/home-page', 'PageContentController@homePage')->name('dashboard.pageContents.home-page');
@@ -214,7 +218,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::post('pageContents/dubaiGuideStore', 'PageContentController@dubaiGuideStore')->name('dashboard.pageContents.dubaiGuideStore');
     Route::post('pageContents/sellerGuideStore', 'PageContentController@sellerGuideStore')->name('dashboard.pageContents.sellerGuide');
     Route::post('pageContents/homeStore', 'PageContentController@homeStore')->name('dashboard.pageContents.homeStore');
-        
+
     Route::get('pageContents/about-page', 'PageContentController@aboutPage')->name('dashboard.pageContents.about-page');
     Route::get('pageContents/properties-page', 'PageContentController@propertiesPage')->name('dashboard.pageContents.properties-page');
     Route::get('pageContents/rent-page', 'PageContentController@rentPage')->name('dashboard.pageContents.rent-page');
@@ -259,8 +263,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
 
     Route::get('projects/{project}/subprojects/{subProject}/floorplansDestroy', 'SubProjectController@floorplansDestroy')->name('dashboard.subProjects.floorplansDestroy');
     Route::get('projects/{project}/subprojects/{subProject}/floorplan/{floorplan}/floorplanDestroy', 'SubProjectController@floorplanDestroy')->name('dashboard.subProjects.floorplanDestroy');
-    
-    
+
+
     Route::get('projects/{project}/subprojects/{subProject}/paymentPlans', 'SubProjectController@payments')->name('dashboard.projects.subProjects.paymentPlans');
     Route::get('projects/{project}/subprojects/{subProject}/create', 'SubProjectController@createPayment')->name('dashboard.projects.subProjects.paymentPlans.create');
     Route::post('projects/{project}/subprojects/{subProject}/paymentPlans', 'SubProjectController@storePayment')->name('dashboard.projects.subProjects.paymentPlans.store');
@@ -303,9 +307,9 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::resource('languages', LanguageController::class, ['as' => 'dashboard']);
     Route::resource('services', ServiceController::class, ['as' => 'dashboard']);
     Route::resource('articles', ArticleController::class, ['as' => 'dashboard']);
-    
+
     Route::get('articles/{article}/media/{media}', 'ArticleController@mediaDestroy')->name('dashboard.articles.media.delete');
-    
+
     Route::resource('video-gallery', VideoGalleryController::class, ['as' => 'dashboard']);
     Route::resource('users', UserController::class, ['as' => 'dashboard']);
 
@@ -324,8 +328,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::resource('page-tags', PageTagController::class, ['as' => 'dashboard']);
 });
 
-Route::namespace('App\Http\Controllers\Frontend')->group(function(){
+Route::namespace('App\Http\Controllers\Frontend')->group(function () {
     Route::get('{slug}', 'HomeController@dynamicPage')->name('dynamicPage');
 });
 
-Route::match(['delete'],'deletePaymentPlanAjax/{id}', 'App\Http\Controllers\Dashboard\ProjectController@deletePaymentPlanAjax')->name('deletePaymentPlanAjax');
+Route::match(['delete'], 'deletePaymentPlanAjax/{id}', 'App\Http\Controllers\Dashboard\ProjectController@deletePaymentPlanAjax')->name('deletePaymentPlanAjax');
