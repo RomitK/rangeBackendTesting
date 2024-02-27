@@ -770,6 +770,7 @@ class HomeController extends Controller
 
 
             Log::info("Form-" . $request->formName . "Data-" . $data);
+            Log::info($data);
             $lead = new Lead;
             $lead->email = $request->email;
             $lead->name = $request->name;
