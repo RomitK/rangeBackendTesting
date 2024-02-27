@@ -716,93 +716,72 @@ class HomeController extends Controller
                 }
             }
 
-            if (in_array(
-                $request->formName,
-                [
-                    "FooterContactForm",
-                    "CallBackRequestForm",
-                    "ResidentialSales&Leasing",
-                    "CommercialSales&Leasing",
-                    "Property/PortfolioManagement",
-                    "HolidayHomes",
-                    "MortgageServices",
-                    "InvestmentConsultancy",
-                    "GoldenVisaForm",
-                    "sellContactForm"
-                ]
-            )) {
+            // if (in_array(
+            //     $request->formName,
+            //     [
+            //         "FooterContactForm",
+            //         "CallBackRequestForm",
+            //         "ResidentialSales&Leasing",
+            //         "CommercialSales&Leasing",
+            //         "Property/PortfolioManagement",
+            //         "HolidayHomes",
+            //         "MortgageServices",
+            //         "InvestmentConsultancy",
+            //         "GoldenVisaForm",
+            //         "sellContactForm"
+            //     ]
+            // )) {
 
-                $data = [
-                    'email' => $request->email,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'message' => "Page Url:" . $request->page . "<br> Message-" . $request->message,
-                    'agentEmail' =>  'ian@xpertise.ae',
+            //     $data = [
+            //         'email' => $request->email,
+            //         'name' => $request->name,
+            //         'phone' => $request->phone,
+            //         'message' => "Page Url:" . $request->page . "<br> Message-" . $request->message,
+            //         'agentEmail' =>  'ian@xpertise.ae',
 
-                ];
+            //     ];
 
-                if ($request->formName == "FooterContactForm") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
+            //     if ($request->formName == "FooterContactForm") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
 
-                if ($request->formName == "CallBackRequestForm") {
-                    $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
+            //     if ($request->formName == "CallBackRequestForm") {
+            //         $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
+            //         CRMLeadJob::dispatch($data);
+            //     }
 
-                    CRMLeadJob::dispatch($data);
-
-                    // $response = Http::withHeaders([
-                    //     'authorization-token' => $token,
-                    // ])->post('https://axtech.range.ae/api/v2/webLeads', $data);
-
-
-                    // if ($response->successful()) {
-                    //     // Request was successful, handle the response
-                    //     $responseData = $response->json(); // If expecting JSON response
-                    //     Log::info('CRM DONE');
-                    //     Log::info($responseData);
-                    //     // Process the response data here
-                    // } else {
-                    //     // Request failed, handle the error
-                    //     $errorCode = $response->status();
-                    //     $errorMessage = $response->body(); // Get the error message
-                    //     // Handle the error here
-
-                    //     Log::info('CRM ERROR DONE');
-                    //     Log::info($errorMessage);
-                    // }
-                }
-
-                if ($request->formName == "ResidentialSales&Leasing") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "CommercialSales&Leasing") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "Property/PortfolioManagement") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "HolidayHomes") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "MortgageServices") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "InvestmentConsultancy") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "GoldenVisaForm") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-                if ($request->formName == "sellContactForm") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-                }
-            }
+            //     if ($request->formName == "ResidentialSales&Leasing") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "CommercialSales&Leasing") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "Property/PortfolioManagement") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "HolidayHomes") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "MortgageServices") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "InvestmentConsultancy") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "GoldenVisaForm") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            //     if ($request->formName == "sellContactForm") {
+            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+            //     }
+            // }
 
 
 
 
-            Log::info("Form-" . $request->formName . "Data-");
-            Log::info($data);
+            // Log::info("Form-" . $request->formName . "Data-");
+            // Log::info($data);
+
             $lead = new Lead;
             $lead->email = $request->email;
             $lead->name = $request->name;
