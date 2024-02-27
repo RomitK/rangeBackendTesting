@@ -79,6 +79,8 @@ return [
             'root'   => public_path('uploads/frontend/partners'),
             'url'        => env('APP_URL') . '/uploads/frontend/partners',
             'visibility' => 'public'
+
+
         ],
         'pageContentFiles' => [
 
@@ -102,10 +104,24 @@ return [
             // 'visibility' => 'public'
         ],
         'bannerFiles' => [
-            'driver' => 'local',
-            'root'   => public_path('uploads/frontend/banners'),
-            'url'        => env('APP_URL') . '/uploads/frontend/banners',
-            'visibility' => 'public'
+            // 'driver' => 'local',
+            // 'root'   => public_path('uploads/frontend/banners'),
+            // 'url'        => env('APP_URL') . '/uploads/frontend/banners',
+            // 'visibility' => 'public'
+
+
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'visibility' => 'public',
+            'root' => 'banners'
+
         ],
         'agentFiles' => [
             // 'driver' => 'local',
@@ -240,28 +256,84 @@ return [
 
         ],
         'articleFiles' => [
-            'driver' => 'local',
-            'root'   => public_path('uploads/frontend/articles'),
-            'url'        => env('APP_URL') . '/uploads/frontend/articles',
-            'visibility' => 'public'
+            // 'driver' => 'local',
+            // 'root'   => public_path('uploads/frontend/articles'),
+            // 'url'        => env('APP_URL') . '/uploads/frontend/articles',
+            // 'visibility' => 'public'
+
+
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'visibility' => 'public',
+            'root' => 'articles'
+
         ],
         'serviceFiles' => [
-            'driver' => 'local',
-            'root'   => public_path('uploads/frontend/services'),
-            'url'        => env('APP_URL') . '/uploads/frontend/services',
-            'visibility' => 'public'
+            // 'driver' => 'local',
+            // 'root'   => public_path('uploads/frontend/services'),
+            // 'url'        => env('APP_URL') . '/uploads/frontend/services',
+            // 'visibility' => 'public'
+
+
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'visibility' => 'public',
+            'root' => 'services'
+
         ],
         'testimonialFiles' => [
-            'driver' => 'local',
-            'root'   => public_path('uploads/frontend/testimonials'),
-            'url'        => env('APP_URL') . '/uploads/frontend/testimonials',
-            'visibility' => 'public'
+            // 'driver' => 'local',
+            // 'root'   => public_path('uploads/frontend/testimonials'),
+            // 'url'        => env('APP_URL') . '/uploads/frontend/testimonials',
+            // 'visibility' => 'public'
+
+
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'visibility' => 'public',
+            'root' => 'testimonials'
+
         ],
         'careerFiles' => [
-            'driver' => 'local',
-            'root'   => public_path('uploads/frontend/careers'),
-            'url'        => env('APP_URL') . '/uploads/frontend/careers',
-            'visibility' => 'public'
+            // 'driver' => 'local',
+            // 'root'   => public_path('uploads/frontend/careers'),
+            // 'url'        => env('APP_URL') . '/uploads/frontend/careers',
+            // 'visibility' => 'public'
+
+
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'visibility' => 'public',
+            'root' => 'careers'
+
         ],
         'local' => [
             'driver' => 'local',
