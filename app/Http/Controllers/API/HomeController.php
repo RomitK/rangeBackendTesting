@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Models\{
     Project,
     Community,
@@ -684,6 +685,8 @@ class HomeController extends Controller
     {
         try {
 
+            $token = '3MPHJP0BC63435345341';
+
             if ($request->formName == 'EmailerForm') {
                 $messages = [
                     'email' => 'Email field is Required',
@@ -732,6 +735,7 @@ class HomeController extends Controller
                     'phone' => $request->phone,
                     'message' => "Page Url:" . $request->page . "<br> Message-" . $request->message,
                     'agentEmail' =>  'ian@xpertise.ae',
+
                 ];
 
                 if ($request->formName == "FooterContactForm") {
@@ -739,7 +743,28 @@ class HomeController extends Controller
                 }
 
                 if ($request->formName == "CallBackRequestForm") {
-                    $data = $this->CRMCampaignManagement($data, 254, 1, 1);
+                    $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
+
+                    $response = Http::withHeaders([
+                        'authorization-token' => $token,
+                    ])->post('https://axtech.range.ae/api/v2/webLeads', $data);
+
+
+                    if ($response->successful()) {
+                        // Request was successful, handle the response
+                        $responseData = $response->json(); // If expecting JSON response
+                        Log::info('CRM DONE');
+                        Log::info($responseData);
+                        // Process the response data here
+                    } else {
+                        // Request failed, handle the error
+                        $errorCode = $response->status();
+                        $errorMessage = $response->body(); // Get the error message
+                        // Handle the error here
+
+                        Log::info('CRM ERROR DONE');
+                        Log::info($errorMessage);
+                    }
                 }
 
                 if ($request->formName == "ResidentialSales&Leasing") {
@@ -767,6 +792,8 @@ class HomeController extends Controller
                     $data = $this->CRMCampaignManagement($data, 1, 1, 1);
                 }
             }
+
+
 
 
             Log::info("Form-" . $request->formName . "Data-");
