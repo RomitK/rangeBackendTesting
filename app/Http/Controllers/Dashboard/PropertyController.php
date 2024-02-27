@@ -424,7 +424,7 @@ class PropertyController extends Controller
             }
 
             Log::info("property store-time: " . Carbon::now());
-            if (in_array($request->is_approved, ["approved"])) {
+            if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
                 StorePropertyBrochure::dispatch($property->id);
                 StorePropertySaleOffer::dispatch($property->id);
             }
@@ -733,7 +733,7 @@ class PropertyController extends Controller
                 $property->amenities()->attach($request->amenityIds);
             }
             Log::info("property update-time: " . Carbon::now());
-            if (in_array($request->is_approved, ["approved"])) {
+            if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
                 StorePropertyBrochure::dispatch($property->id);
                 StorePropertySaleOffer::dispatch($property->id);
             }

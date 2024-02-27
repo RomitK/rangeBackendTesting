@@ -524,7 +524,7 @@ class ProjectController extends Controller
                 }
             }
 
-            if (in_array($request->is_approved, ["approved"])) {
+            if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
                 StoreProjectBrochure::dispatch($project->id);
             }
 
@@ -836,7 +836,7 @@ class ProjectController extends Controller
                 }
             }
 
-            if (in_array($request->is_approved, ["approved"])) {
+            if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
                 Log::info("project update for brochue");
                 StoreProjectBrochure::dispatch($project->id);
             }

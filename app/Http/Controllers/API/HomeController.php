@@ -31,6 +31,9 @@ use App\Http\Resources\{
     SellGuideResource,
     DeveloperListResource
 };
+use App\Jobs\{
+    CRMLeadJob
+};
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use DB;
@@ -745,26 +748,28 @@ class HomeController extends Controller
                 if ($request->formName == "CallBackRequestForm") {
                     $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
 
-                    $response = Http::withHeaders([
-                        'authorization-token' => $token,
-                    ])->post('https://axtech.range.ae/api/v2/webLeads', $data);
+                    CRMLeadJob::dispatch($data);
+
+                    // $response = Http::withHeaders([
+                    //     'authorization-token' => $token,
+                    // ])->post('https://axtech.range.ae/api/v2/webLeads', $data);
 
 
-                    if ($response->successful()) {
-                        // Request was successful, handle the response
-                        $responseData = $response->json(); // If expecting JSON response
-                        Log::info('CRM DONE');
-                        Log::info($responseData);
-                        // Process the response data here
-                    } else {
-                        // Request failed, handle the error
-                        $errorCode = $response->status();
-                        $errorMessage = $response->body(); // Get the error message
-                        // Handle the error here
+                    // if ($response->successful()) {
+                    //     // Request was successful, handle the response
+                    //     $responseData = $response->json(); // If expecting JSON response
+                    //     Log::info('CRM DONE');
+                    //     Log::info($responseData);
+                    //     // Process the response data here
+                    // } else {
+                    //     // Request failed, handle the error
+                    //     $errorCode = $response->status();
+                    //     $errorMessage = $response->body(); // Get the error message
+                    //     // Handle the error here
 
-                        Log::info('CRM ERROR DONE');
-                        Log::info($errorMessage);
-                    }
+                    //     Log::info('CRM ERROR DONE');
+                    //     Log::info($errorMessage);
+                    // }
                 }
 
                 if ($request->formName == "ResidentialSales&Leasing") {
