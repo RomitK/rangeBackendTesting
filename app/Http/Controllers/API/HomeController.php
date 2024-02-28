@@ -716,65 +716,72 @@ class HomeController extends Controller
                 }
             }
 
-            // if (in_array(
-            //     $request->formName,
-            //     [
-            //         "FooterContactForm",
-            //         "CallBackRequestForm",
-            //         "ResidentialSales&Leasing",
-            //         "CommercialSales&Leasing",
-            //         "Property/PortfolioManagement",
-            //         "HolidayHomes",
-            //         "MortgageServices",
-            //         "InvestmentConsultancy",
-            //         "GoldenVisaForm",
-            //         "sellContactForm"
-            //     ]
-            // )) {
+            if (in_array(
+                $request->formName,
+                [
+                    "FooterContactForm",
+                    "CallBackRequestForm",
+                    "ResidentialSales&Leasing",
+                    "CommercialSales&Leasing",
+                    "Property/PortfolioManagement",
+                    "HolidayHomes",
+                    "MortgageServices",
+                    "InvestmentConsultancy",
+                    "GoldenVisaForm",
+                    "sellContactForm"
+                ]
+            )) {
 
-            //     $data = [
-            //         'email' => $request->email,
-            //         'name' => $request->name,
-            //         'phone' => $request->phone,
-            //         'message' => "Page Url:" . $request->page . "<br> Message-" . $request->message,
-            //         'agentEmail' =>  'ian@xpertise.ae',
+                $data = [
+                    'email' => $request->email,
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'message' => "Page Url:" . $request->page . "<br> Message-" . $request->message,
+                    'agentEmail' =>  'ian@xpertise.ae',
 
-            //     ];
+                ];
 
-            //     if ($request->formName == "FooterContactForm") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
+                if ($request->formName == "FooterContactForm") {
+                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+                }
 
-            //     if ($request->formName == "CallBackRequestForm") {
-            //         $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
-            //         CRMLeadJob::dispatch($data);
-            //     }
+                if ($request->formName == "CallBackRequestForm") {
+                    $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
+                    CRMLeadJob::dispatch($data);
+                }
 
-            //     if ($request->formName == "ResidentialSales&Leasing") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "CommercialSales&Leasing") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "Property/PortfolioManagement") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "HolidayHomes") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "MortgageServices") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "InvestmentConsultancy") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "GoldenVisaForm") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            //     if ($request->formName == "sellContactForm") {
-            //         $data = $this->CRMCampaignManagement($data, 1, 1, 1);
-            //     }
-            // }
+                if ($request->formName == "ResidentialSales&Leasing") {
+                    $data = $this->CRMCampaignManagement($data, 256, 461, 2517);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "CommercialSales&Leasing") {
+                    $data = $this->CRMCampaignManagement($data, 256, 461, 2518);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "Property/PortfolioManagement") {
+                    $$data = $this->CRMCampaignManagement($data, 256, 461, 2519);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "HolidayHomes") {
+                    $$data = $this->CRMCampaignManagement($data, 256, 461, 2520);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "MortgageServices") {
+                    $data = $this->CRMCampaignManagement($data, 256, 461, 2521);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "InvestmentConsultancy") {
+                    $data = $this->CRMCampaignManagement($data, 256, 461, 2522);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "GoldenVisaForm") {
+                    $data = $this->CRMCampaignManagement($data, 257, 462, 2523);
+                    CRMLeadJob::dispatch($data);
+                }
+                if ($request->formName == "sellContactForm") {
+                    $data = $this->CRMCampaignManagement($data, 258, 463, 2524);
+                }
+            }
 
 
 
@@ -924,7 +931,7 @@ class HomeController extends Controller
                 } elseif ($request->formName == 'LuxuryPropertiesForm') {
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->propertiesGuide;
-                } elseif ($request->formName == 'SellForm') {
+                } elseif ($request->formName == 'SellerGuideDownloadForm') {
                     $link = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
                     $link =  $link->sellerGuide;
                 } elseif ($request->formName == 'projectBrochure') {
