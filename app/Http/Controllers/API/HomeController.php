@@ -759,11 +759,11 @@ class HomeController extends Controller
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "Property/PortfolioManagement") {
-                    $$data = $this->CRMCampaignManagement($data, 256, 461, 2519);
+                    $data = $this->CRMCampaignManagement($data, 256, 461, 2519);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "HolidayHomes") {
-                    $$data = $this->CRMCampaignManagement($data, 256, 461, 2520);
+                    $data = $this->CRMCampaignManagement($data, 256, 461, 2520);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "MortgageServices") {
