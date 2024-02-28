@@ -731,7 +731,7 @@ class HomeController extends Controller
                     "sellContactForm"
                 ]
             )) {
-
+                Log::info("formName" . $request->formName);
                 $data = [
                     'email' => $request->email,
                     'name' => $request->name,
@@ -780,6 +780,7 @@ class HomeController extends Controller
                 }
                 if ($request->formName == "sellContactForm") {
                     $data = $this->CRMCampaignManagement($data, 258, 463, 2524);
+                    CRMLeadJob::dispatch($data);
                 }
             }
 
