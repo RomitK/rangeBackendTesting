@@ -33,6 +33,7 @@ class CRMLeadJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info('CRMLeadJob Start');
         try {
             $token = '3MPHJP0BC63435345341';
 
