@@ -37,6 +37,7 @@ use App\Jobs\{
     StoreProjectBrochure
 };
 use Auth;
+use Carbon\Carbon;
 use DB;
 use PDF;
 
@@ -877,7 +878,11 @@ class ProjectController extends Controller
     public function mediaDestroy(Project $project, $media)
     {
         try {
+            Log::info("mediaDestroy-start" . Carbon::now());
+            Log::info("project-" . $project->id . "project-approval" . $project->is_approved);
+            Log::info("media-" . $media);
             $project->deleteMedia($media);
+            Log::info("mediaDestroy-end" . Carbon::now());
             return redirect()->route('dashboard.projects.edit', $project->id)->with('success', 'Project Image has been deleted successfully.');
         } catch (\Exception $error) {
             return redirect()->route('dashboard.projects.edit', $project->id)->with('error', $error->getMessage());

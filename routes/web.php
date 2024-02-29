@@ -171,8 +171,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::resource('projects', ProjectController::class, ['as' => 'dashboard']);
     Route::get('project/mainImage', 'ProjectController@mainImage');
     Route::get('projects/{project}/media/{media}', 'ProjectController@mediaDestroy')->name('dashboard.projects.media.delete');
-    Route::get('projects/{project}/interiorMediasDestroy', 'ProjectController@interiorMediasDestroy')->name('dashboard.projects.interiorMediasDestroy');
-    Route::get('projects/{project}/exteriorMediasDestroy', 'ProjectController@exteriorMediasDestroy')->name('dashboard.projects.exteriorMediasDestroy');
+    // Route::get('projects/{project}/interiorMediasDestroy', 'ProjectController@interiorMediasDestroy')->name('dashboard.projects.interiorMediasDestroy');
+    // Route::get('projects/{project}/exteriorMediasDestroy', 'ProjectController@exteriorMediasDestroy')->name('dashboard.projects.exteriorMediasDestroy');
 
 
     Route::get('projects/{project}/updateBrochure', 'ProjectController@updateBrochure')->name('dashboard.projects.updateBrochure');

@@ -772,7 +772,14 @@ class PropertyController extends Controller
     public function mediaDestroy(Property $property, $media)
     {
         try {
+
+            Log::info("mediaDestroy-start" . Carbon::now());
+            Log::info("Property-" . $property->id . "Property-approval" . $property->is_approved);
+            Log::info("media-" . $media);
             $property->deleteMedia($media);
+            Log::info("mediaDestroy-end" . Carbon::now());
+
+
             return redirect()->route('dashboard.properties.edit', $property->id)->with('success', 'Property Image has been deleted successfully.');
         } catch (\Exception $error) {
             return redirect()->route('dashboard.properties.edit', $property->id)->with('error', $error->getMessage());
