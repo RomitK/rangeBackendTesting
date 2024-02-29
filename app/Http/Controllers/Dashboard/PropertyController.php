@@ -556,6 +556,10 @@ class PropertyController extends Controller
     {
 
         DB::beginTransaction();
+
+        Log::info("Property-update-start:" . Carbon::now());
+
+
         try {
             $property->name = $request->name;
             $property->rental_period = $request->rental_period;
@@ -737,6 +741,12 @@ class PropertyController extends Controller
                 StorePropertyBrochure::dispatch($property->id);
                 StorePropertySaleOffer::dispatch($property->id);
             }
+
+            Log::info("Property-update data:");
+
+            Log::info($property);
+
+            Log::info("Property-update-end:" . Carbon::now());
 
             DB::commit();
             return response()->json([

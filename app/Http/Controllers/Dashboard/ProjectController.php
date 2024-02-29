@@ -588,6 +588,7 @@ class ProjectController extends Controller
 
         DB::beginTransaction();
         try {
+            Log::info("Project-update-start:" . Carbon::now());
             $titleArray = explode(' ', $request->title);
             $sub_title = $titleArray[0];
 
@@ -841,6 +842,10 @@ class ProjectController extends Controller
                 Log::info("project update for brochue");
                 StoreProjectBrochure::dispatch($project->id);
             }
+
+            Log::info("Project Updated Data:");
+            Log::info($project);
+            Log::info("Project-update-end:" . Carbon::now());
 
             DB::commit();
             return response()->json([
