@@ -742,13 +742,16 @@ class PropertyController extends Controller
                 StorePropertySaleOffer::dispatch($property->id);
             }
 
+
+
+            DB::commit();
+
             Log::info("Property-update data:");
 
-            Log::info($property);
+            Log::info(count($property->subImages));
 
             Log::info("Property-update-end:" . Carbon::now());
 
-            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Property has been updated successfully.',
