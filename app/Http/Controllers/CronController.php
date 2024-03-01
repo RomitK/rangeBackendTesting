@@ -34,9 +34,29 @@ use GuzzleHttp\Client;
 
 class CronController extends Controller
 {
-    
-    
-     public function makeRequest()
+    public function subProjects()
+    {
+        DB::beginTransaction();
+        try {
+            $projects = Project::active()->approved()->get();
+            foreach ($projects as $project) {
+                Log::info("projectId" . $project->id);
+                $subProjects = $project->subProjects()->active()->where('is_approved', 'requested')->pluck('id')->toArray();
+                Project::whereIn('id', $subProjects)->update([
+                    'approval_id' =>  $project->approval_id,
+                    'is_approved' => $project->is_approved,
+                    'updated_by' => $project->updated_by
+                ]);
+            }
+            echo  "project sub project done";
+            DB::commit();
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()]);
+        }
+    }
+
+
+    public function makeRequest()
     {
         $url = 'https://demo-ipg.ctdev.comtrust.ae:2443';
 
@@ -78,202 +98,199 @@ class CronController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     // need to rerun the cronjob for the first 250 property as main images dont want watermark(2 feb 2024)
-    
-    public function propertyBanner(){
-        Log::info('propertyBannner Start-'.Carbon::now());
+
+    public function propertyBanner()
+    {
+        Log::info('propertyBannner Start-' . Carbon::now());
         DB::beginTransaction();
-        try{ 
+        try {
             // 520-580
             $properties = Property::orderBy('id', 'asc')->skip(700)->take(50)->get();
-            
-            foreach($properties as $property)
-            {
-                Log::info('projectId-'.$property->id. "reference-number: ". $property->reference_number);
-                
-                
+
+            foreach ($properties as $property) {
+                Log::info('projectId-' . $property->id . "reference-number: " . $property->reference_number);
+
+
                 // $lastMediaItem = $property->getMedia('mainImages')->first();
-               
+
                 // if($lastMediaItem && url_exists($lastMediaItem->getUrl())){
-                    
+
                 //     $property->addMediaFromUrl($lastMediaItem->getUrl())->toMediaCollection('mainImages', 'propertyFiles' );
-                    
+
                 // }
-                
+
                 // if($lastMediaItem && Media::where('id',  $lastMediaItem->id)->exists()){
-                       
+
                 //     $media = Media::where('id',  $lastMediaItem->id)->first();
                 //     $media->delete();
                 // }
-                
-                
+
+
                 $property->property_banner = $property->mainImage;
                 $property->save();
             }
-             DB::commit();
-            Log::info('propertyBanner End-'.Carbon::now());
+            DB::commit();
+            Log::info('propertyBanner End-' . Carbon::now());
             echo  "property done";
-        }catch(\Exception $error){
+        } catch (\Exception $error) {
             echo  $error->getMessage();
         }
     }
     public function propertyUpdate()
     {
-        Log::info('propertyUpdate Start-'.Carbon::now());
+        Log::info('propertyUpdate Start-' . Carbon::now());
         DB::beginTransaction();
-        try{ 
+        try {
             // 367-370
             $properties = Property::orderBy('id', 'asc')->skip(663)->take(3)->get();
-            
-            foreach($properties as $property)
-            {
-                
+
+            foreach ($properties as $property) {
+
                 $oldsubImageIds = $property->getMedia('subImages')->pluck('id');
-                
-                Log::info('property-'.$property->id. "reference-number: ". $property->reference_number);
-                
-                
+
+                Log::info('property-' . $property->id . "reference-number: " . $property->reference_number);
+
+
                 // $lastMediaItem = $property->getMedia('mainImages')->first();
-               
+
                 // if($lastMediaItem && url_exists($lastMediaItem->getUrl())){
-                    
+
                 //     $property->addMediaFromUrl($lastMediaItem->getUrl())->toMediaCollection('mainImages', 'propertyFiles' );
-                    
+
                 // }
-                   
+
                 foreach ($property->getMedia('subImages') as $media) {
                     $id = $media->id;
-                      
+
                     $property->addMediaFromUrl($media->getUrl())
-                                ->withCustomProperties([
-                                    'title' => $property->name,
-                                    'order' => $media->getCustomProperty('order')
-                                ])->toMediaCollection('subImages', 'propertyFiles');
+                        ->withCustomProperties([
+                            'title' => $property->name,
+                            'order' => $media->getCustomProperty('order')
+                        ])->toMediaCollection('subImages', 'propertyFiles');
                 }
-                if(count($oldsubImageIds) > 0){
-                    
+                if (count($oldsubImageIds) > 0) {
+
                     Media::whereIn('id',  $oldsubImageIds)->delete();
                 }
-                
-                    $property->save();
-                    $property->updated_brochure = 1;
-                    
-                    //$lastImage = $property->getMedia('mainImages')->last();
 
-                    // if ($lastImage) {
-                    //     $lastImageUrl = $lastImage->getUrl('resize');
-                    //     $property->property_banner = $lastImageUrl;
-                    //     Log::info($lastImageUrl);
-                    // }
-                   
-                   
-                    // $property->save();
-                    
-                    
-                    view()->share([ 'property' => $property ]);
-                    
-                    $pdf = PDF::loadView('pdf.propertyBrochure');
-                    $pdfContent = $pdf->output();
-                     
-                    // $saleOffer = PDF::loadView('pdf.propertySaleOffer');
-                    // $saleOfferPdf = $saleOffer->output();
-    
-                     
-                    $property->clearMediaCollection('brochures');
-                   // $property->clearMediaCollection('saleOffers');
-                   
-                    
-                    $property->addMediaFromString($pdfContent)
-                             ->usingFileName($property->name.'-brochure.pdf')
-                             ->toMediaCollection('brochures', 'propertyFiles' );
-                             
-                    // $property->addMediaFromString($saleOfferPdf)
-                    //          ->usingFileName($property->name.'-saleoffer.pdf')
-                    //          ->toMediaCollection('saleOffers', 'propertyFiles' );
-                    
-                    $property->save();
-                    
-                    // if($lastMediaItem && Media::where('id',  $lastMediaItem->id)->exists()){
-                       
-                    //     $media = Media::where('id',  $lastMediaItem->id)->first();
-                    //     $media->delete();
-                    // }
-                
-                         
+                $property->save();
+                $property->updated_brochure = 1;
+
+                //$lastImage = $property->getMedia('mainImages')->last();
+
+                // if ($lastImage) {
+                //     $lastImageUrl = $lastImage->getUrl('resize');
+                //     $property->property_banner = $lastImageUrl;
+                //     Log::info($lastImageUrl);
+                // }
+
+
+                // $property->save();
+
+
+                view()->share(['property' => $property]);
+
+                $pdf = PDF::loadView('pdf.propertyBrochure');
+                $pdfContent = $pdf->output();
+
+                // $saleOffer = PDF::loadView('pdf.propertySaleOffer');
+                // $saleOfferPdf = $saleOffer->output();
+
+
+                $property->clearMediaCollection('brochures');
+                // $property->clearMediaCollection('saleOffers');
+
+
+                $property->addMediaFromString($pdfContent)
+                    ->usingFileName($property->name . '-brochure.pdf')
+                    ->toMediaCollection('brochures', 'propertyFiles');
+
+                // $property->addMediaFromString($saleOfferPdf)
+                //          ->usingFileName($property->name.'-saleoffer.pdf')
+                //          ->toMediaCollection('saleOffers', 'propertyFiles' );
+
+                $property->save();
+
+                // if($lastMediaItem && Media::where('id',  $lastMediaItem->id)->exists()){
+
+                //     $media = Media::where('id',  $lastMediaItem->id)->first();
+                //     $media->delete();
+                // }
+
+
             }
             DB::commit();
-            Log::info('propertyUpdate End-'.Carbon::now());
+            Log::info('propertyUpdate End-' . Carbon::now());
             echo  "property done";
-        }catch(\Exception $error){
+        } catch (\Exception $error) {
             echo  $error->getMessage();
         }
     }
     public function projectBrochure()
     {
-        Log::info('projectBrochure Start-'.Carbon::now());
+        Log::info('projectBrochure Start-' . Carbon::now());
         DB::beginTransaction();
-        try{ 
+        try {
             // 1- 70
             $projects = Project::mainProject()->active()->approved()->orderBy('id', 'asc')->skip(5)->take(5)->get();
-           
-            foreach($projects as $project)
-            {
-                Log::info('projectId-'.$project->id. "reference-number". $project->reference_number);
-                 
-                 
+
+            foreach ($projects as $project) {
+                Log::info('projectId-' . $project->id . "reference-number" . $project->reference_number);
+
+
                 $minBed = $project->subProjects->min('bedrooms');
                 $maxBed = $project->subProjects->max('bedrooms');
-                if($minBed != $maxBed){
-                    if($maxBed === "Studio"){
-                        $bedroom = $maxBed. "-".$minBed;
-                    }else{
-                        $bedroom = $minBed. "-".$maxBed;
+                if ($minBed != $maxBed) {
+                    if ($maxBed === "Studio") {
+                        $bedroom = $maxBed . "-" . $minBed;
+                    } else {
+                        $bedroom = $minBed . "-" . $maxBed;
                     }
-                }else{
+                } else {
                     $bedroom = $minBed;
                 }
                 $area_unit = 'sq ft';
-            
-                $starting_price = 0; 
+
+                $starting_price = 0;
                 $dateStr = $project->completion_date;
                 $month = date("n", strtotime($dateStr));
                 $yearQuarter = ceil($month / 3);
-                
+
                 view()->share([
                     'project' => $project,
-                    'area_unit'=>$area_unit,
-                    'starting_price'=> count( $project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
-                    'bedrooms'=> $bedroom,
-                    'handOver' => "Q".$yearQuarter." ".date("Y", strtotime($dateStr)),
-                    'communityName'=> $project->mainCommunity ? $project->mainCommunity->name : '',
-                    
+                    'area_unit' => $area_unit,
+                    'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
+                    'bedrooms' => $bedroom,
+                    'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
+                    'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
+
                 ]);
                 $pdf = PDF::loadView('pdf.projectBrochure');
                 $pdfContent = $pdf->output();
-             
+
                 $project->clearMediaCollection('brochures');
                 $project->addMediaFromString($pdfContent)
-                         ->usingFileName($project->title.'-brochure.pdf')
-                         ->toMediaCollection('brochures', 'projectFiles' );
-                         
+                    ->usingFileName($project->title . '-brochure.pdf')
+                    ->toMediaCollection('brochures', 'projectFiles');
+
                 $project->save();
                 $project->brochure_link = $project->brochure;
                 $project->updated_brochure = 1;
                 $project->save();
-            
             }
             DB::commit();
-            Log::info('projectBrochure End-'.Carbon::now());
-             echo  "project done";
-        }catch(\Exception $error){
+            Log::info('projectBrochure End-' . Carbon::now());
+            echo  "project done";
+        } catch (\Exception $error) {
             echo  $error->getMessage();
         }
     }
-    private function applyWatermark( $mediaItem)
+    private function applyWatermark($mediaItem)
     {
-       
-       $tempPath = tempnam(sys_get_temp_dir(), 'media') . '.' . $mediaItem->extension;
+
+        $tempPath = tempnam(sys_get_temp_dir(), 'media') . '.' . $mediaItem->extension;
         $watermarkPath = public_path('path_to_watermark.png'); // Replace with your watermark image path
 
         // Download the image from S3 to a temporary file
@@ -281,11 +298,11 @@ class CronController extends Controller
 
         // Apply the watermark
         Image::load($tempPath)
-             ->watermark($watermarkPath)
-             ->watermarkPosition(Manipulations::POSITION_CENTER)
-             ->watermarkHeight(50, Manipulations::UNIT_PERCENT)
-             ->watermarkOpacity(60)
-             ->save();
+            ->watermark($watermarkPath)
+            ->watermarkPosition(Manipulations::POSITION_CENTER)
+            ->watermarkHeight(50, Manipulations::UNIT_PERCENT)
+            ->watermarkOpacity(60)
+            ->save();
 
         // Replace the original media item with the watermarked image
         $mediaItem->update([
@@ -294,49 +311,47 @@ class CronController extends Controller
 
         // Upload the watermarked image back to S3
         $mediaItem->toMediaCollection('mainImages', 's3');
-        
+
         // Clean up the temporary file
         unlink($tempPath);
     }
 
     public function propertyWaterMark()
     {
-        Log::info('propertyWaterMark Start-'.Carbon::now());
+        Log::info('propertyWaterMark Start-' . Carbon::now());
         DB::beginTransaction();
-        
-        try{ 
+
+        try {
             $properties = Property::orderBy('id', 'asc')->take(4)->get();
-            foreach( $properties as $property){
-                Log::info('propertyId-'.$property->id);
+            foreach ($properties as $property) {
+                Log::info('propertyId-' . $property->id);
                 $lastMediaItem = $property->getMedia('mainImages')->last();
-               
-                if($lastMediaItem && url_exists($lastMediaItem->getUrl())){
-                   
+
+                if ($lastMediaItem && url_exists($lastMediaItem->getUrl())) {
+
                     // Add new media from URL and get the media instance
-                  //  $newMedia = $property->addMediaFromUrl($lastMediaItem->getUrl())->toMediaCollection('mainImages', 'propertyFiles');
+                    //  $newMedia = $property->addMediaFromUrl($lastMediaItem->getUrl())->toMediaCollection('mainImages', 'propertyFiles');
                     count($property->getMedia('subImages'));
-                    
+
                     foreach ($property->getMedia('subImages') as $media) {
                         $id = $media->id;
-                      
+
                         $property->addMediaFromUrl($media->getUrl())
-                                ->withCustomProperties([
-                                    'title' => $property->name,
-                                    'order' => $media->getCustomProperty('order')
-                                ])->toMediaCollection('subImages', 'propertyFiles');
-                       
-                                
+                            ->withCustomProperties([
+                                'title' => $property->name,
+                                'order' => $media->getCustomProperty('order')
+                            ])->toMediaCollection('subImages', 'propertyFiles');
                     }
-            
-            
-                    
+
+
+
                     $property->save();
                     DB::commit();
-                   
-                     
+
+
                     //$property->property_banner = $newMedia->getUrl('resize');
                     //$property->save();
-                    
+
                     //$medias = $property->getMedia('mainImages')->sortByDesc('created_at');
 
                     // Check if there are more than one media items
@@ -347,16 +362,13 @@ class CronController extends Controller
                     //     });
                     // }
 
-                    Log::info('propertyId-'.$property->id);
-                    
+                    Log::info('propertyId-' . $property->id);
                 }
-                
             }
-            Log::info('propertyWaterMark End-'.Carbon::now());
-        }catch(\Exception $error){
+            Log::info('propertyWaterMark End-' . Carbon::now());
+        } catch (\Exception $error) {
             echo  $error->getMessage();
         }
-        
     }
     public function addxml()
     {
@@ -365,30 +377,29 @@ class CronController extends Controller
         $xml_arr  = simplexml_load_file($apiURL, 'SimpleXMLElement', LIBXML_NOCDATA);
 
         $xml_arr  = json_decode(json_encode($xml_arr, true), true);
-        
-        
-        $propertAll = Property::where('reference_number','!=', NULL)->where('property_source', 'xml')->get();
-        
-        foreach($propertAll as $prop){
+
+
+        $propertAll = Property::where('reference_number', '!=', NULL)->where('property_source', 'xml')->get();
+
+        foreach ($propertAll as $prop) {
             $flag = 0;
-            foreach($xml_arr['Listing'] as $key => $value){
-                if($prop['reference_number'] == $value['Property_Ref_No']){
+            foreach ($xml_arr['Listing'] as $key => $value) {
+                if ($prop['reference_number'] == $value['Property_Ref_No']) {
                     $flag = 1;
                     break;
-                }else{
+                } else {
                     $flag = 0;
                 }
             }
-            if($flag == 0){
-                $propDel = Property::where('id','=', $prop['id'])->first();
+            if ($flag == 0) {
+                $propDel = Property::where('id', '=', $prop['id'])->first();
                 $propDel->delete();
-                
             }
         }
 
         foreach ($xml_arr['Listing'] as $key => $value) {
 
-            $allraedy               = Property::where('reference_number',$value['Property_Ref_No'])->first();
+            $allraedy               = Property::where('reference_number', $value['Property_Ref_No'])->first();
 
             $property               = $allraedy ? $allraedy : new Property;
 
@@ -415,9 +426,9 @@ class CronController extends Controller
             $property->furnished     = '';
 
             $property->area     = array_key_exists("Unit_Builtup_Area", $value) ? (!empty($value['Unit_Builtup_Area']) ? $value['Unit_Builtup_Area'] : 0) : 0;
-            
+
             $property->unit_measure     = array_key_exists("unit_measure", $value) ? (!empty($value['unit_measure']) ? $value['unit_measure'] : 'Sq.Ft') : 'Sq.Ft';
- 
+
             $property->price     = array_key_exists("Price", $value) ? (!empty($value['Price']) ? $value['Price'] : '') : '';
             $property->currency     = 'AED';
 
@@ -430,14 +441,14 @@ class CronController extends Controller
 
             $property->address_latitude     = array_key_exists("Latitude", $value) ? (!empty($value['Latitude']) ? $value['Latitude'] : '') : '';
             $property->address_longitude     = array_key_exists("Longitude", $value) ? (!empty($value['Longitude']) ? $value['Longitude'] : '') : '';
-            
+
             // $projectExists = Project::where(['address_longitude'=>$property->address_latitude, 'address_latitude'=>$property->address_longitude])->exists();
             // if($projectExists){
             //     $projectExists = Project::where(['address_longitude'=>$property->address_latitude, 'address_latitude'=>$property->address_longitude])->first();
             //     $property->project_id =  $projectExists->id;
             // }
 
-            $property->emirate     = array_key_exists("Emirate", $value) ? (!empty($value['Emirate']) ? $value['Emirate'].', ' : '') : '';
+            $property->emirate     = array_key_exists("Emirate", $value) ? (!empty($value['Emirate']) ? $value['Emirate'] . ', ' : '') : '';
             $property->primary_view     = array_key_exists("Primary_View", $value) ? (!empty($value['Primary_View']) ? $value['Primary_View'] : '') : '';
 
             $property->property_source     = 'xml';
@@ -451,7 +462,7 @@ class CronController extends Controller
             // if(is_array($value['completion_status']) || is_object($value['completion_status'])) { 
             //     if(in_array('off_plan', $value['completion_status'])){
             //       $property->category_id   = '2';
-                   
+
             //     }else{
             //       if($value['Ad_Type'] == 'Sale'){
             //             $property->category_id   = '4'; 
@@ -468,10 +479,10 @@ class CronController extends Controller
             //       }else if($value['Ad_Type'] == 'Rent'){
             //             $property->category_id   = '1'; 
             //       }
-                    
+
             //     }
             // }
-            
+
             $staCode = array_key_exists("Ad_Type", $value) ? (!empty($value['Ad_Type']) ? $value['Ad_Type'] : '') : '';
             if ($staCode != '') {
                 if ($staCode == "Sale" || $staCode == "sale") {
@@ -491,7 +502,7 @@ class CronController extends Controller
             }
 
             $comName = array_key_exists("Community", $value) ? (!empty($value['Community']) ? $value['Community'] : '') : '';
-           
+
             if ($comName != '') {
                 $community = Community::where('name', 'like', '%' . $comName . '%')->first();
                 if (!empty($community)) {
@@ -505,10 +516,9 @@ class CronController extends Controller
                     $community->save();
                     $property->communities()->associate($community->id);
                 }
-                
             }
-            
-             
+
+
 
             // $offerType = array_key_exists("Unit_Type", $value) ? (!empty($value['Unit_Type']) ? $value['Unit_Type'] : '') : '';
             // if ($offerType != '') {
@@ -586,12 +596,12 @@ class CronController extends Controller
             }
 
             $property->save();
-           // $community = Community::where('id', $property->community_id )->first();
-            if(Project::where('title', $property->sub_title)->exists()){
+            // $community = Community::where('id', $property->community_id )->first();
+            if (Project::where('title', $property->sub_title)->exists()) {
                 $project = Project::where('title', $property->sub_title)->first();
                 $project->community_id = $community->id;
                 $project->save();
-            }else{
+            } else {
                 $project = new Project();
                 $project->title = $property->sub_title;
                 $project->user_id = 1;
@@ -600,15 +610,14 @@ class CronController extends Controller
 
                 $project->address_latitude     = array_key_exists("Latitude", $value) ? (!empty($value['Latitude']) ? $value['Latitude'] : '') : '';
                 $project->address_longitude     = array_key_exists("Longitude", $value) ? (!empty($value['Longitude']) ? $value['Longitude'] : '') : '';
-            
-            
+
+
                 $project->community_id = $community->id;
                 $project->save();
-                
             }
 
             $property->project_id =  $project->id;
-            $property->search_keyword = $property->name.", ". $property->sub_title."(".$property->emirate .$community->name.")";
+            $property->search_keyword = $property->name . ", " . $property->sub_title . "(" . $property->emirate . $community->name . ")";
             $property->save();
             if (array_key_exists("Facilities", $value) && (count($value['Facilities']['facility']) > 0)) {
                 foreach ($value['Facilities']['facility'] as $keys => $faci) {
@@ -631,14 +640,13 @@ class CronController extends Controller
             }
             if (array_key_exists("Images", $value) && (count($value['Images']['image']) > 0)) {
                 foreach ($value['Images']['image'] as $keys => $img) {
-                    $checkGM = PropertyGallery::where('property_id',$property->id)->where('galleryimage',$img)->first();
+                    $checkGM = PropertyGallery::where('property_id', $property->id)->where('galleryimage', $img)->first();
                     $gallery                = $checkGM ? $checkGM : new PropertyGallery;
                     $gallery->property_id   = $property->id;
                     $gallery->galleryimage  = $img;
                     $gallery->save();
                 }
             }
-
         }
         echo "Property added successfully.";
     }
@@ -662,19 +670,17 @@ class CronController extends Controller
             if ($allraedy) {
                 $property->clearMediaCollection('mainImages');
             }
-           try {
-            $property->addMediaFromUrl($img)->toMediaCollection('mainImages', 'propertyFiles');
-           } catch (\Throwable $th) {
-            //throw $th;
-           }
-
-
+            try {
+                $property->addMediaFromUrl($img)->toMediaCollection('mainImages', 'propertyFiles');
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
         }
         echo "Property Image added successfully.";
     }
     public function addxmlSubImg()
     {
-       // XMLSubImageJob::dispatch();
+        // XMLSubImageJob::dispatch();
 
         ini_set('max_execution_time', 6000);
         set_time_limit(6000);
@@ -695,16 +701,15 @@ class CronController extends Controller
             if (array_key_exists("listing_media", $value) && (count($value['listing_media']['images']['image']) > 0)) {
                 foreach ($value['listing_media']['images']['image'] as $keys => $img) {
                     // if(filesize($img['url']) < (128 * 1024)){
-                        if ($keys < 5) {
-                            $property->addMediaFromUrl($img['url'])->toMediaCollection('subImages', 'propertyFiles');
-                        } else {
-                             break;
-                        }
+                    if ($keys < 5) {
+                        $property->addMediaFromUrl($img['url'])->toMediaCollection('subImages', 'propertyFiles');
+                    } else {
+                        break;
+                    }
                     // }
                 }
             }
         }
         echo "Property Sub Images added successfully.";
     }
-
 }
