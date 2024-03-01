@@ -36,7 +36,8 @@ use App\Jobs\{
 };
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 
 class HomeController extends Controller
 {
@@ -187,14 +188,40 @@ class HomeController extends Controller
             $brochure = PageContent::WherePageName(config('constants.home.name'))->first();
             $developers = DeveloperListResource::collection(Developer::active()->approved()->home()->orderByRaw('ISNULL(developerOrder)')->orderBy('developerOrder', 'asc')->get());
 
+            $results = DB::select("
+                        SELECT MIN(starting_price) AS min_price, MAX(starting_price) AS max_price
+                        FROM projects
+                        WHERE deleted_at IS NULL
+                        AND status = 'active'
+                        AND starting_price IS NOT NULL
+                        AND starting_price REGEXP '^[0-9]+$'
+                    ");
+            // Convert minPrice and maxPrice to integers
+            $minPrice = intval($results[0]->min_price);
+            $maxPrice = intval($results[0]->max_price);
+
+            // Calculate the step size
+            $step = ceil(($maxPrice - $minPrice) / 9);
+            $formattedNumbers = [];
+            for ($i = 0; $i < 10; $i++) {
+                $number = $minPrice + $i * $step;
+                $formattedNumbers[] = number_format(ceil($number / 10000) * 10000);
+            }
+            array_pop($formattedNumbers);
+
             $data = [
+                'formattedNumbers' => $formattedNumbers,
+                'minPrice' => $results[0]->min_price,
+                'maxPrice' => $results[0]->max_price,
                 'communities' => $communities,
                 'projects' => $projects,
                 'newProjects' => $newProjects,
                 'testimonials' => $testimonials,
                 'mapProjects' => $mapProjects,
                 'developers' => $developers,
-                'brochure' => $brochure->brochure
+                'brochure' => $brochure->brochure,
+
+
             ];
 
             return $this->success('Home Data', $data, 200);
