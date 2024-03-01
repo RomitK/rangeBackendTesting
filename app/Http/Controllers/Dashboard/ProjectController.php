@@ -843,6 +843,15 @@ class ProjectController extends Controller
             if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
                 Log::info("project update for brochue");
                 StoreProjectBrochure::dispatch($project->id);
+
+
+
+                $subProjects = $project->subProjects()->active()->where('is_approved', 'requested')->pluck('id')->toArray();
+                Project::whereIn('id', $subProjects)->update([
+                    'approval_id' =>  $project->approval_id,
+                    'is_approved' => $project->is_approved,
+                    'updated_by' => $project->updated_by
+                ]);
             }
 
 
