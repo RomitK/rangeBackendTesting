@@ -146,6 +146,7 @@ class PropertyController extends Controller
                         WHERE deleted_at IS NULL
                         AND status = 'active'
                         AND is_approved = 'approved'
+                        AND category_id= 8
                         AND completion_status_id= 286
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
@@ -172,6 +173,7 @@ class PropertyController extends Controller
                         WHERE deleted_at IS NULL
                         AND status = 'active'
                         AND is_approved = 'approved'
+                        AND category_id= 8
                         AND completion_status_id= 287
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
