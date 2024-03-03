@@ -28,6 +28,186 @@ class ProjectController extends Controller
 {
     public function priceList()
     {
+
+        try {
+
+            // Function to convert number to words
+            function convertToWords($number)
+            {
+                // Define arrays for number names
+                $ones = array(
+                    0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine',
+                    10 => 'ten', 11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen'
+                );
+                $tens = array(
+                    0 => 'zero', 1 => 'ten', 2 => 'twenty', 3 => 'thirty', 4 => 'forty', 5 => 'fifty', 6 => 'sixty', 7 => 'seventy', 8 => 'eighty', 9 => 'ninety'
+                );
+
+                // If the number is less than 20, return its name directly from $ones array
+                if ($number < 20) {
+                    return $ones[$number];
+                }
+
+                // If the number is greater than or equal to 100 crore, process crore part
+                if ($number >= 10000000) {
+                    $crore = floor($number / 10000000);
+                    $remaining = $number % 10000000;
+                    $croreStr = convertToWords($crore) . ' crore ';
+                    return $croreStr;
+                }
+
+                // If the number is greater than or equal to 1 million, process million part
+                if ($number >= 1000000) {
+                    $million = floor($number / 1000000);
+                    $remaining = $number % 1000000;
+                    $millionStr = convertToWords($million) . ' million ';
+                    return $millionStr;
+                }
+
+                // If the number is greater than or equal to 1 lakh, process lakh part
+                if ($number >= 100000) {
+                    $lakh = floor($number / 100000);
+                    $remaining = $number % 100000;
+                    $lakhStr = convertToWords($lakh) . ' lakh ';
+                    return $lakhStr;
+                }
+
+                // If the number is greater than or equal to 1 thousand, process thousand part
+                if ($number >= 1000) {
+                    $thousand = floor($number / 1000);
+                    $remaining = $number % 1000;
+                    $thousandStr = convertToWords($thousand) . ' thousand ';
+                    return $thousandStr;
+                }
+
+                // If the number is greater than 100, process hundred part
+                if ($number >= 100) {
+                    $hundred = floor($number / 100);
+                    $remaining = $number % 100;
+                    $hundredStr = convertToWords($hundred) . ' hundred ';
+                    return $hundredStr;
+                }
+
+                // If the number is greater than 20 and not a multiple of 10, process tens and ones parts
+                $ten = floor($number / 10);
+                $one = $number % 10;
+                return $tens[$ten] . ' ' . $ones[$one];
+            }
+
+
+            // Function to convert words to number
+            function convertToNumber($word)
+            {
+                // Define arrays for number names
+                $ones = array(
+                    'zero' => 0, 'one' => 1, 'two' => 2, 'three' => 3, 'four' => 4, 'five' => 5, 'six' => 6, 'seven' => 7, 'eight' => 8, 'nine' => 9,
+                    'ten' => 10, 'eleven' => 11, 'twelve' => 12, 'thirteen' => 13, 'fourteen' => 14, 'fifteen' => 15, 'sixteen' => 16, 'seventeen' => 17, 'eighteen' => 18, 'nineteen' => 19,
+                    'twenty' => 20, 'thirty' => 30, 'forty' => 40, 'fifty' => 50, 'sixty' => 60, 'seventy' => 70, 'eighty' => 80, 'ninety' => 90
+                );
+
+                // Split the word by spaces and hyphens
+                $words = preg_split('/[\s-]+/', $word);
+
+                $total = 0;
+                $current = 0;
+
+                foreach ($words as $word) {
+                    if (isset($ones[$word])) {
+                        $current += $ones[$word];
+                    } elseif ($word == 'hundred') {
+                        $current *= 100;
+                    } elseif ($word == 'thousand') {
+                        $total += $current * 1000;
+                        $current = 0;
+                    } elseif ($word == 'lakh') {
+                        $total += $current * 100000;
+                        $current = 0;
+                    } elseif ($word == 'crore') {
+                        $total += $current * 10000000;
+                        $current = 0;
+                    } elseif ($word == 'million') {
+                        $total += $current * 1000000;
+                        $current = 0;
+                    } elseif ($word == 'billion') {
+                        $total += $current * 1000000000;
+                        $current = 0;
+                    }
+                }
+
+                $total += $current;
+
+                return $total;
+            }
+
+            // Fetch results from the database
+            $results = DB::select("
+                SELECT starting_price
+                FROM projects
+                WHERE deleted_at IS NULL
+                AND status = 'active'
+                AND is_approved = 'approved'
+                AND starting_price IS NOT NULL
+                AND starting_price REGEXP '^[0-9]+$'
+                GROUP BY starting_price
+                ORDER BY starting_price;
+            ");
+
+            // Initialize arrays to store starting prices in words
+            $thousands = [];
+            $lakhs = [];
+            $crores = [];
+            $millions = [];
+            $billions = [];
+
+            // Convert each starting price to words and categorize them
+            foreach ($results as $row) {
+                $startingPrice = (int)$row->starting_price;
+                if ($startingPrice >= 1000000000) {
+                    $billions[] = convertToWords($startingPrice);
+                } elseif ($startingPrice >= 10000000) {
+                    $crores[] = convertToWords($startingPrice);
+                } elseif ($startingPrice >= 100000) {
+                    $lakhs[] = convertToWords($startingPrice);
+                } elseif ($startingPrice >= 1000) {
+                    $thousands[] = convertToWords($startingPrice);
+                } elseif ($startingPrice >= 1000000) {
+                    $millions[] = convertToWords($startingPrice);
+                }
+            }
+
+            $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
+
+            $text = [];
+            foreach ($combinedArray as $row) {
+                $text[] =  convertToNumber($row);
+            }
+            sort($text);
+
+            return $this->success('Project Price List', ['formattedNumbers' => $text], 200);
+        } catch (\Exception $exception) {
+            return $this->failure($exception->getMessage());
+        }
+    }
+    public function minPriceNumber($minPrice)
+    {
+        // Convert the number to a string and get its length
+        $minPriceLength = strlen((string) $minPrice);
+        // Subtract 1 from the length
+        $adjustedLength = $minPriceLength - 1;
+        // Generate a string of zeros with the adjusted length
+        $zeros = str_repeat("0", $adjustedLength);
+        // Convert the number to a string
+        $numberAsString = (string) $minPrice;
+        // Extract the first character
+        $firstDigit = $numberAsString[0];
+
+        return (int) $firstDigit . $zeros;
+    }
+
+
+
+    public function oldpriceList()
+    {
         try {
             $results = DB::select("
                         SELECT MIN(starting_price) AS min_price, MAX(starting_price) AS max_price
@@ -93,21 +273,6 @@ class ProjectController extends Controller
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }
-    }
-    public function minPriceNumber($minPrice)
-    {
-        // Convert the number to a string and get its length
-        $minPriceLength = strlen((string) $minPrice);
-        // Subtract 1 from the length
-        $adjustedLength = $minPriceLength - 1;
-        // Generate a string of zeros with the adjusted length
-        $zeros = str_repeat("0", $adjustedLength);
-        // Convert the number to a string
-        $numberAsString = (string) $minPrice;
-        // Extract the first character
-        $firstDigit = $numberAsString[0];
-
-        return (int) $firstDigit . $zeros;
     }
 
     public function getGap($minPrice)
