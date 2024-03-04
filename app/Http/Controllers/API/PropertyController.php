@@ -933,13 +933,15 @@ class PropertyController extends Controller
             }
 
             if (isset($request->minarea) || isset($request->maxarea)) {
-                if (isset($request->minarea)) {
-                    $collection->where('area', '>', (int)$request->minarea);
-                } elseif (isset($request->maxarea)) {
-                    $collection->where('area', '<', (int)$request->maxarea);
-                }
+
                 if (isset($request->minarea) && isset($request->maxarea)) {
                     $collection->whereBetween('area', [(int)$request->minarea, (int)$request->maxarea]);
+                } else {
+                    if (isset($request->minarea)) {
+                        $collection->where('area', '>', (int)$request->minarea);
+                    } elseif (isset($request->maxarea)) {
+                        $collection->where('area', '<', (int)$request->maxarea);
+                    }
                 }
             }
 
@@ -948,13 +950,15 @@ class PropertyController extends Controller
             }
 
             if (isset($request->minprice) || isset($request->maxprice)) {
-                if (isset($request->minprice)) {
-                    $collection->where('price', '>', (int)$request->minprice);
-                } elseif (isset($request->maxprice)) {
-                    $collection->where('price', '<', (int)$request->maxprice);
-                }
+
                 if (isset($request->minprice) && isset($request->maxprice)) {
                     $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
+                } else {
+                    if (isset($request->minprice)) {
+                        $collection->where('price', '>', (int)$request->minprice);
+                    } elseif (isset($request->maxprice)) {
+                        $collection->where('price', '<', (int)$request->maxprice);
+                    }
                 }
             }
 
