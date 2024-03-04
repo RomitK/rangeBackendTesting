@@ -48,7 +48,7 @@ class PropertyController extends Controller
         if ($number >= 10000000) {
             $crore = floor($number / 10000000);
             $remaining = $number % 10000000;
-            $croreStr = convertToWords($crore) . ' crore ';
+            $croreStr = $this->convertToWords($crore) . ' crore ';
             return $croreStr;
         }
 
@@ -56,7 +56,7 @@ class PropertyController extends Controller
         if ($number >= 1000000) {
             $million = floor($number / 1000000);
             $remaining = $number % 1000000;
-            $millionStr = convertToWords($million) . ' million ';
+            $millionStr = $this->convertToWords($million) . ' million ';
             return $millionStr;
         }
 
@@ -64,7 +64,7 @@ class PropertyController extends Controller
         if ($number >= 100000) {
             $lakh = floor($number / 100000);
             $remaining = $number % 100000;
-            $lakhStr = convertToWords($lakh) . ' lakh ';
+            $lakhStr = $this->convertToWords($lakh) . ' lakh ';
             return $lakhStr;
         }
 
@@ -72,7 +72,7 @@ class PropertyController extends Controller
         if ($number >= 1000) {
             $thousand = floor($number / 1000);
             $remaining = $number % 1000;
-            $thousandStr = convertToWords($thousand) . ' thousand ';
+            $thousandStr = $this->convertToWords($thousand) . ' thousand ';
             return $thousandStr;
         }
 
@@ -80,7 +80,7 @@ class PropertyController extends Controller
         if ($number >= 100) {
             $hundred = floor($number / 100);
             $remaining = $number % 100;
-            $hundredStr = convertToWords($hundred) . ' hundred ';
+            $hundredStr = $this->convertToWords($hundred) . ' hundred ';
             return $hundredStr;
         }
 
@@ -233,13 +233,13 @@ class PropertyController extends Controller
                 if ($startingPrice >= 1000000000) {
                     $billions[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 10000000) {
-                    $crores[] = convertToWords($startingPrice);
+                    $crores[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 100000) {
-                    $lakhs[] = convertToWords($startingPrice);
+                    $lakhs[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 1000) {
-                    $thousands[] = convertToWords($startingPrice);
+                    $thousands[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 1000000) {
-                    $millions[] = convertToWords($startingPrice);
+                    $millions[] = $this->convertToWords($startingPrice);
                 }
             }
 
@@ -355,13 +355,13 @@ class PropertyController extends Controller
                 if ($startingPrice >= 1000000000) {
                     $billions[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 10000000) {
-                    $crores[] = convertToWords($startingPrice);
+                    $crores[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 100000) {
-                    $lakhs[] = convertToWords($startingPrice);
+                    $lakhs[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 1000) {
-                    $thousands[] = convertToWords($startingPrice);
+                    $thousands[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 1000000) {
-                    $millions[] = convertToWords($startingPrice);
+                    $millions[] = $this->convertToWords($startingPrice);
                 }
             }
 
@@ -369,7 +369,7 @@ class PropertyController extends Controller
 
             $text = [];
             foreach ($combinedArray as $row) {
-                $text[] =  convertToNumber($row);
+                $text[] =  $this->convertToNumber($row);
             }
             sort($text);
             return $this->success('Property Price List', ['formattedNumbers' => $text], 200);
