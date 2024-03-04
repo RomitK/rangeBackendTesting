@@ -247,7 +247,7 @@ class PropertyController extends Controller
 
             $text = [];
             foreach ($combinedArray as $row) {
-                $text[] =  convertToNumber($row);
+                $text[] =  $this->convertToNumber($row);
             }
             sort($text);
             return $this->success('Property Price List', ['formattedNumbers' => $text], 200);
