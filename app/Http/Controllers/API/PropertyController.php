@@ -226,6 +226,7 @@ class PropertyController extends Controller
             $crores = [];
             $millions = [];
             $billions = [];
+            $hundreds = [];
 
             // Convert each starting price to words and categorize them
             foreach ($results as $row) {
@@ -238,12 +239,15 @@ class PropertyController extends Controller
                     $lakhs[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 1000) {
                     $thousands[] = $this->convertToWords($startingPrice);
+                } elseif ($startingPrice >= 100) {
+                    $hundreds[] = $this->convertToWords($startingPrice);
                 } elseif ($startingPrice >= 1000000) {
                     $millions[] = $this->convertToWords($startingPrice);
                 }
             }
 
-            $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
+
+            $combinedArray = array_merge(array_unique($hundreds), array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
 
             $text = [];
             foreach ($combinedArray as $row) {
