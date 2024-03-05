@@ -139,8 +139,6 @@ class ProjectController extends Controller
     {
         try {
 
-
-
             // Fetch results from the database
             $results = DB::select("
                 SELECT area
