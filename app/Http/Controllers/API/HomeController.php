@@ -1192,13 +1192,13 @@ class HomeController extends Controller
                 if ($request->formName == 'homePageBrochure') {
                     $link = PageContent::WherePageName(config('constants.home.name'))->first();
                     $link = $link->brochure;
-                } elseif ($request->formName == 'GoldenVisaForm') {
+                } elseif ($request->formName == 'GoldenVisaGuideForm') {
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->goldenVisa;
-                } elseif ($request->formName == 'BuyerGudieForm') {
+                } elseif ($request->formName == 'BuyerGuideForm') {
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->buyerGuide;
-                } elseif ($request->formName == 'LuxuryPropertiesForm') {
+                } elseif ($request->formName == 'InvestmentGuideForm') {
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->propertiesGuide;
                 } elseif ($request->formName == 'SellerGuideDownloadForm') {
