@@ -998,7 +998,7 @@ class HomeController extends Controller
                     'email' => $request->email,
                     'name' => $request->name,
                     'phone' => $request->phone,
-                    'message' => "Page Url:" . $request->page . "<br> Message-" . $request->message,
+                    'message' => "Page Url:" . $request->page . " Message-" . $request->message,
                     'agentEmail' =>  'ian@xpertise.ae',
 
                 ];
@@ -1068,11 +1068,20 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId)
+    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '')
     {
         $data["campaignId"] = $campaignId;
         $data["sourceId"] = $sourceId;
         $data["subSourceId"] = $subSourceId;
+
+        // Check if $agentEmail is empty, assign default value if so
+        if (empty($agentEmail)) {
+            $agentEmail = 'ian@xpertise.ae';
+        }
+
+        // Add agentEmail to the data array
+        $data["agentEmail"] = $agentEmail;
+
         return $data;
     }
 
@@ -1150,15 +1159,13 @@ class HomeController extends Controller
     public function verifyOtp(Request $request)
     {
 
-        $crmData = [
-            'name'  => $request->name,
+        $data = [
             'email' => $request->email,
-            'phone' => $request->phoneNumber,
-            'pageUrl' => '',
-            'agentId' => '',
-            'campaginId' => '',
-            'sourceId' => ''
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'message' => "Page Url:" . $request->page . " Message-" . $request->message,
         ];
+
         try {
             $link = null;
             $messages = [
@@ -1195,6 +1202,10 @@ class HomeController extends Controller
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->propertiesGuide;
                 } elseif ($request->formName == 'SellerGuideDownloadForm') {
+
+                    $data = $this->CRMCampaignManagement($data, 258, 463, 2527);
+                    CRMLeadJob::dispatch($data);
+
                     $link = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
                     $link =  $link->sellerGuide;
                 } elseif ($request->formName == 'projectBrochure') {
