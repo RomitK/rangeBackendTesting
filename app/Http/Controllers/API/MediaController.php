@@ -22,7 +22,7 @@ class MediaController extends Controller
     {
         try {
 
-            $collection = Article::active()->approved()->orderByRaw('ISNULL(publish_at)')->orderBy('publish_at');
+            $collection = Article::active()->approved()->orderByRaw('ISNULL(publish_at)')->orderBy('publish_at', 'desc');
             //$collection = Article::active()->approved()->latest();
             $medias = clone $collection;
             $news = clone $collection;
