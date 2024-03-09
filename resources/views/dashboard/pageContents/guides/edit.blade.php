@@ -87,7 +87,7 @@
                                         @enderror
 
                                         @if ($guide->guideFile)
-                                        <a href="{{ $guide->guideFile}}" download="">Download File</a>
+                                        <a href="{{ $guide->guideFile}}" download="" target="_blank">Download File</a>
                                         @endif
 
                                     </div>

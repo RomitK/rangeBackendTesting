@@ -30,6 +30,9 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/mortageYears', 'HomeController@mortageYears');
 
     Route::get('dubaiGuideData', 'HomeController@dubaiGuideData');
+
+    Route::get('guides', 'GuideController@allGuides');
+
     Route::get('sellerGuideData', 'HomeController@sellerGuideData');
     Route::get('/getHomeData', 'HomeController@getHomeData');
     Route::get('/homeData', 'HomeController@homeData');
