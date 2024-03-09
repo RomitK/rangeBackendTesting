@@ -14,6 +14,8 @@ use Carbon\Carbon;
 class TagCategory extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText;
+
+    protected $fillable = ['name', 'type', 'user_id'];
     /**
      * The dates attributes
      *
@@ -29,9 +31,7 @@ class TagCategory extends Model implements HasMedia
      *
      * @var array
      */
-    protected $richTextFields = [
-
-    ];
+    protected $richTextFields = [];
 
     /**
      * The attributes that should be append with arrays.
@@ -60,7 +60,7 @@ class TagCategory extends Model implements HasMedia
     {
         return $this->belongsTo(User::class);
     }
-     /**
+    /**
      * FIND local scope
      */
     public function scopeActive($query)
@@ -78,6 +78,10 @@ class TagCategory extends Model implements HasMedia
     public function scopeDeveloperTag($query)
     {
         return $query->where('type', config('constants.developer'));
+    }
+    public function scopeGuideTag($query)
+    {
+        return $query->where('type', config('constants.guide'));
     }
     public function scopeDeactive($query)
     {
@@ -99,4 +103,3 @@ class TagCategory extends Model implements HasMedia
         }
     }
 }
-

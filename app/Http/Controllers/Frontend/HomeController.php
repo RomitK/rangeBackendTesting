@@ -11,7 +11,6 @@ use App\Models\{
     PageTag,
     Property,
     Project
-    
 };
 
 use Illuminate\Http\Request;
@@ -26,7 +25,7 @@ class HomeController extends Controller
     {
         if (Auth::check()) {
             // If the user is already authenticated, redirect them to a different page
-            return redirect()->route('dashboard');
+            return redirect()->route('home');
         } else {
             // If the user is not authenticated, show the login page
             return view('auth.login');
@@ -36,36 +35,36 @@ class HomeController extends Controller
     public function singlePropertyBrochure($slug)
     {
         $property = Property::where('slug', $slug)->first();
-            view()->share([
-                'property' => $property
-            ]);
-            
-            $pdf = PDF::loadView('pdf.propertyBrochure');
+        view()->share([
+            'property' => $property
+        ]);
+
+        $pdf = PDF::loadView('pdf.propertyBrochure');
         return $pdf->stream();
     }
-    
-     public function singlePropertySaleOffer($slug)
+
+    public function singlePropertySaleOffer($slug)
     {
         $property = Property::with('communities', 'project')->where('slug', $slug)->first();
-            view()->share([
-                'property' => $property,
-            ]);
-        
+        view()->share([
+            'property' => $property,
+        ]);
+
         $pdf = PDF::loadView('pdf.propertySaleOffer');
         return $pdf->stream();
     }
-    
+
     public function singleProjectSaleOffer($slug)
     {
         $project = Project::with('developer', 'mainCommunity', 'subProjects')->where('slug', $slug)->first();
         $dateStr = $project->completion_date;
         $month = date("n", strtotime($dateStr));
         $yearQuarter = ceil($month / 3);
-        
+
         view()->share([
             'project' => $project,
-             'handOver' => "Q".$yearQuarter." ".date("Y", strtotime($dateStr)),
-            
+            'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
+
         ]);
         $pdf = PDF::loadView('pdf.projectSaleOffer');
         return $pdf->stream();
@@ -76,48 +75,49 @@ class HomeController extends Controller
         $project = Project::with('developer', 'mainCommunity', 'subProjects')->where('slug', $slug)->first();
         $minBed = $project->subProjects->min('bedrooms');
         $maxBed = $project->subProjects->max('bedrooms');
-        if($minBed != $maxBed){
-            if($maxBed === "Studio"){
-                $bedroom = $maxBed. "-".$minBed;
-            }else{
-                $bedroom = $minBed. "-".$maxBed;
+        if ($minBed != $maxBed) {
+            if ($maxBed === "Studio") {
+                $bedroom = $maxBed . "-" . $minBed;
+            } else {
+                $bedroom = $minBed . "-" . $maxBed;
             }
-        }else{
+        } else {
             $bedroom = $minBed;
         }
         $area_unit = 'sq ft';
-        
-        $starting_price = 0; 
+
+        $starting_price = 0;
         $dateStr = $project->completion_date;
         $month = date("n", strtotime($dateStr));
         $yearQuarter = ceil($month / 3);
-        
+
         view()->share([
             'project' => $project,
-            'area_unit'=>$area_unit,
-            'starting_price'=> count( $project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
-            'bedrooms'=> $bedroom,
-            'handOver' => "Q".$yearQuarter." ".date("Y", strtotime($dateStr)),
-            'communityName'=> $project->mainCommunity ? $project->mainCommunity->name : '',
-            
+            'area_unit' => $area_unit,
+            'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
+            'bedrooms' => $bedroom,
+            'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
+            'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
+
         ]);
         $pdf = PDF::loadView('pdf.projectBrochure');
-       
-        return $pdf->download($project->title.' Brochure.pdf');
-        
+
+        return $pdf->download($project->title . ' Brochure.pdf');
+
         // $PDFHtml="";
         // $data = [];
         // $PDFHtml.= view('pdf.projectBrochure', compact([
         //             'project'
         //     ]))->render();
-        
+
         // $pdf = PDF::loadHTML($PDFHtml);
         // return $pdf->download();
-        
-       // return view('pdf.brochure', compact('project'));
-        
+
+        // return view('pdf.brochure', compact('project'));
+
     }
-    public function storeData(Request $request){
+    public function storeData(Request $request)
+    {
         dd($request->all);
     }
     public function home()
@@ -151,23 +151,22 @@ class HomeController extends Controller
                 $collection->where('accommodation_id', $request->accommodation_id);
             }
             if (isset($request->category)) {
-                if($request->category == 'buy'){
+                if ($request->category == 'buy') {
                     $collection->orWhere('category_id', 2);
                     $collection->orWhere('category_id', 6);
-                }elseif($request->category == 'sale'){
-                    
-                } elseif($request->category == 'rent'){
+                } elseif ($request->category == 'sale') {
+                } elseif ($request->category == 'rent') {
                     $collection->orWhere('category_id', 1);
-                }elseif($request->category == 'offplan'){
+                } elseif ($request->category == 'offplan') {
                     $collection->orWhere('category_id', 2);
-                }elseif($request->category == 'ready'){
+                } elseif ($request->category == 'ready') {
                     $collection->orWhere('category_id', 6);
                 }
-               
-                
-               // $collection->where('category_id', $request->category_id);
+
+
+                // $collection->where('category_id', $request->category_id);
             }
-            
+
             if (isset($request->category_id)) {
                 $collection->where('category_id', $request->category_id);
             }
@@ -178,16 +177,16 @@ class HomeController extends Controller
                 $collection->where('bedrooms', $request->bedrooms);
             }
             if (isset($request->minprice) || isset($request->maxprice)) {
-                if(isset($request->minprice)){
-                    $collection->where('price', '>' ,(int)$request->minprice);
-                }elseif(isset($request->maxprice)){
-                    $collection->where('price', '<' ,(int)$request->maxprice);
+                if (isset($request->minprice)) {
+                    $collection->where('price', '>', (int)$request->minprice);
+                } elseif (isset($request->maxprice)) {
+                    $collection->where('price', '<', (int)$request->maxprice);
                 }
-                if(isset($request->minprice) && isset($request->maxprice)){
-                    $collection->whereBetween('price', [(int)$request->minprice,(int)$request->maxprice]);
+                if (isset($request->minprice) && isset($request->maxprice)) {
+                    $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
                 }
             }
-            if($request->coordinates){
+            if ($request->coordinates) {
                 $allPolygons = $request->coordinates;
                 $polygons = [];
                 foreach ($allPolygons as $coordinates) {
@@ -202,29 +201,29 @@ class HomeController extends Controller
                 $multiPolygonString = 'MULTIPOLYGON(' . implode(',', $polygons) . ')';
                 $collection->whereRaw("ST_Within(Point(address_longitude, address_latitude), ST_GeomFromText(?))", [$multiPolygonString]);
             }
-            $properties = $collection->with('accommodations','communities','category')->active()->get();
+            $properties = $collection->with('accommodations', 'communities', 'category')->active()->get();
             foreach ($properties as $key => $value) {
-                $value->setAttribute('lat',(double)$value->address_latitude);
-                $value->setAttribute('lng',(double)$value->address_longitude);
+                $value->setAttribute('lat', (float)$value->address_latitude);
+                $value->setAttribute('lng', (float)$value->address_longitude);
             }
-            $properties=$properties->toJson();
+            $properties = $properties->toJson();
             return response()->json(['success' => true, 'html' => $properties])->header('Access-Control-Allow-Origin', '*');
-        }else{
-            $properties = Property::with('accommodations','communities','category')->active()->get()->toJson();
+        } else {
+            $properties = Property::with('accommodations', 'communities', 'category')->active()->get()->toJson();
         }
 
-        return view('frontend.propertiesDemo2', compact('properties','accomodation','pagemeta','category','community','bedrooms'));
+        return view('frontend.propertiesDemo2', compact('properties', 'accomodation', 'pagemeta', 'category', 'community', 'bedrooms'));
     }
     public function propertiesDemo(Request $request)
     {
         $pagemeta =  PageTag::where('page_name', Route::current()->getName())->first();
-        
+
         $accomodation = Accommodation::active()->get();
         $category = Category::active()->get();
         $community = Community::get();
         $bedrooms = Property::select('bedrooms')->groupBy('bedrooms')->get();
-        
-        if (($request->ajax() && $request->isMethod('post'))) { 
+
+        if (($request->ajax() && $request->isMethod('post'))) {
             $collection = Property::query();
             // if ($request->filled('status_id')) {
             if (isset($request->acc)) {
@@ -240,32 +239,32 @@ class HomeController extends Controller
                 $collection->where('bedrooms', $request->bedrooms);
             }
             if (isset($request->minprice) || isset($request->maxprice)) {
-                if(isset($request->minprice)){
-                    $collection->where('price', '>' ,(int)$request->minprice);
-                }elseif(isset($request->maxprice)){
-                    $collection->where('price', '<' ,(int)$request->maxprice);
+                if (isset($request->minprice)) {
+                    $collection->where('price', '>', (int)$request->minprice);
+                } elseif (isset($request->maxprice)) {
+                    $collection->where('price', '<', (int)$request->maxprice);
                 }
-                if(isset($request->minprice) && isset($request->maxprice)){
-                    $collection->whereBetween('price', [(int)$request->minprice,(int)$request->maxprice]);
+                if (isset($request->minprice) && isset($request->maxprice)) {
+                    $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
                 }
             }
-            $properties = $collection->with('accommodations','communities','category')->active()->get()->toJson();
+            $properties = $collection->with('accommodations', 'communities', 'category')->active()->get()->toJson();
             return response()->json(['success' => true, 'html' => $properties]);
-        }else{
-            $properties = Property::with('accommodations','communities','category')->active()->get()->toJson();
+        } else {
+            $properties = Property::with('accommodations', 'communities', 'category')->active()->get()->toJson();
         }
-        return view('frontend.propertiesDemo2', compact('properties','accomodation','pagemeta','category','community','bedrooms'));
+        return view('frontend.propertiesDemo2', compact('properties', 'accomodation', 'pagemeta', 'category', 'community', 'bedrooms'));
     }
     public function buy(Request $request)
     {
         $pagemeta =  PageTag::where('page_name', Route::current()->getName())->first();
-        
+
         $accomodation = Accommodation::active()->get();
         $category = Category::active()->get();
         $community = Community::get();
         $bedrooms = Property::select('bedrooms')->groupBy('bedrooms')->get();
-        
-        if (($request->ajax() && $request->isMethod('post'))) { 
+
+        if (($request->ajax() && $request->isMethod('post'))) {
             $collection = Property::query();
             $collection = $collection->where('category_id', 2);
             // if ($request->filled('status_id')) {
@@ -282,34 +281,34 @@ class HomeController extends Controller
                 $collection->where('bedrooms', $request->bedrooms);
             }
             if (isset($request->minprice) || isset($request->maxprice)) {
-                if(isset($request->minprice)){
-                    $collection->where('price', '>' ,(int)$request->minprice);
-                }elseif(isset($request->maxprice)){
-                    $collection->where('price', '<' ,(int)$request->maxprice);
+                if (isset($request->minprice)) {
+                    $collection->where('price', '>', (int)$request->minprice);
+                } elseif (isset($request->maxprice)) {
+                    $collection->where('price', '<', (int)$request->maxprice);
                 }
-                if(isset($request->minprice) && isset($request->maxprice)){
-                    $collection->whereBetween('price', [(int)$request->minprice,(int)$request->maxprice]);
+                if (isset($request->minprice) && isset($request->maxprice)) {
+                    $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
                 }
             }
-            $properties = $collection->with('accommodations','communities','category')->active()->get()->toJson();
+            $properties = $collection->with('accommodations', 'communities', 'category')->active()->get()->toJson();
             return response()->json(['success' => true, 'html' => $properties]);
-        }else{
-            $properties = Property::with('accommodations','communities','category')->where('category_id', 2)->active()->get()->toJson();
+        } else {
+            $properties = Property::with('accommodations', 'communities', 'category')->where('category_id', 2)->active()->get()->toJson();
         }
-        return view('frontend.propertiesDemo2', compact('properties','accomodation','pagemeta','category','community','bedrooms'));
+        return view('frontend.propertiesDemo2', compact('properties', 'accomodation', 'pagemeta', 'category', 'community', 'bedrooms'));
     }
     public function rent(Request $request)
     {
-       $pagemeta =  PageTag::where('page_name', Route::current()->getName())->first();
-        
+        $pagemeta =  PageTag::where('page_name', Route::current()->getName())->first();
+
         $accomodation = Accommodation::active()->get();
         $category = Category::active()->get();
         $community = Community::get();
         $bedrooms = Property::select('bedrooms')->groupBy('bedrooms')->get();
-        
-        if (($request->ajax() && $request->isMethod('post'))) { 
+
+        if (($request->ajax() && $request->isMethod('post'))) {
             $collection = Property::query();
-            $collection = $collection->where('category_id',1);
+            $collection = $collection->where('category_id', 1);
             // if ($request->filled('status_id')) {
             if (isset($request->acc)) {
                 $collection->where('accommodation_id', $request->acc);
@@ -323,22 +322,22 @@ class HomeController extends Controller
             if (isset($request->bedrooms)) {
                 $collection->where('bedrooms', $request->bedrooms);
             }
-           if (isset($request->minprice) || isset($request->maxprice)) {
-                 if(isset($request->minprice)){
-                    $collection->where('price', '>' ,(int)$request->minprice);
-                }elseif(isset($request->maxprice)){
-                    $collection->where('price', '<' ,(int)$request->maxprice);
+            if (isset($request->minprice) || isset($request->maxprice)) {
+                if (isset($request->minprice)) {
+                    $collection->where('price', '>', (int)$request->minprice);
+                } elseif (isset($request->maxprice)) {
+                    $collection->where('price', '<', (int)$request->maxprice);
                 }
-                if(isset($request->minprice) && isset($request->maxprice)){
-                    $collection->whereBetween('price', [(int)$request->minprice,(int)$request->maxprice]);
+                if (isset($request->minprice) && isset($request->maxprice)) {
+                    $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
                 }
             }
-            $properties = $collection->with('accommodations','communities','category')->active()->get()->toJson();
+            $properties = $collection->with('accommodations', 'communities', 'category')->active()->get()->toJson();
             return response()->json(['success' => true, 'html' => $properties]);
-        }else{
-            $properties = Property::with('accommodations','communities','category')->where('category_id',1)->active()->get()->toJson();
+        } else {
+            $properties = Property::with('accommodations', 'communities', 'category')->where('category_id', 1)->active()->get()->toJson();
         }
-        return view('frontend.propertiesDemo2', compact('properties','accomodation','pagemeta','category','community','bedrooms'));
+        return view('frontend.propertiesDemo2', compact('properties', 'accomodation', 'pagemeta', 'category', 'community', 'bedrooms'));
     }
     public function luxuryProperties()
     {
@@ -351,7 +350,7 @@ class HomeController extends Controller
     }
     public function singlePropertyPage($slug)
     {
-        if(Property::where('slug', $slug)->exists()){
+        if (Property::where('slug', $slug)->exists()) {
             $property = Property::where('slug', $slug)->first();
             return view('frontend.singlePropertyPage', compact('property'));
         }
@@ -362,7 +361,7 @@ class HomeController extends Controller
     }
     public function singleCommunityPage($slug)
     {
-        if(Community::where('slug', $slug)->exists()){
+        if (Community::where('slug', $slug)->exists()) {
             $community = Community::where('slug', $slug)->first();
             return view('frontend.singleCommunityPage', compact('community'));
         }
@@ -373,7 +372,7 @@ class HomeController extends Controller
     }
     public function singleDeveloperPage($slug)
     {
-        if(Developer::where('slug', $slug)->exists()){
+        if (Developer::where('slug', $slug)->exists()) {
             $developer = Developer::where('slug', $slug)->first();
             return view('frontend.singleDeveloperPage', compact('developer'));
         }

@@ -11,7 +11,8 @@ use App\Models\{
     Faq,
     Counter,
     Partner,
-    PageContent
+    PageContent,
+    Guide
 };
 use Auth;
 use App\Http\Requests\Dashboard\PageContentRequest;
@@ -21,13 +22,18 @@ class PageContentController extends Controller
 {
     function __construct()
     {
-        $this->middleware('permission:'.config('constants.Permissions.languages'),
-        ['only' => ['index','create', 'edit', 'update', 'destroy',
-                    'homePage','homeContentStore', 'aboutContentStore', 'ceoContentStore', 'aboutPage',
-                    'aboutGalleryStore','aboutGalleryDestroy', 'rentPage','resalePage','factFigurePage',
-                    'aboutDubaiPage', 'whyInvestPage','sellerGuidePage', 'dubaiGuidePage', 'termConditionPage','relocatingToDubaiPage',
-                    'privacyPolicyPage','communitiesPage', 'developersPage', 'faqsPage', 'offPlanPage', 'propertiesPage']
-        ]);
+        $this->middleware(
+            'permission:' . config('constants.Permissions.languages'),
+            [
+                'only' => [
+                    'index', 'create', 'edit', 'update', 'destroy',
+                    'homePage', 'homeContentStore', 'aboutContentStore', 'ceoContentStore', 'aboutPage',
+                    'aboutGalleryStore', 'aboutGalleryDestroy', 'rentPage', 'resalePage', 'factFigurePage',
+                    'aboutDubaiPage', 'whyInvestPage', 'sellerGuidePage', 'dubaiGuidePage', 'termConditionPage', 'relocatingToDubaiPage',
+                    'privacyPolicyPage', 'communitiesPage', 'developersPage', 'faqsPage', 'offPlanPage', 'propertiesPage'
+                ]
+            ]
+        );
     }
     /**
      * Display a listing of the resource.
@@ -41,19 +47,19 @@ class PageContentController extends Controller
         $description = null;
         $banners = Banner::home()->latest()->get();
         $counters = Counter::home()->latest()->get();
-        if(PageContent::home()->exists()){
+        if (PageContent::home()->exists()) {
             $content = PageContent::home()->first();
             $title = $content->title;
             $description = $content->description;
         };
-        return view('dashboard.pageContents.home', compact('banners','content', 'counters', 'title', 'description'));
+        return view('dashboard.pageContents.home', compact('banners', 'content', 'counters', 'title', 'description'));
     }
     public function homeContentStore(PageContentRequest $request)
     {
-        try{
-            if(PageContent::home()->exists()){
+        try {
+            if (PageContent::home()->exists()) {
                 $content = PageContent::home()->first();
-            }else{
+            } else {
                 $content = new PageContent;
             }
             $content->page_name = config('constants.home.name');
@@ -64,57 +70,58 @@ class PageContentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message'=> 'Content has been created successfully.',
+                'message' => 'Content has been created successfully.',
                 'redirect' => route(config('constants.home.route')),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route(config('constants.home.route')),
             ]);
         }
     }
     public function dubaiGuidePage()
     {
+
+        $guides  = Guide::latest()->get();
         $content = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
-        return view('dashboard.pageContents.dubaiGuide', compact('content'));
+        return view('dashboard.pageContents.dubaiGuide', compact('content', 'guides'));
     }
     public function homeStore(Request $request)
     {
-        try{
-        
+        try {
+
             $content = PageContent::WherePageName(config('constants.home.name'))->first();
-         
+
             if ($request->hasFile('brochure')) {
                 $content->clearMediaCollection('brochure');
                 $img =  $request->file('brochure');
                 $ext = $img->getClientOriginalExtension();
-                $imageName = 'About Dubai Brochure.'.$ext;
+                $imageName = 'About Dubai Brochure.' . $ext;
                 $content->addMediaFromRequest('brochure')->usingFileName($imageName)->toMediaCollection('brochure', 'pageContentFiles');
             }
-            
+
             $content->save();
             return response()->json([
                 'success' => true,
-                'message'=> 'Content has been created successfully.',
+                'message' => 'Content has been created successfully.',
                 'redirect' => route(config('constants.home.route')),
             ]);
-            
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route(config('constants.sellerGuide.route')),
             ]);
-        }    
+        }
     }
     public function aboutContentStore(PageContentRequest $request)
     {
-        try{
-            if(PageContent::about()->exists()){
+        try {
+            if (PageContent::about()->exists()) {
                 $content = PageContent::about()->first();
-            }else{
+            } else {
                 $content = new PageContent;
             }
             $content->page_name = config('constants.about.name');
@@ -123,33 +130,33 @@ class PageContentController extends Controller
             $content->more_description = $request->more_description;
             $content->video_iframe = $request->video_iframe;
             if ($request->hasFile('image')) {
-                if(PageContent::about()->exists()){
+                if (PageContent::about()->exists()) {
                     $content->clearMediaCollection('images');
                 }
                 $img =  $request->file('image');
                 $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug(config('constants.about.name')).'_image.'.$ext;
+                $imageName =  Str::slug(config('constants.about.name')) . '_image.' . $ext;
                 $content->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'pageContentFiles');
             }
 
             if ($request->hasFile('video')) {
-                if(PageContent::about()->exists()){
+                if (PageContent::about()->exists()) {
                     $content->clearMediaCollection('videos');
                 }
                 $video =  $request->file('video');
                 $videoExt = $video->getClientOriginalExtension();
-                $videoName =  Str::slug(config('constants.about.name')).'.'.$videoExt;
+                $videoName =  Str::slug(config('constants.about.name')) . '.' . $videoExt;
                 $content->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'pageContentFiles');
             }
             $content->user_id = Auth::user()->id;
             $content->save();
-            return redirect()->route(config('constants.about.route'))->with('success','Content has been created successfully.');
-        //     return response()->json([
-        //         'success' => true,
-        //         'message'=> 'Content has been created successfully.',
-        //         'redirect' => route(config('constants.about.route')),
-        //     ]);
-         } catch (\Exception $error) {
+            return redirect()->route(config('constants.about.route'))->with('success', 'Content has been created successfully.');
+            //     return response()->json([
+            //         'success' => true,
+            //         'message'=> 'Content has been created successfully.',
+            //         'redirect' => route(config('constants.about.route')),
+            //     ]);
+        } catch (\Exception $error) {
             return redirect()->route(config('constants.about.route'))->with('error', $error->getMessage());
             // return response()->json([
             //     'success' => false,
@@ -160,10 +167,10 @@ class PageContentController extends Controller
     }
     public function ceoContentStore(PageContentRequest $request)
     {
-        try{
-            if(PageContent::ceo()->exists()){
+        try {
+            if (PageContent::ceo()->exists()) {
                 $content = PageContent::ceo()->first();
-            }else{
+            } else {
                 $content = new PageContent;
             }
             $content->page_name = config('constants.ceo.name');
@@ -171,24 +178,23 @@ class PageContentController extends Controller
             $content->description = $request->description;
             $content->video_iframe_1 = $request->ceo_video_iframe;
             if ($request->hasFile('image')) {
-                if(PageContent::ceo()->exists())
-                {
+                if (PageContent::ceo()->exists()) {
                     $content->clearMediaCollection('images');
                 }
                 $img =  $request->file('image');
                 $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug(config('constants.ceo.name')).'_image.'.$ext;
+                $imageName =  Str::slug(config('constants.ceo.name')) . '_image.' . $ext;
 
                 $content->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'pageContentFiles');
             }
 
             if ($request->hasFile('video')) {
-                if(PageContent::ceo()->exists()){
+                if (PageContent::ceo()->exists()) {
                     $content->clearMediaCollection('videos');
                 }
                 $video =  $request->file('video');
                 $videoExt = $video->getClientOriginalExtension();
-                $videoName =  Str::slug(config('constants.ceo.name')).'.'.$videoExt;
+                $videoName =  Str::slug(config('constants.ceo.name')) . '.' . $videoExt;
                 $content->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'pageContentFiles');
             }
             $content->user_id = Auth::user()->id;
@@ -196,15 +202,15 @@ class PageContentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message'=> 'Content has been created successfully.',
+                'message' => 'Content has been created successfully.',
                 'redirect' => route(config('constants.ceo.route')),
             ]);
             //return redirect()->route(config('constants.ceo.route'))->with('success','Content has been created successfully.');
         } catch (\Exception $error) {
-           // dd($error->getMessage());
+            // dd($error->getMessage());
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route(config('constants.ceo.route')),
             ]);
             //return redirect()->route(config('constants.ceo.route'))->with('error',$error->getMessage());
@@ -228,8 +234,8 @@ class PageContentController extends Controller
         $ceo_video_iframe = null;
 
         $partners = Partner::latest()->get();
-        if(PageContent::about()->exists()){
-            $content =PageContent::about()->first();
+        if (PageContent::about()->exists()) {
+            $content = PageContent::about()->first();
             $title = $content->title;
             $less_description = $content->less_description;
             $more_description = $content->more_description;
@@ -238,33 +244,32 @@ class PageContentController extends Controller
             $gallery = $content->gallery;
             $video_iframe = $content->video_iframe;
         };
-        if(PageContent::ceo()->exists()){
-            $ceo =PageContent::ceo()->first();
+        if (PageContent::ceo()->exists()) {
+            $ceo = PageContent::ceo()->first();
             $ceoMessageTitle = $ceo->title;
             $ceoMessage = $ceo->description;
             $ceoImage = $ceo->image;
             $ceoVideo = $ceo->video;
             $ceo_video_iframe = $ceo->video_iframe_1;
         }
-        return view('dashboard.pageContents.about', compact('video_iframe','ceo_video_iframe','ceoMessageTitle','ceoMessage','ceoImage','ceoVideo','partners', 'title','image', 'video','gallery','more_description', 'less_description'));
+        return view('dashboard.pageContents.about', compact('video_iframe', 'ceo_video_iframe', 'ceoMessageTitle', 'ceoMessage', 'ceoImage', 'ceoVideo', 'partners', 'title', 'image', 'video', 'gallery', 'more_description', 'less_description'));
     }
     public function careerPage()
     {
         $counters = Counter::career()->latest()->get();
-        return view('dashboard.pageContents.career', compact('counters'));    
+        return view('dashboard.pageContents.career', compact('counters'));
     }
     public function aboutGalleryStore(GalleryRequest $request)
     {
-        try{
-            if(PageContent::about()->exists()){
+        try {
+            if (PageContent::about()->exists()) {
                 $content = PageContent::about()->first();
-            }else{
+            } else {
                 $content = new PageContent;
             }
             $content->page_name = config('constants.about.name');
-            if($request->images != null && count($request->images)>0){
-                foreach($request->images as $image)
-                {
+            if ($request->images != null && count($request->images) > 0) {
+                foreach ($request->images as $image) {
                     $content->addMedia($image)->toMediaCollection('Gallery', 'pageContentFiles');
                 }
             }
@@ -272,29 +277,29 @@ class PageContentController extends Controller
             $content->user_id = Auth::user()->id;
             $content->save();
 
-            return redirect()->route(config('constants.about.route'))->with('success','Images has been added successfully.');
-
-        }catch(\Exception $error){
-            return redirect()->route(config('constants.about.route'))->with('error',$error->getMessage());
+            return redirect()->route(config('constants.about.route'))->with('success', 'Images has been added successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route(config('constants.about.route'))->with('error', $error->getMessage());
         }
     }
     public function aboutGalleryDestroy($gallery)
     {
-        try{
+        try {
             $content = PageContent::about()->first();
             $content->deleteMedia($gallery);
-            return redirect()->route(config('constants.about.route'))->with('success','Image has been deleted successfully.');
-
-        }catch(\Exception $error){
-            return redirect()->route(config('constants.about.route'))->with('error',$error->getMessage());
+            return redirect()->route(config('constants.about.route'))->with('success', 'Image has been deleted successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route(config('constants.about.route'))->with('error', $error->getMessage());
         }
     }
-    public function rentPage(){
+    public function rentPage()
+    {
         $contents = PageContent::WherePageName(config('constants.rent.name'))->latest()->get();
         $faqs = Faq::WherePageName(config('constants.rent.name'))->latest()->get();
         return view('dashboard.pageContents.rent', compact('contents', 'faqs'));
     }
-    public function resalePage(){
+    public function resalePage()
+    {
         $contents = PageContent::WherePageName(config('constants.resale.name'))->latest()->get();
         $faqs = Faq::WherePageName(config('constants.resale.name'))->latest()->get();
         return view('dashboard.pageContents.resale', compact('contents', 'faqs'));
@@ -305,20 +310,24 @@ class PageContentController extends Controller
         $faqs = Faq::WherePageName(config('constants.properties.name'))->latest()->get();
         return view('dashboard.pageContents.properties', compact('contents', 'faqs'));
     }
-    public function offPlanPage(){
+    public function offPlanPage()
+    {
         $contents = PageContent::WherePageName(config('constants.offPlan.name'))->latest()->get();
         $faqs = Faq::WherePageName(config('constants.offPlan.name'))->latest()->get();
         return view('dashboard.pageContents.offPlan', compact('contents', 'faqs'));
     }
-    public function faqsPage(){
+    public function faqsPage()
+    {
         $faqs = Faq::WherePageName(config('constants.faqs.name'))->latest()->get();
-        return view('dashboard.pageContents.faqs', compact( 'faqs'));
+        return view('dashboard.pageContents.faqs', compact('faqs'));
     }
-    public function developersPage(){
+    public function developersPage()
+    {
         $contents = PageContent::WherePageName(config('constants.developers.name'))->latest()->get();
         return view('dashboard.pageContents.developers', compact('contents'));
     }
-    public function communitiesPage(){
+    public function communitiesPage()
+    {
         $contents = PageContent::WherePageName(config('constants.communities.name'))->latest()->get();
         return view('dashboard.pageContents.communities', compact('contents'));
     }
@@ -370,7 +379,6 @@ class PageContentController extends Controller
     public function create($page)
     {
         return view('dashboard.pageContents.contents.create', compact('page'));
-
     }
 
     /**
@@ -379,84 +387,81 @@ class PageContentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    
-    public function sellerGuideStore(Request $request){
-        
-        try{
-        
+
+    public function sellerGuideStore(Request $request)
+    {
+
+        try {
+
             $content = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
-         
+
             if ($request->hasFile('sellerGuide')) {
                 $content->clearMediaCollection('sellerGuide');
                 $img =  $request->file('sellerGuide');
                 $ext = $img->getClientOriginalExtension();
-                $imageName = 'SellerGuide.'.$ext;
+                $imageName = 'SellerGuide.' . $ext;
                 $content->addMediaFromRequest('sellerGuide')->usingFileName($imageName)->toMediaCollection('sellerGuide', 'pageContentFiles');
             }
-            
+
             $content->save();
             return response()->json([
                 'success' => true,
-                'message'=> 'Content has been created successfully.',
+                'message' => 'Content has been created successfully.',
                 'redirect' => route(config('constants.sellerGuide.route')),
             ]);
-            
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route(config('constants.sellerGuide.route')),
             ]);
         }
-         
     }
     public function dubaiGuideStore(Request $request)
     {
-        try{
+        try {
             $content = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
-           
+
             if ($request->hasFile('goldenVisa')) {
                 $content->clearMediaCollection('goldenVisa');
                 $img =  $request->file('goldenVisa');
                 $ext = $img->getClientOriginalExtension();
-                $imageName = 'GoldenVisaGuide.'.$ext;
+                $imageName = 'GoldenVisaGuide.' . $ext;
                 $content->addMediaFromRequest('goldenVisa')->usingFileName($imageName)->toMediaCollection('goldenVisa', 'pageContentFiles');
             }
-            
+
             if ($request->hasFile('buyerGuide')) {
-                    $content->clearMediaCollection('buyerGuide');
-                    $img =  $request->file('buyerGuide');
-                    $ext = $img->getClientOriginalExtension();
-                    $imageName = 'BuyerGuide.'.$ext;
-                    $content->addMediaFromRequest('buyerGuide')->usingFileName($imageName)->toMediaCollection('buyerGuide', 'pageContentFiles');
+                $content->clearMediaCollection('buyerGuide');
+                $img =  $request->file('buyerGuide');
+                $ext = $img->getClientOriginalExtension();
+                $imageName = 'BuyerGuide.' . $ext;
+                $content->addMediaFromRequest('buyerGuide')->usingFileName($imageName)->toMediaCollection('buyerGuide', 'pageContentFiles');
             }
-            
+
             if ($request->hasFile('propertiesGuide')) {
                 $content->clearMediaCollection('propertiesGuide');
                 $img =  $request->file('propertiesGuide');
                 $ext = $img->getClientOriginalExtension();
-                $imageName = 'LuxuryPropertiesGuide.'.$ext;
+                $imageName = 'LuxuryPropertiesGuide.' . $ext;
                 $content->addMediaFromRequest('propertiesGuide')->usingFileName($imageName)->toMediaCollection('propertiesGuide', 'pageContentFiles');
             }
             $content->save();
-         return response()->json([
+            return response()->json([
                 'success' => true,
-                'message'=> 'Content has been created successfully.',
+                'message' => 'Content has been created successfully.',
                 'redirect' => route(config('constants.dubaiGuide.route')),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route(config('constants.dubaiGuide.route')),
             ]);
         }
-        
-        
     }
     public function store(PageContentRequest $request)
     {
-        try{
+        try {
             $content = new PageContent;
             $content->page_name = $request->page_name;
             $content->title = $request->title;
@@ -466,14 +471,14 @@ class PageContentController extends Controller
             if ($request->hasFile('image')) {
                 $img =  $request->file('image');
                 $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->page_name).'_image.'.$ext;
+                $imageName =  Str::slug($request->page_name) . '_image.' . $ext;
                 $content->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'pageContentFiles');
             }
 
             if ($request->hasFile('video')) {
                 $video =  $request->file('video');
                 $videoExt = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->page_name).'.'.$videoExt;
+                $videoName =  Str::slug($request->page_name) . '.' . $videoExt;
                 $content->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'pageContentFiles');
             }
 
@@ -482,17 +487,16 @@ class PageContentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message'=> 'Content has been created successfully.',
-                'redirect' => route(config('constants.'.$request->page_name.'.route')),
+                'message' => 'Content has been created successfully.',
+                'redirect' => route(config('constants.' . $request->page_name . '.route')),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
-                'redirect' => route(config('constants.'.$request->page_name.'.route')),
+                'message' => $error->getMessage(),
+                'redirect' => route(config('constants.' . $request->page_name . '.route')),
             ]);
         }
-
     }
 
     /**
@@ -526,7 +530,7 @@ class PageContentController extends Controller
      */
     public function update(PageContentRequest $request, $page, PageContent $content)
     {
-        try{
+        try {
             $content->page_name = $page;
             $content->title = $request->title;
             $content->less_description = $request->less_description;
@@ -536,7 +540,7 @@ class PageContentController extends Controller
                 $content->clearMediaCollection('images');
                 $img =  $request->file('image');
                 $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($page).'_image.'.$ext;
+                $imageName =  Str::slug($page) . '_image.' . $ext;
                 $content->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'pageContentFiles');
             }
 
@@ -544,7 +548,7 @@ class PageContentController extends Controller
                 $content->clearMediaCollection('videos');
                 $video =  $request->file('video');
                 $videoExt = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($page).'.'.$videoExt;
+                $videoName =  Str::slug($page) . '.' . $videoExt;
                 $content->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'pageContentFiles');
             }
 
@@ -552,14 +556,14 @@ class PageContentController extends Controller
             $content->save();
             return response()->json([
                 'success' => true,
-                'message'=> 'Content has been updated successfully.',
-                'redirect' => route(config('constants.'.$request->page_name.'.route')),
+                'message' => 'Content has been updated successfully.',
+                'redirect' => route(config('constants.' . $request->page_name . '.route')),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
-                'redirect' => route(config('constants.'.$request->page_name.'.route')),
+                'message' => $error->getMessage(),
+                'redirect' => route(config('constants.' . $request->page_name . '.route')),
             ]);
         }
     }
@@ -572,12 +576,11 @@ class PageContentController extends Controller
      */
     public function destroy($page, PageContent $content)
     {
-        try{
+        try {
             $content->delete();
-            return redirect()->route(config('constants.'.$page.'.route'))->with('success','Content has been deleted successfully.');
-
-        }catch(\Exception $error){
-            return redirect()->route(config('constants.'.$page.'.route'))->with('error',$error->getMessage());
+            return redirect()->route(config('constants.' . $page . '.route'))->with('success', 'Content has been deleted successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route(config('constants.' . $page . '.route'))->with('error', $error->getMessage());
         }
     }
 }

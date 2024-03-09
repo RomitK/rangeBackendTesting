@@ -213,6 +213,16 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::put('{page}/faqs/{faq}', 'FaqController@update')->name('dashboard.faqs.update');
     Route::delete('{page}/faqs/{faq}', 'FaqController@destroy')->name('dashboard.faqs.destroy');
 
+
+
+    Route::get('{page}/guides/create', 'GuideController@create')->name('dashboard.guides.create');
+    Route::post('guides', 'GuideController@store')->name('dashboard.guides.store');
+    Route::get('{page}/guides/{guide}/edit', 'GuideController@edit')->name('dashboard.guides.edit');
+    Route::put('{page}/guides/{guide}', 'GuideController@update')->name('dashboard.guides.update');
+    Route::delete('{page}/guides/{guide}', 'GuideController@destroy')->name('dashboard.guides.destroy');
+
+
+
     Route::resource('dynamicPages', DynamicPageController::class, ['as' => 'dashboard']);
     Route::get('pageContents/home-page', 'PageContentController@homePage')->name('dashboard.pageContents.home-page');
     Route::get('pageContents/career-page', 'PageContentController@careerPage')->name('dashboard.pageContents.career-page');
