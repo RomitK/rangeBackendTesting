@@ -72,7 +72,7 @@ class GuideController extends Controller
             if ($request->hasFile('guideFile')) {
                 $img =  $request->file('guideFile');
                 $ext = $img->getClientOriginalExtension();
-                $guideFile =  Str::slug($request->title) . $ext;
+                $guideFile =  Str::slug($request->title) . "." . $ext;
                 $guide->addMediaFromRequest('guideFile')->usingFileName($guideFile)->toMediaCollection('guides', 'guideFiles');
             }
 
@@ -172,7 +172,7 @@ class GuideController extends Controller
 
                 $img =  $request->file('guideFile');
                 $ext = $img->getClientOriginalExtension();
-                $guideFile =  Str::slug($request->title) . $ext;
+                $guideFile =  Str::slug($request->title) . "." . $ext;
                 $guide->addMediaFromRequest('guideFile')->usingFileName($guideFile)->toMediaCollection('guides', 'guideFiles');
             }
 
