@@ -28,8 +28,8 @@ class GuideRequest extends FormRequest
             case 'POST': {
                     return [
                         'title' => ['required', Rule::unique('guides')->whereNull('deleted_at'), 'min:3', 'max:225'],
-                        'sliderImage' => ['required', 'image', 'max:2048'],
-                        'featureImage' => ['required', 'image', 'max:2048'],
+                        'sliderImage' => ['required', 'image'],
+                        'featureImage' => ['required', 'image'],
                         'status' => ['required', Rule::in(array_keys(config('constants.statuses')))]
                     ];
                 }
@@ -37,8 +37,8 @@ class GuideRequest extends FormRequest
             case 'PUT': {
                     return [
                         'title' => ['required', Rule::unique('guides')->ignore($this->guide)->whereNull('deleted_at'), 'min:3', 'max:225'],
-                        'sliderImage' => ['image', 'max:2048'],
-                        'featureImage' => ['image', 'max:2048'],
+                        'sliderImage' => ['image'],
+                        'featureImage' => ['image'],
                         'status' => ['required', Rule::in(array_keys(config('constants.statuses')))]
                     ];
                 }
