@@ -42,7 +42,7 @@ class Guide extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('sliderImages', 'resize');
     }
-    public function getGuideAttribute()
+    public function getGuideFileAttribute()
     {
         return $this->getFirstMediaUrl('guides');
     }
