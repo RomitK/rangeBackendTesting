@@ -1190,13 +1190,17 @@ class HomeController extends Controller
                 $otpModel->is_used = 1;
                 $otpModel->save();
                 if ($request->has('DubaiGuides')) {
-                     // 262, 468 check the <
+
+                    if ($request->sourceId) {
+                        $data = $this->CRMCampaignManagement($data, 262, 468, $request->sourceId);
+                        CRMLeadJob::dispatch($data);
+                    }
                 }
                 if ($request->formName == 'homePageBrochure') {
                     $link = PageContent::WherePageName(config('constants.home.name'))->first();
                     $link = $link->brochure;
                 } elseif ($request->formName == 'GoldenVisaGuideForm') {
-                                     
+
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->goldenVisa;
                 } elseif ($request->formName == 'BuyerGuideForm') {
