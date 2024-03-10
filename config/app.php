@@ -55,10 +55,12 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    
+
     'frontend_url' => env('APP_FRONTEND_URL', 'http://localhost'),
-    
-    
+
+    'crm_url' => env('CRM_URL', 'https://axtech.range.ae/api/v2/webLeads/'),
+
+    'crm_token' => env('CRM_TOKEN', '3MPHJP0BC63435345341'),
 
     'asset_url' => env('ASSET_URL'),
 

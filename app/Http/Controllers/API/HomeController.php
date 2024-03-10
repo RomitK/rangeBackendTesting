@@ -1189,10 +1189,14 @@ class HomeController extends Controller
             if ($otpModel) {
                 $otpModel->is_used = 1;
                 $otpModel->save();
+                if ($request->has('DubaiGuides')) {
+                     // 262, 468 check the <
+                }
                 if ($request->formName == 'homePageBrochure') {
                     $link = PageContent::WherePageName(config('constants.home.name'))->first();
                     $link = $link->brochure;
                 } elseif ($request->formName == 'GoldenVisaGuideForm') {
+                                     
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->goldenVisa;
                 } elseif ($request->formName == 'BuyerGuideForm') {

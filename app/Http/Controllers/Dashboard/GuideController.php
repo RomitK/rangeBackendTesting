@@ -52,6 +52,7 @@ class GuideController extends Controller
             $guide->title = $request->title;
             $guide->status = $request->status;
             $guide->user_id = Auth::user()->id;
+            $guide->crm_sub_source_id = $request->crm_sub_source_id;
             $guide->orderBy = $request->orderBy;
             $guide->description = $request->description;
 
@@ -148,6 +149,7 @@ class GuideController extends Controller
             $guide->title = $request->title;
             $guide->status = $request->status;
             $guide->orderBy = $request->orderBy;
+            $guide->crm_sub_source_id = $request->crm_sub_source_id;
             $guide->description = $request->description;
 
             if ($request->hasFile('sliderImage')) {

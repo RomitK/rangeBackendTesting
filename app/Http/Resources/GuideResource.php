@@ -18,6 +18,7 @@ class GuideResource extends JsonResource
         return [
             'id' => "guide_" . $this->id,
             'slug' => Str::slug($this->title),
+            'source_id' => $this->crm_sub_source_id,
             'title' => $this->title,
             'description' => $this->description,
             'slider_image' => $this->slider_image,

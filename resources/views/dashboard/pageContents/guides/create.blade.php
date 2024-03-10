@@ -45,7 +45,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="orderBy">Order By</label>
                                         <input type="number" value="{{ old('orderBy') }}" min="0" class="form-control @error('orderBy') is-invalid @enderror" id="orderBy" placeholder="Enter orderBy" name="orderBy">
@@ -56,7 +56,19 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="crm_sub_source_id">CRM Subsource Id</label>
+                                        <input type="number" value="{{ old('crm_sub_source_id') }}" min="0" class="form-control @error('crm_sub_source_id') is-invalid @enderror" id="crm_sub_source_id" placeholder="Enter CRM SubSorce Id" name="crm_sub_source_id">
+                                        @error('crm_sub_source_id')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="status">Status</label>
                                         <select class="form-control select1 @error('status') is-invalid @enderror" id="status" name="status">
@@ -72,7 +84,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-4">
+                                <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="guideFile">Guide File</label>
                                         <div class="custom-file   @error('guideFile') is-invalid @enderror">
@@ -84,7 +96,6 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                         @enderror
-
                                     </div>
                                 </div>
                                 <div class="col-sm-12">

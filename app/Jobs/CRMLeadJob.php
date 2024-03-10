@@ -35,11 +35,10 @@ class CRMLeadJob implements ShouldQueue
     {
         Log::info('CRMLeadJob Start');
         try {
-            $token = '3MPHJP0BC63435345341';
 
             $response = Http::withHeaders([
-                'authorization-token' => $token,
-            ])->post('https://axtech.range.ae/api/v2/webLeads', $this->data);
+                'authorization-token' => config('crm_token'),
+            ])->post(config('app.crm_url'), $this->data);
 
 
             if ($response->successful()) {
