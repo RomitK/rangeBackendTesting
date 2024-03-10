@@ -1190,8 +1190,9 @@ class HomeController extends Controller
                 $otpModel->is_used = 1;
                 $otpModel->save();
                 if ($request->has('DubaiGuides')) {
-
-                    if ($request->sourceId) {
+                    Log::info("DubaiGuides");
+                    if ($request->has('sourceId')) {
+                        Log::info("sourceId-" . $request->sourceId);
                         $data = $this->CRMCampaignManagement($data, 262, 468, $request->sourceId);
                         CRMLeadJob::dispatch($data);
                     }
