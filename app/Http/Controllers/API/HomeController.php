@@ -1189,7 +1189,7 @@ class HomeController extends Controller
             if ($otpModel) {
                 $otpModel->is_used = 1;
                 $otpModel->save();
-                if ($request->has('DubaiGuides')) {
+                if ($request->has('superformName') && $request->superformName == "DubaiGuides") {
                     Log::info("DubaiGuides");
                     if ($request->has('sourceId')) {
                         Log::info("sourceId-" . $request->sourceId);
