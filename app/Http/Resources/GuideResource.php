@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class GuideResource extends JsonResource
 {
@@ -16,6 +17,7 @@ class GuideResource extends JsonResource
     {
         return [
             'id' => "guide_" . $this->id,
+            'slug' => Str($this->title),
             'title' => $this->title,
             'description' => $this->description,
             'slider_image' => $this->slider_image,
