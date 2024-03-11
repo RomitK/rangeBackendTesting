@@ -19,12 +19,20 @@ class GuideController extends Controller
     {
         try {
 
+            //@if(in_array($tag->id, $guide->tags()->pluck('tag_category_id')->toArray()))
+
             $collection = Guide::query();
             if (isset($request->keyword)) {
+
                 $question = $request->keyword;
-                $collection->where('question', 'like', "%$question%");
+                $tagCategoriesIds = TagCategory::where(['type' => config('constants.guide'), 'status' => config('constants.active')])->where('name', 'like', "%$question%")->pluck('id')->toArray();
+                // $tagCategoriesIds = TagCategory::where(['type' => config('constants.guide'), 'status' => config('constants.active')])->where('name', $question)->pluck('id')->toArray();
+                $collection->whereHas('tags', function ($query) use ($tagCategoriesIds) {
+                    $query->whereIn('tag_category_id', $tagCategoriesIds);
+                });
             }
-            $guides =  $collection->active()->approved()->orderByRaw('ISNULL(orderBy)')->orderBy('orderBy', 'asc')->get();
+            $guides =  $collection->with('tags')->active()->approved()->orderByRaw('ISNULL(orderBy)')->orderBy('orderBy', 'asc')->get();
+
             $guides = GuideResource::collection($guides);
             return $this->success('Guide Data', $guides, 200);
         } catch (\Exception $exception) {
