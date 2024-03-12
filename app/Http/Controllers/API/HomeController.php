@@ -29,7 +29,8 @@ use App\Http\Resources\{
     HomeMapProjectsResource,
     DubaiGuideResource,
     SellGuideResource,
-    DeveloperListResource
+    DeveloperListResource,
+    BankListResource
 };
 use App\Jobs\{
     CRMLeadJob
@@ -75,37 +76,48 @@ class HomeController extends Controller
     public function bankNames()
     {
         try {
-            $bankNames = [
-                ["value" => "Dubai Islamic Bank", "label" => "Dubai Islamic Bank"],
-                ["value" => "Citi Bank", "label" => "Citi Bank"],
-                ["value" => "Emirate Islamic Bank", "label" => "Emirate Islamic Bank"],
-                [
-                    "value" => "ADCB Abu Dhabi Commercial Bank",
-                    "label" => "ADCB Abu Dhabi Commercial Bank",
-                ],
-                ["value" => "Abu Dhabi Islamic Bank", "label" => "Abu Dhabi Islamic Bank"],
-                ["value" => "Ajman Bank", "label" => "Ajman Bank"],
-                ["value" => "Arab Bank", "label" => "Arab Bank"],
-                ["value" => "Bank Of Baroda", "label" => "Bank Of Baroda"],
-                [
-                    "value" => "Commercial Bank International",
-                    "label" => "Commercial Bank International",
-                ],
-                [
-                    "value" => "CBD Commercial Bank Of Dubai",
-                    "label" => "CBD Commercial Bank Of Dubai",
-                ],
-                ["value" => "Emirates NBD", "label" => "Emirates NBD"],
-                ["value" => "FAB First Abu Dhabi Bank", "label" => "FAB First Abu Dhabi Bank"],
-                ["value" => "HSBC", "label" => "HSBC"],
-                ["value" => "Mashreq Bank", "label" => "Mashreq Bank"],
-                ["value" => "National Bank Of Fujairah", "label" => "National Bank Of Fujairah"],
-                ["value" => "RAK Bank", "label" => "RAK Bank"],
-                ["value" => "Sharjah Islamic Bank", "label" => "Sharjah Islamic Bank"],
-                ["value" => "Standard Chartered Bank", "label" => "Standard Chartered Bank"],
-                ["value" => "United Arab Bank", "label" => "United Arab Bank"],
-            ];
 
+            $bankNames = [];
+            $response = Http::get('http://65.0.31.40:88/api/banks');
+            if ($response->successful()) {
+                $responseData = $response->json(); // If expecting JSON response
+                $bankNames = $responseData['data'];
+            } else {
+                $errorCode = $response->status();
+                $errorMessage = $response->body(); // Get the error message
+            }
+
+            // $bankNames = [
+            //     ["value" => "Dubai Islamic Bank", "label" => "Dubai Islamic Bank"],
+            //     ["value" => "Citi Bank", "label" => "Citi Bank"],
+            //     ["value" => "Emirate Islamic Bank", "label" => "Emirate Islamic Bank"],
+            //     [
+            //         "value" => "ADCB Abu Dhabi Commercial Bank",
+            //         "label" => "ADCB Abu Dhabi Commercial Bank",
+            //     ],
+            //     ["value" => "Abu Dhabi Islamic Bank", "label" => "Abu Dhabi Islamic Bank"],
+            //     ["value" => "Ajman Bank", "label" => "Ajman Bank"],
+            //     ["value" => "Arab Bank", "label" => "Arab Bank"],
+            //     ["value" => "Bank Of Baroda", "label" => "Bank Of Baroda"],
+            //     [
+            //         "value" => "Commercial Bank International",
+            //         "label" => "Commercial Bank International",
+            //     ],
+            //     [
+            //         "value" => "CBD Commercial Bank Of Dubai",
+            //         "label" => "CBD Commercial Bank Of Dubai",
+            //     ],
+            //     ["value" => "Emirates NBD", "label" => "Emirates NBD"],
+            //     ["value" => "FAB First Abu Dhabi Bank", "label" => "FAB First Abu Dhabi Bank"],
+            //     ["value" => "HSBC", "label" => "HSBC"],
+            //     ["value" => "Mashreq Bank", "label" => "Mashreq Bank"],
+            //     ["value" => "National Bank Of Fujairah", "label" => "National Bank Of Fujairah"],
+            //     ["value" => "RAK Bank", "label" => "RAK Bank"],
+            //     ["value" => "Sharjah Islamic Bank", "label" => "Sharjah Islamic Bank"],
+            //     ["value" => "Standard Chartered Bank", "label" => "Standard Chartered Bank"],
+            //     ["value" => "United Arab Bank", "label" => "United Arab Bank"],
+            // ];
+            $bankNames = BankListResource::collection($bankNames);
             return $this->success('bankNames', $bankNames, 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
