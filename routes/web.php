@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+Route::get('/file_info', function () {
+    $maxUploadSize = ini_get('upload_max_filesize');
+    $maxPostSize = ini_get('post_max_size');
+    echo "maxUploadSize-" . $maxUploadSize . "maxPostSize-" . $maxPostSize;
+});
+
 Route::get('/phpinfo', function () {
     phpinfo();
 });
