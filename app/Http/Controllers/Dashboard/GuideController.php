@@ -46,6 +46,10 @@ class GuideController extends Controller
      */
     public function store(GuideRequest $request)
     {
+
+        ini_set('upload_max_filesize', '4000M');
+        ini_set('post_max_size', '4000M');
+
         DB::beginTransaction();
         try {
             $guide = new Guide;
@@ -143,6 +147,9 @@ class GuideController extends Controller
      */
     public function update(GuideRequest $request, $page, Guide $guide)
     {
+        ini_set('upload_max_filesize', '4000M');
+        ini_set('post_max_size', '4000M');
+
         DB::beginTransaction();
         try {
 
