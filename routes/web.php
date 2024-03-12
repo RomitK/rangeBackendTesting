@@ -14,6 +14,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/upload-test', function () {
+    return view('upload-test');
+});
+
+
+Route::post('/upload-test', function () {
+    $maxUploadSize = ini_get('upload_max_filesize');
+    $maxPostSize = ini_get('post_max_size');
+
+    // Logic to handle file upload
+    if (!empty($_FILES['uploaded_file'])) {
+        $path = "uploads/";
+        $path = $path . basename($_FILES['uploaded_file']['name']);
+        $move = move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $path);
+
+        if ($move) {
+            echo "The file " . basename($_FILES['uploaded_file']['name']) . " has been uploaded";
+        } else {
+            echo "Failed to upload the file";
+        }
+    } else {
+        echo "No file uploaded";
+    }
+});
+
+
 
 Route::get('/file_info', function () {
     $maxUploadSize = ini_get('upload_max_filesize');
