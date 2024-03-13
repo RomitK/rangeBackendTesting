@@ -1016,7 +1016,14 @@ class HomeController extends Controller
 
                 ];
                 if ($request->formName == "mortgageForm") {
-                    //$data['message'] = request()->except('email', 'name', 'phone', 'agentEmail', 'formName', 'page');
+                    // Exclude specific fields from the message
+                    $excludedFields = ['email', 'name', 'phone', 'agentEmail', 'formName', 'page'];
+                    $messageDetails = collect($request->except($excludedFields))->map(function ($value, $key) {
+                        return ucfirst($key) . ": " . $value;
+                    })->implode(", ");
+
+                    // Add additional details to the message
+                    $data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
                     $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
                     CRMLeadJob::dispatch($data);
                 }
