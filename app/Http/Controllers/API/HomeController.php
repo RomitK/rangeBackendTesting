@@ -1042,10 +1042,11 @@ class HomeController extends Controller
                     ]);
 
                     //LeadMovetoMortgageJob::dispatch($request->all());
-
+                    Log::info($request->all());
 
                     $response = Http::withHeaders([
-                        'authorization-token' => config('mortgage_lead_token'),
+                        'Accept' => 'application/json',
+                        'Auth-Token' => 'my_mortgage_api_Obs1ykgU6K2MB9AteHYBApcH',
                     ])->post(config('app.mortgage_lead_api'), $request->all());
 
 
