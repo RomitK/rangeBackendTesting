@@ -62,6 +62,10 @@ return [
 
     'crm_token' => env('CRM_TOKEN', '3MPHJP0BC63435345341'),
 
+    'mortgage_lead_api' => env('MORTGAGE_LEAD_API', 'http://65.0.31.40:88/api/mortgage-application-submit'),
+
+    'mortgage_lead_token'=> env('MORTGAGE_LEAD_TOKEN', 'my_mortgage_api_Obs1ykgU6K2MB9AteHYBApcH'),
+    
     'asset_url' => env('ASSET_URL'),
 
     /*

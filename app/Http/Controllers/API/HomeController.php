@@ -33,7 +33,8 @@ use App\Http\Resources\{
     BankListResource
 };
 use App\Jobs\{
-    CRMLeadJob
+    CRMLeadJob,
+    LeadMovetoMortgageJob
 };
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -1017,6 +1018,8 @@ class HomeController extends Controller
                 ];
                 if ($request->formName == "mortgageForm") {
 
+
+
                     // Exclude specific fields from the message
                     $excludedFields = ['email', 'name', 'phone', 'agentEmail', 'formName', 'page'];
                     $messageDetails = collect($request->except($excludedFields))->filter(function ($value, $key) {
@@ -1029,6 +1032,16 @@ class HomeController extends Controller
                     $data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
                     $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
                     CRMLeadJob::dispatch($data);
+
+                    $request->merge([
+                        'customer_name' => $request->name,
+                        'customer_email' => $request->email,
+                        'customer_phone_country_code' => $request->name,
+                        'customer_phone' => $request->phone,
+                        'customer_phone_country_code' => $request->countryCode
+                    ]);
+
+                    LeadMovetoMortgageJob::dispatch($request->all());
                 }
                 if ($request->formName == "FooterContactForm") {
                     $data = $this->CRMCampaignManagement($data, 1, 1, 1);
