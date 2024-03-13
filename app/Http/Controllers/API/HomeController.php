@@ -1006,7 +1006,7 @@ class HomeController extends Controller
                     "mortgageForm"
                 ]
             )) {
-                Log::info("formName" . $request->formName);
+                Log::info("formName:" . $request->formName);
                 $data = [
                     'email' => $request->email,
                     'name' => $request->name,
@@ -1016,7 +1016,7 @@ class HomeController extends Controller
 
                 ];
                 if ($request->formName == "mortgageForm") {
-                    $data['message'] = request()->except('email', 'name', 'phone', 'agentEmail', 'formName', 'page');
+                    //$data['message'] = request()->except('email', 'name', 'phone', 'agentEmail', 'formName', 'page');
                     $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
                     CRMLeadJob::dispatch($data);
                 }
