@@ -1036,8 +1036,7 @@ class HomeController extends Controller
                     $request->merge([
                         'customer_name' => $request->name,
                         'customer_email' => $request->email,
-                        'customer_phone_country_code' => $request->name,
-                        'customer_phone' => $request->phone,
+                        'customer_phone' => $request->nationalNumber,
                         'customer_phone_country_code' => $request->countryCode
                     ]);
 
