@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class LeadMovetoMortgageJob implements ShouldQueue
+class LeadMovetoMortgageJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
