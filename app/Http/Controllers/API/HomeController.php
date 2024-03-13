@@ -1016,9 +1016,12 @@ class HomeController extends Controller
 
                 ];
                 if ($request->formName == "mortgageForm") {
+
                     // Exclude specific fields from the message
                     $excludedFields = ['email', 'name', 'phone', 'agentEmail', 'formName', 'page'];
-                    $messageDetails = collect($request->except($excludedFields))->map(function ($value, $key) {
+                    $messageDetails = collect($request->except($excludedFields))->filter(function ($value, $key) {
+                        return !empty($value);
+                    })->map(function ($value, $key) {
                         return ucfirst($key) . ": " . $value;
                     })->implode(", ");
 
