@@ -1002,7 +1002,8 @@ class HomeController extends Controller
                     "MortgageServices",
                     "InvestmentConsultancy",
                     "GoldenVisaForm",
-                    "sellContactForm"
+                    "sellContactForm",
+                    "mortgageForm"
                 ]
             )) {
                 Log::info("formName" . $request->formName);
@@ -1014,7 +1015,11 @@ class HomeController extends Controller
                     'agentEmail' =>  'ian@xpertise.ae',
 
                 ];
-
+                if ($request->formName == "mortgageForm") {
+                    $data['message'] = request()->except('email', 'name', 'phone', 'agentEmail', 'formName', 'page');
+                    $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
+                    CRMLeadJob::dispatch($data);
+                }
                 if ($request->formName == "FooterContactForm") {
                     $data = $this->CRMCampaignManagement($data, 1, 1, 1);
                 }
