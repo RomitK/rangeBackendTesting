@@ -1029,8 +1029,8 @@ class HomeController extends Controller
                     })->implode(", ");
 
                     // Add additional details to the message
-                    $data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
-                    $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
+                    //$data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
+                    //$data = $this->CRMCampaignManagement($data, 263, 470, 2537);
                     //CRMLeadJob::dispatch($data);
 
                     $request->merge([
@@ -1041,7 +1041,29 @@ class HomeController extends Controller
                         'customer_phone_country_code' => $request->countryCode
                     ]);
 
-                    LeadMovetoMortgageJob::dispatch($request->all());
+                    //LeadMovetoMortgageJob::dispatch($request->all());
+
+
+                    $response = Http::withHeaders([
+                        'authorization-token' => config('mortgage_lead_token'),
+                    ])->post(config('app.mortgage_lead_api'), $request->all());
+
+
+                    if ($response->successful()) {
+                        // Request was successful, handle the response
+                        $responseData = $response->json(); // If expecting JSON response
+                        Log::info('MortgageLeadJob DONE');
+                        Log::info($responseData);
+                        // Process the response data here
+                    } else {
+                        // Request failed, handle the error
+                        $errorCode = $response->status();
+                        $errorMessage = $response->body(); // Get the error message
+                        // Handle the error here
+
+                        Log::info('MortgageLeadJob ERROR DONE');
+                        Log::info($errorMessage);
+                    }
                 }
                 if ($request->formName == "FooterContactForm") {
                     $data = $this->CRMCampaignManagement($data, 1, 1, 1);
