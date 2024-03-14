@@ -62,7 +62,7 @@ class Agent extends Model implements HasMedia
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
@@ -82,9 +82,9 @@ class Agent extends Model implements HasMedia
     {
         // return $this->getFirstMediaUrl('images', 'resize');
 
-        if($this->getFirstMediaUrl('images', 'resize')){
+        if ($this->getFirstMediaUrl('images', 'resize')) {
             return $this->getFirstMediaUrl('images', 'resize');
-        }else{
+        } else {
             return asset('frontend/assets/images/no-user.webp');
         }
     }
@@ -96,10 +96,10 @@ class Agent extends Model implements HasMedia
     {
         return Carbon::parse($this->created_at)->format('d m Y');
     }
-    public function registerMediaConversions(Media $media = null) : void
+    public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
-            ->height(300)
+            //->height(300)
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('images')
             ->nonQueued();
@@ -107,9 +107,10 @@ class Agent extends Model implements HasMedia
     /**
      * FIND Relationship
      */
-     
-    public function approval(){
-        return $this->belongsTo(User::class,'approval_id');
+
+    public function approval()
+    {
+        return $this->belongsTo(User::class, 'approval_id');
     }
     public function updatedBy()
     {
@@ -149,16 +150,16 @@ class Agent extends Model implements HasMedia
     }
     public function saleProperties()
     {
-        return $this->properties()->where('category_id',config('constants.categories')["Sale"]);
+        return $this->properties()->where('category_id', config('constants.categories')["Sale"]);
     }
     public function resaleProperties()
     {
-        return $this->properties()->where('category_id',config('constants.categories')["Resale"]);
+        return $this->properties()->where('category_id', config('constants.categories')["Resale"]);
     }
 
     /**
-    * FIND local scope
-    */
+     * FIND local scope
+     */
     public function scopeActive($query)
     {
         return $query->where('status', config('constants.active'));
@@ -175,8 +176,8 @@ class Agent extends Model implements HasMedia
     {
         return $query->where('is_management', 1);
     }
-    
-     
+
+
     /**
      *
      * Filters

@@ -25,58 +25,57 @@ class AgentRequest extends FormRequest
     public function rules()
     {
         switch ($this->method()) {
-            case 'POST':
-                {
+            case 'POST': {
                     return [
-                        'name' => ['required', 'min:3','max:225'],
+                        'name' => ['required', 'min:3', 'max:225'],
                         // 'email' => ['required','email',Rule::unique('agents')->whereNull('deleted_at'), 'min:3','max:225'],
-                        'employeeId' => ['required',Rule::unique('agents')->whereNull('deleted_at'), 'min:3','max:225'],
-                        'email' => ['required','email', 'min:3','max:225'],
-                        'contact_number' => ['required','max:225'],
-                        'whatsapp_number' => ['required','max:225'],
-                        'orderBy'=>['integer','min:0'],
-                        'designation'=>['max:225'],
-                        'specialization'=>['max:225'],
-                        'nationality'=>['max:225'],
-                        'experience'=>['max:225'],
-                        'start_working'=>['max:225'],
-                        'linkedin_profile'=>['max:225'],
-                        'license_number'=>['max:225'],
-                        'languageIds'=>['array'],
+                        'employeeId' => ['required', Rule::unique('agents')->whereNull('deleted_at'), 'min:3', 'max:225'],
+                        'email' => ['required', 'email', 'min:3', 'max:225'],
+                        'contact_number' => ['required', 'max:225'],
+                        'whatsapp_number' => ['required', 'max:225'],
+                        'orderBy' => ['integer', 'min:0'],
+                        'designation' => ['max:225'],
+                        'specialization' => ['max:225'],
+                        'nationality' => ['max:225'],
+                        'experience' => ['max:225'],
+                        'start_working' => ['max:225'],
+                        'linkedin_profile' => ['max:225'],
+                        'license_number' => ['max:225'],
+                        'languageIds' => ['array'],
                         'languageIds.*' => [Rule::exists('languages', 'id')],
-                        'serviceIds'=>['array'],
+                        'serviceIds' => ['array'],
                         'serviceIds.*' => [Rule::exists('services', 'id')],
                         'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'image' => ['image', 'max:2048'],
+                        'image' => ['image'],
                     ];
                 }
             case 'PATCH':
-            case 'PUT':
-                {
+            case 'PUT': {
                     return [
-                        'name' => ['required', 'min:3','max:225'],
+                        'name' => ['required', 'min:3', 'max:225'],
                         // 'email' => ['required','email',Rule::unique('agents')->ignore($this->agent)->whereNull('deleted_at'), 'min:3','max:225'],
-                        'employeeId' => ['required',Rule::unique('agents')->ignore($this->agent)->whereNull('deleted_at'), 'min:3','max:225'],
-                        'email' => ['required','email', 'min:3','max:225'],
-                        'contact_number' => ['required','max:225'],
-                        'orderBy'=>['integer','min:0'],
-                        'whatsapp_number' => ['required','max:225'],
-                        'designation'=>['max:225'],
-                        'specialization'=>['max:225'],
-                        'nationality'=>['max:225'],
-                        'experience'=>['max:225'],
-                        'start_working'=>['max:225'],
-                        'linkedin_profile'=>['max:225'],
-                        'license_number'=>['max:225'],
-                        'languageIds'=>['array'],
+                        'employeeId' => ['required', Rule::unique('agents')->ignore($this->agent)->whereNull('deleted_at'), 'min:3', 'max:225'],
+                        'email' => ['required', 'email', 'min:3', 'max:225'],
+                        'contact_number' => ['required', 'max:225'],
+                        'orderBy' => ['integer', 'min:0'],
+                        'whatsapp_number' => ['required', 'max:225'],
+                        'designation' => ['max:225'],
+                        'specialization' => ['max:225'],
+                        'nationality' => ['max:225'],
+                        'experience' => ['max:225'],
+                        'start_working' => ['max:225'],
+                        'linkedin_profile' => ['max:225'],
+                        'license_number' => ['max:225'],
+                        'languageIds' => ['array'],
                         'languageIds.*' => [Rule::exists('languages', 'id')],
-                        'serviceIds'=>['array'],
+                        'serviceIds' => ['array'],
                         'serviceIds.*' => [Rule::exists('services', 'id')],
                         'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'image' => ['image', 'max:2048'],
+                        'image' => ['image'],
                     ];
                 }
-            default: break;
+            default:
+                break;
         }
     }
 }
