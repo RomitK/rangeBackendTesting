@@ -1048,7 +1048,7 @@ class HomeController extends Controller
                             ]);
 
                             // Exclude specific fields from the message
-                            $excludedFields = ['email', 'name', 'phone', 'agentEmail', 'formName', 'page', 'customer_name', 'customer_email', 'customer_phone', 'customer_phone_country_code'];
+                            $excludedFields = ['CountryCode', 'NationalNumber', 'FullPhoneNumber', 'email', 'name', 'phone', 'agentEmail', 'formName', 'page', 'customer_name', 'customer_email', 'customer_phone', 'customer_phone_country_code'];
                             $messageDetails = collect($request->except($excludedFields))->filter(function ($value, $key) {
                                 return !empty($value);
                             })->map(function ($value, $key) {
