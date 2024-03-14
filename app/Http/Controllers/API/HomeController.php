@@ -1054,6 +1054,9 @@ class HomeController extends Controller
                         $responseData = $response->json(); // If expecting JSON response
                         Log::info('MortgageLeadJob DONE');
                         Log::info($responseData);
+                        if ($response['data']) {
+                            Log::info($response['data']['mortgage_application_reference_number']);
+                        }
                         // Process the response data here
                     } else {
                         // Request failed, handle the error
