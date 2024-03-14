@@ -1018,21 +1018,6 @@ class HomeController extends Controller
                 ];
                 if ($request->formName == "mortgageForm") {
 
-
-
-                    // Exclude specific fields from the message
-                    $excludedFields = ['email', 'name', 'phone', 'agentEmail', 'formName', 'page'];
-                    $messageDetails = collect($request->except($excludedFields))->filter(function ($value, $key) {
-                        return !empty($value);
-                    })->map(function ($value, $key) {
-                        return ucfirst($key) . ": " . $value;
-                    })->implode(", ");
-
-                    // Add additional details to the message
-                    //$data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
-                    //$data = $this->CRMCampaignManagement($data, 263, 470, 2537);
-                    //CRMLeadJob::dispatch($data);
-
                     $request->merge([
                         'customer_name' => $request->name,
                         'customer_email' => $request->email,
@@ -1041,7 +1026,7 @@ class HomeController extends Controller
                     ]);
 
                     //LeadMovetoMortgageJob::dispatch($request->all());
-                    Log::info($request->all());
+                    //Log::info($request->all());
 
                     $response = Http::withHeaders([
                         'Accept' => 'application/json',
@@ -1056,6 +1041,24 @@ class HomeController extends Controller
                         Log::info($responseData);
                         if ($response['data']) {
                             Log::info($response['data']['mortgage_application_reference_number']);
+                            $mortgageReferenNumber = $response['data']['mortgage_application_reference_number'];
+
+                            $request->merge([
+                                'mortgage_application_reference_number' => $mortgageReferenNumber,
+                            ]);
+
+                            // Exclude specific fields from the message
+                            $excludedFields = ['email', 'name', 'phone', 'agentEmail', 'formName', 'page', 'customer_name', 'customer_email', 'customer_phone', 'customer_phone_country_code'];
+                            $messageDetails = collect($request->except($excludedFields))->filter(function ($value, $key) {
+                                return !empty($value);
+                            })->map(function ($value, $key) {
+                                return ucfirst($key) . ": " . $value;
+                            })->implode(", ");
+
+                            // Add additional details to the message
+                            $data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
+                            $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
+                            CRMLeadJob::dispatch($data);
                         }
                         // Process the response data here
                     } else {
@@ -1211,7 +1214,7 @@ class HomeController extends Controller
                 $data = $response->json();
                 return $this->success('Form Submit', [], 200);
             } else {
-                \Log::error('SMS API Error: ' . $response->body());
+                Log::error('SMS API Error: ' . $response->body());
                 return $this->success('Form Submit ERROR', [], 200);
             }
 
