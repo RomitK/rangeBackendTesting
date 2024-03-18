@@ -799,6 +799,7 @@ class ProjectController extends Controller
                 $project->is_approved = "requested";
                 $project->approval_id = null;
             }
+
             $project->updated_by = Auth::user()->id;
             $project->projectOrder = $request->projectOrder;
 
@@ -809,6 +810,8 @@ class ProjectController extends Controller
             $project->banner_image = $project->mainImage;
 
             $project->save();
+            $project->subProjects()->update(['is_approved' => $request->is_approved]);
+
             Property::where('project_id', $project->id)->update(['updated_brochure' => 0]);
 
             if ($project->status != '') {
