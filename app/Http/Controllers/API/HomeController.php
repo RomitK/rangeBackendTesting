@@ -1266,7 +1266,7 @@ class HomeController extends Controller
                 if ($request->has('superformName') && $request->superformName == "DubaiGuides") {
                     Log::info("DubaiGuides");
                     if ($request->has('sourceId')) {
-                        Log::info("sourceId-" . $request->sourceId);
+                        //Log::info("sourceId-" . $request->sourceId);
                         $data = $this->CRMCampaignManagement($data, 262, 468, $request->sourceId);
                         CRMLeadJob::dispatch($data);
                     }
@@ -1274,6 +1274,9 @@ class HomeController extends Controller
                 if ($request->formName == 'homePageBrochure') {
                     $link = PageContent::WherePageName(config('constants.home.name'))->first();
                     $link = $link->brochure;
+
+                    $data = $this->CRMCampaignManagement($data, 265, 479, 2547);
+                    CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'GoldenVisaGuideForm') {
 
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
