@@ -1004,7 +1004,8 @@ class HomeController extends Controller
                     "InvestmentConsultancy",
                     "GoldenVisaForm",
                     "sellContactForm",
-                    "mortgageForm"
+                    "mortgageForm",
+                    "bookACall"
                 ]
             )) {
                 Log::info("formName:" . $request->formName);
@@ -1074,7 +1075,11 @@ class HomeController extends Controller
                 if ($request->formName == "FooterContactForm") {
                     $data = $this->CRMCampaignManagement($data, 1, 1, 1);
                 }
+                if ($request->formName == "bookACall") {
+                    $data['message'] = "Page Url: " . $request->page . ", Date:" . $request->date . " , Time:" . $request->time . " , Message:" . $messageDetails;
 
+                    $data = $this->CRMCampaignManagement($data, 265, 479, 2546);
+                }
                 if ($request->formName == "CallBackRequestForm") {
                     $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
                     CRMLeadJob::dispatch($data);
