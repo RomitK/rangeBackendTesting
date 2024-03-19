@@ -1076,7 +1076,7 @@ class HomeController extends Controller
                     $data = $this->CRMCampaignManagement($data, 1, 1, 1);
                 }
                 if ($request->formName == "bookACall") {
-                    $data['message'] = "Page Url: " . $request->page . ", Date:" . $request->date . " , Time:" . $request->time . " , Message:" . $messageDetails;
+                    $data['message'] = "Page Url: " . $request->page . ", Date:" . $request->date . " , Time:" . $request->time . " , Message:" . $request->message;
 
                     $data = $this->CRMCampaignManagement($data, 265, 479, 2546);
                 }
