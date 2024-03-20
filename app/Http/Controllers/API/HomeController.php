@@ -1142,12 +1142,13 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '')
+    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '')
     {
         $data["campaignId"] = $campaignId;
         $data["sourceId"] = $sourceId;
         $data["subSourceId"] = $subSourceId;
-
+        $data['needToCreateSubSource'] = $needToCreateSubSource;
+        $data['subSourceName'] = $subSourceName;
         // Check if $agentEmail is empty, assign default value if so
         if (empty($agentEmail)) {
             $agentEmail = 'ian@xpertise.ae';
@@ -1297,6 +1298,9 @@ class HomeController extends Controller
                 } elseif ($request->formName == 'projectBrochure') {
                     $project = Project::where('slug', $request->project)->first();
                     $link = $project->brochure;
+                    $data = $this->CRMCampaignManagement($data, 266, 480, "", '', true, $project->title);
+                    Log::info($data);
+                    CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'propertyBrochure') {
                     $property = Property::where('slug', $request->property)->first();
                     $link = $property->brochure;
