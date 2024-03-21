@@ -1023,7 +1023,7 @@ class HomeController extends Controller
                         'customer_name' => $request->name,
                         'customer_email' => $request->email,
                         'customer_phone' => $request->nationalNumber,
-                        'customer_phone_country_code' => str_replace("+","",$request->countryCode); 
+                        'customer_phone_country_code' => str_replace("+", "", $request->countryCode)
                     ]);
 
                     //LeadMovetoMortgageJob::dispatch($request->all());
