@@ -1304,6 +1304,7 @@ class HomeController extends Controller
                 } elseif ($request->formName == 'propertyBrochure') {
                     $property = Property::where('slug', $request->property)->first();
                     $link = $property->brochure;
+                    $data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
                 }
                 return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
             } else {
