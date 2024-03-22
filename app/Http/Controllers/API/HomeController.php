@@ -494,7 +494,7 @@ class HomeController extends Controller
             $data = [
                 'title' => $title,
                 'meta_description' => $description,
-                'meta_keyword' => $keywords,
+                'meta_keywords' => $keywords,
             ];
 
             return $this->success('Home Data Meta', $data, 200);
