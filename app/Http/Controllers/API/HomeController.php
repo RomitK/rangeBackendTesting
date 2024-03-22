@@ -1301,9 +1301,11 @@ class HomeController extends Controller
                     $data = $this->CRMCampaignManagement($data, 266, 480, "", '', true, $project->title);
                     Log::info($data);
                     CRMLeadJob::dispatch($data);
-                } elseif ($request->formName == 'propertyBrochure') {
+                } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
                     $property = Property::where('slug', $request->property)->first();
-                    $link = $property->brochure;
+                    if ($request->formName == 'propertyBrochure') {
+                        $link = $property->brochure;
+                    }
 
                     $data['message'] = $request->formName;
                     $data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
