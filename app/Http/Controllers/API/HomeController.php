@@ -261,7 +261,7 @@ class HomeController extends Controller
     {
         try {
             // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
-            $communities = HomeCommunitiesResource::collection(Community::select('name', 'slug', 'mainImage', 'id')->active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get());
+            $communities = HomeCommunitiesResource::collection(Community::select('name', 'slug', 'banner_image', 'id')->active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get());
             $testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
 
             $allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
