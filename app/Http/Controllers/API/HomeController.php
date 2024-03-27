@@ -266,6 +266,7 @@ class HomeController extends Controller
                 ->where('status', config('constants.active'))
                 ->where('is_approved', config('constants.approved'))
                 ->where('display_on_home', 1)
+                ->whereNull('deleted_at')
                 ->limit(12)
                 ->orderByRaw('ISNULL(communityOrder)')
                 ->orderBy('communityOrder', 'asc')
@@ -275,6 +276,7 @@ class HomeController extends Controller
             $testimonials =  HomeTestimonial::collection(DB::table('testimonials')
                 ->select('id', 'feedback', 'client_name', 'rating')
                 ->where('status', config('constants.active'))
+                ->whereNull('deleted_at')
                 ->orderBy('created_at', 'desc')
                 ->get());
 
@@ -286,6 +288,7 @@ class HomeController extends Controller
                 ->where('status', config('constants.active'))
                 ->where('is_approved', config('constants.approved'))
                 ->where('display_on_home', 1)
+                ->whereNull('deleted_at')
                 ->orderByRaw('ISNULL(developerOrder)')
                 ->orderBy('developerOrder', 'asc')
                 ->get());
