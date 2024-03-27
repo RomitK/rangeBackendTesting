@@ -261,21 +261,43 @@ class HomeController extends Controller
     {
         try {
             // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
-            $communities = HomeCommunitiesResource::collection(Community::select('name', 'slug', 'banner_image', 'id')->active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get());
-            $testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
+            $communities = HomeCommunitiesResource::collection(DB::table('communities')
+                ->select('name', 'slug', 'banner_image', 'id')
+                ->where('status', config('constants.active'))
+                ->where('is_approved', config('constants.approved'))
+                ->where('display_on_home', 1)
+                ->limit(12)
+                ->orderByRaw('ISNULL(communityOrder)')
+                ->orderBy('communityOrder', 'asc')
+                ->get());
+
+            //$testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
+            $testimonials =  HomeTestimonial::collection(DB::table('testimonials')
+                ->select('id', 'feedback', 'client_name', 'rating')
+                ->where('status', config('constants.active'))
+                ->orderBy('created_at', 'desc')
+                ->get());
+
+
+            //$developers = DeveloperListResource::collection(Developer::active()->approved()->home()->orderByRaw('ISNULL(developerOrder)')->orderBy('developerOrder', 'asc')->get());
+
+            $developers = DeveloperListResource::collection(DB::table('developers')
+                ->select('id', 'logo_image', 'slug', 'name', 'developerOrder')
+                ->where('status', config('constants.active'))
+                ->where('is_approved', config('constants.approved'))
+                ->where('display_on_home', 1)
+                ->orderByRaw('ISNULL(developerOrder)')
+                ->orderBy('developerOrder', 'asc')
+                ->get());
 
             $allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
-
             $displayProjects = clone $allProjects;
-
             $displayProjects = $displayProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->take(8);
-
 
             $projects = HomeProjectResource::collection($displayProjects->get());
             $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('title', 'asc')->get());
             $mapProjects = HomeMapProjectsResource::collection($allProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get());
             $brochure = PageContent::WherePageName(config('constants.home.name'))->first();
-            $developers = DeveloperListResource::collection(Developer::active()->approved()->home()->orderByRaw('ISNULL(developerOrder)')->orderBy('developerOrder', 'asc')->get());
 
             // Function to convert number to words
             function convertToWords($number)
