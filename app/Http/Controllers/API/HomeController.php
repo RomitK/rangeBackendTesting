@@ -79,7 +79,8 @@ class HomeController extends Controller
         try {
 
             $bankNames = [];
-            $response = Http::get('http://65.0.31.40:88/api/banks');
+            $response = Http::get(config('app.mortgage_api_url') . '/banks');
+
             if ($response->successful()) {
                 $responseData = $response->json(); // If expecting JSON response
                 $bankNames = $responseData['data'];
@@ -87,37 +88,6 @@ class HomeController extends Controller
                 $errorCode = $response->status();
                 $errorMessage = $response->body(); // Get the error message
             }
-
-            // $bankNames = [
-            //     ["value" => "Dubai Islamic Bank", "label" => "Dubai Islamic Bank"],
-            //     ["value" => "Citi Bank", "label" => "Citi Bank"],
-            //     ["value" => "Emirate Islamic Bank", "label" => "Emirate Islamic Bank"],
-            //     [
-            //         "value" => "ADCB Abu Dhabi Commercial Bank",
-            //         "label" => "ADCB Abu Dhabi Commercial Bank",
-            //     ],
-            //     ["value" => "Abu Dhabi Islamic Bank", "label" => "Abu Dhabi Islamic Bank"],
-            //     ["value" => "Ajman Bank", "label" => "Ajman Bank"],
-            //     ["value" => "Arab Bank", "label" => "Arab Bank"],
-            //     ["value" => "Bank Of Baroda", "label" => "Bank Of Baroda"],
-            //     [
-            //         "value" => "Commercial Bank International",
-            //         "label" => "Commercial Bank International",
-            //     ],
-            //     [
-            //         "value" => "CBD Commercial Bank Of Dubai",
-            //         "label" => "CBD Commercial Bank Of Dubai",
-            //     ],
-            //     ["value" => "Emirates NBD", "label" => "Emirates NBD"],
-            //     ["value" => "FAB First Abu Dhabi Bank", "label" => "FAB First Abu Dhabi Bank"],
-            //     ["value" => "HSBC", "label" => "HSBC"],
-            //     ["value" => "Mashreq Bank", "label" => "Mashreq Bank"],
-            //     ["value" => "National Bank Of Fujairah", "label" => "National Bank Of Fujairah"],
-            //     ["value" => "RAK Bank", "label" => "RAK Bank"],
-            //     ["value" => "Sharjah Islamic Bank", "label" => "Sharjah Islamic Bank"],
-            //     ["value" => "Standard Chartered Bank", "label" => "Standard Chartered Bank"],
-            //     ["value" => "United Arab Bank", "label" => "United Arab Bank"],
-            // ];
             $bankNames = BankListResource::collection($bankNames);
             return $this->success('bankNames', $bankNames, 200);
         } catch (\Exception $exception) {
@@ -291,7 +261,7 @@ class HomeController extends Controller
     {
         try {
             // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
-            $communities = HomeCommunitiesResource::collection(Community::active()->approved()->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get());
+            $communities = HomeCommunitiesResource::collection(Community::select('name', 'slug', 'mainImage', 'id')->active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get());
             $testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
 
             $allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
