@@ -300,7 +300,7 @@ class HomeController extends Controller
             $projects = HomeProjectResource::collection($displayProjects->get());
             $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('title', 'asc')->get());
             $mapProjects = HomeMapProjectsResource::collection($allProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get());
-            $brochure = PageContent::WherePageName(config('constants.home.name'))->first();
+
 
             // Function to convert number to words
             function convertToWords($number)
@@ -462,9 +462,6 @@ class HomeController extends Controller
                 'testimonials' => $testimonials,
                 'mapProjects' => $mapProjects,
                 'developers' => $developers,
-                'brochure' => $brochure->brochure,
-
-
             ];
 
             return $this->success('Home Data', $data, 200);
