@@ -1001,8 +1001,8 @@ class HomeController extends Controller
 
                     $response = Http::withHeaders([
                         'Accept' => 'application/json',
-                        'Auth-Token' => 'my_mortgage_api_Obs1ykgU6K2MB9AteHYBApcH',
-                    ])->post(config('app.mortgage_lead_api'), $request->all());
+                        'Auth-Token' => config('app.mortgage_token'),
+                    ])->post(config('app.mortgage_api_url') . 'mortgage-application-submit', $request->all());
 
 
                     if ($response->successful()) {

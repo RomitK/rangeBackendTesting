@@ -64,6 +64,8 @@ return [
 
     'mortgage_api_url' => env('MORTGAGE_API_URL', 'https://admin.mymortgage.ae/api/'),
 
+    'mortgage_token' => env('MORTGAGE_TOKEN', 'my_mortgage_api_PvNc94Yrj6JJFY8GgtC8VHnp'),
+
     'mortgage_lead_api' => env('MORTGAGE_LEAD_API', 'http://65.0.31.40:88/api/mortgage-application-submit'),
 
     'mortgage_lead_token' => env('MORTGAGE_LEAD_TOKEN', 'my_mortgage_api_Obs1ykgU6K2MB9AteHYBApcH'),
