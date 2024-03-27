@@ -28,13 +28,13 @@ class HomeProjectResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => 'project_'.$this->id,
+            'id' => 'project_' . $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
             'mainImage' => $this->banner_image,
-            'accommodation'=>$this->accommodation ? $this->accommodation->name: null,
-            'mainImage'=> $this->banner_image,
-            'projectOrder'=>$this->projectOrder
+            'accommodation' => $this->accommodation_name,
+            'mainImage' => $this->banner_image,
+            'projectOrder' => $this->projectOrder
         ];
     }
 }

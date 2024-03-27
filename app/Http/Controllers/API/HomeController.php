@@ -293,13 +293,56 @@ class HomeController extends Controller
                 ->orderBy('developerOrder', 'asc')
                 ->get());
 
-            $allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
+            //$allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
+
+            $allProjects =  DB::table('projects')
+                ->select(
+                    'projects.id',
+                    'projects.title',
+                    'projects.slug',
+                    'projects.banner_image',
+                    'projects.projectOrder',
+                    'projects.address',
+                    'projects.completion_date',
+                    'projects.address_latitude',
+                    'projects.address_longitude',
+                    'accommodations.name as accommodation_name',
+                    'completion_statuses.name as completion_statuses_name'
+                )
+                ->leftJoin('accommodations', 'projects.accommodation_id', '=', 'accommodations.id')
+                ->leftJoin('completion_statuses', 'projects.completion_status_id', '=', 'completion_statuses.id')
+                ->where('projects.is_parent_project', true)
+                ->where('projects.is_approved', config('constants.approved'))
+                ->where('projects.status', config('constants.active'))
+                ->where('projects.is_display_home', 1)
+                ->whereNull('projects.deleted_at');
+
             $displayProjects = clone $allProjects;
-            $displayProjects = $displayProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->take(8);
+            $displayProjects = $displayProjects->orderByRaw('ISNULL(projects.projectOrder)')->orderBy('projects.projectOrder', 'asc')->take(8);
 
             $projects = HomeProjectResource::collection($displayProjects->get());
-            $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('title', 'asc')->get());
-            $mapProjects = HomeMapProjectsResource::collection($allProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get());
+
+            $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('projects.title', 'asc')->get());
+
+            // Retrieve sub-projects using a recursive Common Table Expression (CTE)
+            $subProjects = DB::table('projects')
+                ->select('projects.id as sub_project_id', 'projects.area', 'projects.bedrooms', 'projects.starting_price', 'projects.parent_project_id')
+                ->where('projects.is_parent_project', false) // Fetch only sub-projects
+                ->where('projects.is_approved', config('constants.approved'))
+                ->where('projects.status', config('constants.active'))
+                ->whereNull('projects.deleted_at')
+                ->get();
+
+            $allProjectsResult = $allProjects->get();
+            $projectsWithSubProjects = [];
+
+            foreach ($allProjectsResult as $project) {
+                $projectsWithSubProjects[$project->id] = (array) $project;
+                $projectsWithSubProjects[$project->id]['sub_projects'] = $subProjects->where('parent_project_id', $project->id)->values()->all();
+                $projectsWithSubProjects[$project->id]['has_sub_projects'] = count($projectsWithSubProjects[$project->id]['sub_projects']) > 0;
+            }
+
+            $mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
 
 
             // Function to convert number to words
@@ -412,16 +455,16 @@ class HomeController extends Controller
 
             // Fetch results from the database
             $results = DB::select("
-             SELECT starting_price
-             FROM projects
-             WHERE deleted_at IS NULL
-             AND status = 'active'
-             AND is_approved = 'approved'
-             AND starting_price IS NOT NULL
-             AND starting_price REGEXP '^[0-9]+$'
-             GROUP BY starting_price
-             ORDER BY starting_price;
-         ");
+                 SELECT starting_price
+                 FROM projects
+                 WHERE deleted_at IS NULL
+                 AND status = 'active'
+                 AND is_approved = 'approved'
+                 AND starting_price IS NOT NULL
+                 AND starting_price REGEXP '^[0-9]+$'
+                 GROUP BY starting_price
+                 ORDER BY starting_price;
+             ");
 
             // Initialize arrays to store starting prices in words
             $thousands = [];
