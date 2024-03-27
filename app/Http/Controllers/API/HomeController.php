@@ -79,7 +79,7 @@ class HomeController extends Controller
         try {
 
             $bankNames = [];
-            $response = Http::get(config('app.mortgage_api_url') . '/banks');
+            $response = Http::get(config('app.mortgage_api_url') . 'banks');
 
             if ($response->successful()) {
                 $responseData = $response->json(); // If expecting JSON response
