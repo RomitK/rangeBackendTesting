@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Requests\Dashboard;
+
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,24 +26,23 @@ class PageTagRequest extends FormRequest
     public function rules(Request $request)
     {
         switch ($this->method()) {
-            case 'POST':
-                {
+            case 'POST': {
                     return [
-                        'page_name' => ['required',Rule::unique('page_tags')->whereNull('deleted_at'),'max:225'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'page_name' => ['required', Rule::unique('page_tags')->whereNull('deleted_at'), 'max:225'],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
                         'banner_image' => ['image', 'mimes:webp', 'max:2048'],
                     ];
                 }
             case 'PATCH':
-            case 'PUT':
-                {
+            case 'PUT': {
                     return [
-                        'page_name' => ['required',Rule::unique('page_tags')->ignore($this->page_tag)->whereNull('deleted_at'),'max:225'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'banner_image'=>['image', 'mimes:webp', 'max:2048'],
+                        'page_name' => ['required', Rule::unique('page_tags')->ignore($this->page_tag)->whereNull('deleted_at'), 'max:225'],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'banner_image' => ['image', 'mimes:webp', 'max:2048'],
                     ];
                 }
-            default: break;
+            default:
+                break;
         }
     }
 }

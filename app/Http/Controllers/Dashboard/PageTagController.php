@@ -13,8 +13,10 @@ class PageTagController extends Controller
 {
     function __construct()
     {
-        $this->middleware('permission:'.config('constants.Permissions.tags'),
-        ['only' => ['index','create', 'edit', 'update', 'destroy']]);
+        $this->middleware(
+            'permission:' . config('constants.Permissions.tags'),
+            ['only' => ['index', 'create', 'edit', 'update', 'destroy']]
+        );
     }
     /**
      * Display a listing of the resource.
@@ -24,9 +26,9 @@ class PageTagController extends Controller
     public function index(Request $request)
     {
         $tags = PageTag::with('user')
-        ->applyFilters($request->only(['status']))
-        ->latest()
-        ->get();
+            ->applyFilters($request->only(['status']))
+            ->latest()
+            ->get();
         return view('dashboard.seo.pageTags.index', compact('tags'));
     }
 
@@ -50,7 +52,7 @@ class PageTagController extends Controller
      */
     public function store(PageTagRequest $request)
     {
-        try{
+        try {
             $page_tag = new PageTag;
             $page_tag->page_name = $request->page_name;
             $page_tag->meta_title = $request->meta_title;
@@ -62,16 +64,14 @@ class PageTagController extends Controller
             if ($request->hasFile('banner_image')) {
                 $img =  $request->file('banner_image');
                 $imgExt = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->page_name).'.'.$imgExt;
+                $imageName =  Str::slug($request->page_name) . '.' . $imgExt;
                 $page_tag->addMediaFromRequest('banner_image')->usingFileName($imageName)->toMediaCollection('banners', 'bannerFiles');
             }
             $page_tag->save();
-            return redirect()->route('dashboard.page-tags.index')->with('success','Page Tag has been created successfully.');
-
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.page-tags.index')->with('error',$error->getMessage());
+            return redirect()->route('dashboard.page-tags.index')->with('success', 'Page Tag has been created successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.page-tags.index')->with('error', $error->getMessage());
         }
-
     }
 
     /**
@@ -106,27 +106,26 @@ class PageTagController extends Controller
      */
     public function update(PageTagRequest $request, PageTag $page_tag)
     {
-        try{
+        try {
             $page_tag->page_name = $request->page_name;
             $page_tag->meta_title = $request->meta_title;
             $page_tag->meta_keywords = $request->meta_keywords;
             $page_tag->meta_description = $request->meta_description;
-            $page_tag->status = $request->status;
+            //$page_tag->status = $request->status;
             $page_tag->user_id = Auth::user()->id;
             if ($request->hasFile('banner_image')) {
 
                 $page_tag->clearMediaCollection('banners');
                 $img =  $request->file('banner_image');
                 $imgExt = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->page_name).'.'.$imgExt;
+                $imageName =  Str::slug($request->page_name) . '.' . $imgExt;
                 $page_tag->addMediaFromRequest('banner_image')->usingFileName($imageName)->toMediaCollection('banners', 'bannerFiles');
             }
             $page_tag->save();
-            return redirect()->route('dashboard.page-tags.index')->with('success','Page Tag has been updated successfully.');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.page-tags.index')->with('error',$error->getMessage());
+            return redirect()->route('dashboard.page-tags.index')->with('success', 'Page Tag has been updated successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.page-tags.index')->with('error', $error->getMessage());
         }
-
     }
 
     /**
@@ -137,13 +136,12 @@ class PageTagController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             PageTag::find($id)->delete();
 
-            return redirect()->route('dashboard.page-tags.index')->with('success','Page Tag has been deleted successfully');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.page-tags.index')->with('error',$error->getMessage());
+            return redirect()->route('dashboard.page-tags.index')->with('success', 'Page Tag has been deleted successfully');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.page-tags.index')->with('error', $error->getMessage());
         }
-
     }
 }

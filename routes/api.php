@@ -36,7 +36,7 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('sellerGuideData', 'HomeController@sellerGuideData');
     Route::get('/getHomeData', 'HomeController@getHomeData');
     Route::get('/homeData', 'HomeController@homeData');
-    Route::get('/homePage/meta', 'HomeController@homeMeta');
+
     Route::get('/search', 'HomeController@search');
     Route::get('/searchR', 'HomeController@searchR');
 
@@ -127,6 +127,8 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::post('/contactUs', 'HomeController@contactUsForm')->name('contact-us');
     Route::post('/sendOtp', 'HomeController@sendOtp');
     Route::post('/verifyOtp', 'HomeController@verifyOtp');
+
+    Route::get('/meta/{pageName}', 'MetaController@homeMeta');
 });
 
 Route::namespace('App\Http\Controllers\Frontend')->group(function () {

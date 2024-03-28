@@ -512,31 +512,7 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    public function homeMeta()
-    {
-        try {
-            $pagemeta =  PageTag::where('page_name', 'home')->first();
-
-            if ($pagemeta) {
-                $title = $pagemeta->meta_title;
-                $description = $pagemeta->meta_description;
-                $keywords = $pagemeta->meta_keywords;
-            } else {
-                $title = WebsiteSetting::getSetting('website_name') ? WebsiteSetting::getSetting('website_name') : '';
-                $description = WebsiteSetting::getSetting('website_description') ? WebsiteSetting::getSetting('website_description') : '';
-                $keywords = WebsiteSetting::getSetting('website_keyword') ? WebsiteSetting::getSetting('website_keyword') : '';
-            }
-            $data = [
-                'title' => $title,
-                'meta_description' => $description,
-                'meta_keywords' => $keywords,
-            ];
-
-            return $this->success('Home Data Meta', $data, 200);
-        } catch (\Exception $exception) {
-            return $this->failure($exception->getMessage());
-        }
-    }
+    
     public function getHomeData()
     {
         try {

@@ -54,13 +54,17 @@ class PageTag extends Model implements HasMedia
     {
         return $this->belongsTo(User::class);
     }
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
     public function properties()
     {
         return $this->hasMany(Property::class);
     }
     /**
-    * FIND local scope
-    */
+     * FIND local scope
+     */
     public function scopeActive($query)
     {
         return $query->where('status', config('constants.active'));
