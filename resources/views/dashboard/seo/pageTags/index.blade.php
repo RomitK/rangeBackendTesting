@@ -22,7 +22,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <!-- <div class="card-header">
                         <div class="row float-right">
 
                             <a href="{{ route('dashboard.page-tags.create') }}" class="btn btn-block btn-primary">
@@ -31,7 +31,7 @@
                             </a>
 
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- /.card-header -->
                     <div class="card-body ">
