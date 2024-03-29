@@ -261,16 +261,16 @@ class HomeController extends Controller
     {
         try {
             // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
-            $communities = HomeCommunitiesResource::collection(DB::table('communities')
-                ->select('name', 'slug', 'banner_image', 'id')
-                ->where('status', config('constants.active'))
-                ->where('is_approved', config('constants.approved'))
-                ->where('display_on_home', 1)
-                ->whereNull('deleted_at')
-                ->limit(12)
-                ->orderByRaw('ISNULL(communityOrder)')
-                ->orderBy('communityOrder', 'asc')
-                ->get());
+            // $communities = HomeCommunitiesResource::collection(DB::table('communities')
+            //     ->select('name', 'slug', 'banner_image', 'id')
+            //     ->where('status', config('constants.active'))
+            //     ->where('is_approved', config('constants.approved'))
+            //     ->where('display_on_home', 1)
+            //     ->whereNull('deleted_at')
+            //     ->limit(12)
+            //     ->orderByRaw('ISNULL(communityOrder)')
+            //     ->orderBy('communityOrder', 'asc')
+            //     ->get());
 
             //$testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
             $testimonials =  HomeTestimonial::collection(DB::table('testimonials')
@@ -499,7 +499,7 @@ class HomeController extends Controller
 
             $data = [
                 'formattedNumbers' => $text,
-                'communities' => $communities,
+                //'communities' => $communities,
                 'projects' => $projects,
                 'newProjects' => $newProjects,
                 'testimonials' => $testimonials,
@@ -512,7 +512,7 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    
+
     public function getHomeData()
     {
         try {

@@ -9,10 +9,11 @@ use App\Models\{
     WebsiteSetting
 };
 use App\Http\Resources\{
+    HomeCommunitiesResource,
     CommunityResource,
     CommunityListResource
 };
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CommunityController extends Controller
 {
@@ -20,6 +21,19 @@ class CommunityController extends Controller
     {
         try {
             $communities = Community::select('id', 'name', 'slug')->approved()->active()->home()->limit(8)->get();
+
+            // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
+            $communities = HomeCommunitiesResource::collection(DB::table('communities')
+                ->select('name', 'slug', 'banner_image', 'id')
+                ->where('status', config('constants.active'))
+                ->where('is_approved', config('constants.approved'))
+                ->where('display_on_home', 1)
+                ->whereNull('deleted_at')
+                ->limit(12)
+                ->orderByRaw('ISNULL(communityOrder)')
+                ->orderBy('communityOrder', 'asc')
+                ->get());
+
             return $this->success('Home Communities', $communities, 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage(), $exception->getCode());
