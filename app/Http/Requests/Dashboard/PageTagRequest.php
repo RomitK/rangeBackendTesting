@@ -36,7 +36,7 @@ class PageTagRequest extends FormRequest
             case 'PATCH':
             case 'PUT': {
                     return [
-                        'page_name' => ['required', Rule::unique('page_tags')->ignore($this->page_tag)->whereNull('deleted_at'), 'max:225'],
+                        //'page_name' => ['required', Rule::unique('page_tags')->ignore($this->page_tag)->whereNull('deleted_at'), 'max:225'],
                         // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
                         'banner_image' => ['image', 'mimes:webp', 'max:2048'],
                     ];
