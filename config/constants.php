@@ -293,7 +293,7 @@ return [
         'developers' => 'Developers',
         'projects' => 'Projects',
         'luxury_properties' => 'Luxury Properties',
-        'mymortgage' => 'Mymortgage'
+        'mortgage' => 'Mortgage'
 
     ]
 ];
