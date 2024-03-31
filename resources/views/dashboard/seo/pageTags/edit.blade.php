@@ -36,7 +36,7 @@
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="name">Page Name</label>
-                                        <select class="form-control  @error('page_name') is-invalid @enderror" id="page_name" name="page_name" required >
+                                        <select class="form-control  @error('page_name') is-invalid @enderror" id="page_name" name="page_name" required disabled>
                                             @foreach (config('constants.pageTags') as $key=>$value)
                                             <option value="{{ $value }}" @if($page_tag->page_name == $value) selected @endif>{{ $value}}</option>
                                             @endforeach
