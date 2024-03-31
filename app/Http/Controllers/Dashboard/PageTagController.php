@@ -107,7 +107,10 @@ class PageTagController extends Controller
     public function update(PageTagRequest $request, PageTag $page_tag)
     {
         try {
-            $page_tag->page_name = $request->page_name;
+            if ($request->page_name) {
+                $page_tag->page_name = $request->page_name;
+            }
+
             $page_tag->meta_title = $request->meta_title;
             $page_tag->meta_keywords = $request->meta_keywords;
             $page_tag->meta_description = $request->meta_description;
@@ -121,6 +124,7 @@ class PageTagController extends Controller
                 $imageName =  Str::slug($request->page_name) . '.' . $imgExt;
                 $page_tag->addMediaFromRequest('banner_image')->usingFileName($imageName)->toMediaCollection('banners', 'bannerFiles');
             }
+            $page_tag->updated_by = Auth::user()->id;
             $page_tag->save();
             return redirect()->route('dashboard.page-tags.index')->with('success', 'Page Tag has been updated successfully.');
         } catch (\Exception $error) {
