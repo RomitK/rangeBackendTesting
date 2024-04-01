@@ -1052,11 +1052,11 @@ class HomeController extends Controller
                         Log::info('MortgageLeadJob DONE');
                         Log::info($responseData);
                         if ($response['data']) {
-                            Log::info($response['data']['mortgage_application_reference_number']);
-                            $mortgageReferenNumber = $response['data']['mortgage_application_reference_number'];
+                            Log::info($response['data']['mortgage_lead_application_reference_number']);
+                            $mortgageReferenNumber = $response['data']['mortgage_lead_application_reference_number'];
 
                             $request->merge([
-                                'mortgage_application_reference_number' => $mortgageReferenNumber,
+                                'mortgage_lead_application_reference_number' => $mortgageReferenNumber,
                             ]);
 
                             // Exclude specific fields from the message
