@@ -26,7 +26,9 @@ class Kernel extends ConsoleKernel
         //     Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
         // })->everyMinute();
 
-        $schedule->job(new WebsiteStateReportJob)->weeklyOn(1, '9:00');
+        //$schedule->job(new WebsiteStateReportJob)->weeklyOn(1, '9:00');
+
+        $schedule->job(new WebsiteStateReportJob)->everyMinute();
     }
 
     /**
