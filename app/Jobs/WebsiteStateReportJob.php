@@ -44,62 +44,66 @@ class WebsiteStateReportJob implements ShouldQueue
      */
     public function handle()
     {
-        $collection = Article::active()->approved();
+        Log::info('WebsiteStateReportJob Start');
+        try {
+            $collection = Article::active()->approved();
 
+            $medias = clone $collection;
+            $news = clone $collection;
+            $blogs = clone $collection;
+            $awards = clone $collection;
+            $celebrations = clone $collection;
 
-        $medias = clone $collection;
-        $news = clone $collection;
-        $blogs = clone $collection;
-        $awards = clone $collection;
-        $celebrations = clone $collection;
+            $propertiesCollection = Property::approved()->active();
+            $propertiesCount = clone $propertiesCollection;
+            $ready = clone $propertiesCollection;
+            $offplan = clone $propertiesCollection;
+            $rentProperties = clone $propertiesCollection;
 
-        $propertiesCollection = Property::approved()->active();
-        $propertiesCount = clone $propertiesCollection;
-        $ready = clone $propertiesCollection;
-        $offplan = clone $propertiesCollection;
-        $rentProperties = clone $propertiesCollection;
+            $data = [
+                'allMedias' => $medias->count(),
+                'types' => [
+                    'News' => $news->news()->count(),
+                    'Blogs' => $blogs->blogs()->count(),
+                    'Awards' => $awards->awards()->count(),
+                    'Celebrations' => $celebrations->celebrations()->count(),
+                ],
+                'teams' => Agent::active()->where('is_management', 0)->count(),
+                'careers' => Career::active()->count(),
+                'guides' => Guide::active()->approved()->count(),
+                'communities' => Community::active()->approved()->count(),
+                'developers' => Developer::active()->approved()->count(),
+                'projects' => Project::approved()->active()->mainProject()->count(),
+                'properties' => $propertiesCount->count(),
+                'propertiesTypes' => [
+                    'Ready' => $ready->where('completion_status_id', 286)->count(),
+                    'Offplan' => $offplan->where('completion_status_id', 287)->count(),
+                    'Rent' => $rentProperties->rent()->count()
+                ]
+            ];
 
-        $data = [
-            'allMedias' => $medias->count(),
-            'types' => [
-                'News' => $news->news()->count(),
-                'Blogs' => $blogs->blogs()->count(),
-                'Awards' => $awards->awards()->count(),
-                'Celebrations' => $celebrations->celebrations()->count(),
-            ],
-            'teams' => Agent::active()->where('is_management', 0)->count(),
-            'careers' => Career::active()->count(),
-            'guides' => Guide::active()->approved()->count(),
-            'communities' => Community::active()->approved()->count(),
-            'developers' => Developer::active()->approved()->count(),
-            'projects' => Project::approved()->active()->mainProject()->count(),
-            'properties' => $propertiesCount->count(),
-            'propertiesTypes' => [
-                'Ready' => $ready->where('completion_status_id', 286)->count(),
-                'Offplan' => $offplan->where('completion_status_id', 287)->count(),
-                'Rent' => $rentProperties->rent()->count()
-            ]
-        ];
+            Log::info($data);
 
-        Log::info($data);
+            $recipients = [
+                ['name' => 'Aqsa', 'email' => 'aqsa@xpertise.ae'],
+                // ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
+                // ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
+                // ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
+                // ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
+            ];
 
-        $recipients = [
-            ['name' => 'Aqsa', 'email' => 'aqsa@xpertise.ae'],
-            // ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
-            // ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
-            // ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
-            // ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
-        ];
+            foreach ($recipients as $recipient) {
+                $name = $recipient['name'];
+                $email = $recipient['email'];
 
-        foreach ($recipients as $recipient) {
-            $name = $recipient['name'];
-            $email = $recipient['email'];
+                $data['userName'] = $name; // Change userName for each recipient
 
-            $data['userName'] = $name; // Change userName for each recipient
-
-            Mail::send('mails.websiteStatReport', ['data' => $data], function ($message) use ($email, $name) {
-                $message->to($email, $name)->subject('Website Stat Report');
-            });
+                Mail::send('mails.websiteStatReport', ['data' => $data], function ($message) use ($email, $name) {
+                    $message->to($email, $name)->subject('Website Stat Report');
+                });
+            }
+        } catch (\Exception $error) {
+            Log::info("WebsiteStateReportJob-error" . $error->getMessage());
         }
     }
 }
