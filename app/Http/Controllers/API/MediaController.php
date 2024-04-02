@@ -35,10 +35,10 @@ class MediaController extends Controller
                 'medias',
                 [
                     'all' => MediaListResource::collection($medias->paginate(100))->response()->getData(true),
-                    'news' => MediaListResource::collection($news->where('article_type', 'News')->paginate(100))->response()->getData(true),
-                    'blogs' => MediaListResource::collection($blogs->where('article_type', 'Blogs')->paginate(100))->response()->getData(true),
-                    'awards' => MediaListResource::collection($awards->where('article_type', 'Awards')->paginate(100))->response()->getData(true),
-                    'celebrations' => MediaListResource::collection($celebrations->where('article_type', 'Celebrations')->paginate(100))->response()->getData(true),
+                    'news' => MediaListResource::collection($news->news()->paginate(100))->response()->getData(true),
+                    'blogs' => MediaListResource::collection($blogs->blogs()->paginate(100))->response()->getData(true),
+                    'awards' => MediaListResource::collection($awards->awards()->paginate(100))->response()->getData(true),
+                    'celebrations' => MediaListResource::collection($celebrations->celebrations()->paginate(100))->response()->getData(true),
                     'events' => MediaListResource::collection($events->where('article_type', 'Sales Event')->paginate(100))->response()->getData(true),
                 ],
                 200
@@ -59,7 +59,7 @@ class MediaController extends Controller
                 if ($article->meta_title) {
                     $singleArticle->meta_title = $article->meta_title;
                 } else {
-                    $singleCommunity->meta_title = WebsiteSetting::getSetting('website_name') ? WebsiteSetting::getSetting('website_name') : '';
+                    $singleArticle->meta_title = WebsiteSetting::getSetting('website_name') ? WebsiteSetting::getSetting('website_name') : '';
                 }
                 if ($article->meta_description) {
                     $singleArticle->meta_description = $article->meta_description;

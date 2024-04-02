@@ -6,6 +6,9 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Jobs\{
+    WebsiteStateReportJob
+};
 
 class Kernel extends ConsoleKernel
 {
@@ -22,6 +25,8 @@ class Kernel extends ConsoleKernel
         // $schedule->call(function () {
         //     Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
         // })->everyMinute();
+
+        $schedule->job(new WebsiteStateReportJob)->everyMinute();
     }
 
     /**

@@ -41,7 +41,7 @@ class Article extends Model  implements HasMedia
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('title')
@@ -65,62 +65,70 @@ class Article extends Model  implements HasMedia
      */
     public function getMainImageAttribute()
     {
-        if($this->getFirstMediaUrl('mainImages', 'resize')){
+        if ($this->getFirstMediaUrl('mainImages', 'resize')) {
             return $this->getFirstMediaUrl('mainImages', 'resize');
-        }else{
+        } else {
             return asset('frontend/assets/images/blog-no-image.webp');
         }
     }
-    
+
     public function getAdditionalImageAttribute()
     {
-        if($this->getFirstMediaUrl('additionalImages', 'resize')){
+        if ($this->getFirstMediaUrl('additionalImages', 'resize')) {
             return $this->getFirstMediaUrl('additionalImages', 'resize');
         }
     }
     public function getImageGalleryAttribute()
     {
         $gallery = array();
-        foreach($this->getMedia('imageGalleries')->sortBy(function ($mediaItem, $key) {  $order = $mediaItem->getCustomProperty('order'); return $order ?? PHP_INT_MAX;}) as $image){
-            if($image->hasGeneratedConversion('resize_gallery')){
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl('resize_gallery'),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
-            }else{
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl(),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
+        foreach ($this->getMedia('imageGalleries')->sortBy(function ($mediaItem, $key) {
+            $order = $mediaItem->getCustomProperty('order');
+            return $order ?? PHP_INT_MAX;
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_gallery')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_gallery'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
             }
         }
-       return $gallery;
+        return $gallery;
     }
-    
-    public function registerMediaConversions(Media $media = null) : void
+
+    public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             ->height(400)
             ->performOnCollections('mainImages')
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('additionalImages')
-             ->height(400)
+            ->height(400)
             ->nonQueued();
-        
+
         $this->addMediaConversion('resize_images')
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('imageGalleries')
             ->height(400)
             ->nonQueued();
-            
     }
 
     public function getFormattedCreatedAtAttribute($value)
@@ -139,8 +147,8 @@ class Article extends Model  implements HasMedia
         return $this->belongsTo(User::class);
     }
     /**
-    * FIND local scope
-    */
+     * FIND local scope
+     */
     public function scopeApproved($query)
     {
         return $query->where('is_approved', config('constants.approved'));
@@ -157,6 +165,22 @@ class Article extends Model  implements HasMedia
     {
         return $query->where('status', $status);
     }
+    public function scopeNews($query)
+    {
+        return $query->where('article_type', 'News');
+    }
+    public function scopeblogs($query)
+    {
+        return $query->where('article_type', 'Blogs');
+    }
+    public function scopeAwards($query)
+    {
+        return $query->where('article_type', 'Awards');
+    }
+    public function scopeCelebrations($query)
+    {
+        return $query->where('article_type', 'Celebrations');
+    }
     /**
      *
      * Filters
@@ -169,4 +193,3 @@ class Article extends Model  implements HasMedia
         }
     }
 }
-

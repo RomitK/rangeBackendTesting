@@ -843,9 +843,9 @@ class PropertyController extends Controller
             if (isset($request->category)) {
                 if ($request->category == 'rent') {
                     $categoryName = "Rent";
-                    $collection->where('category_id', 9);
+                    $collection->rent();
                 } elseif ($request->category == 'buy') {
-                    $collection->where('category_id', 8);
+                    $collection->buy();
                     $categoryName = "Buy";
                 }
             }
@@ -1040,9 +1040,9 @@ class PropertyController extends Controller
             if (isset($request->category)) {
                 if ($request->category == 'rent') {
                     $categoryName = "Rent";
-                    $collection->where('category_id', 9);
+                    $collection->rent();
                 } elseif ($request->category == 'buy') {
-                    $collection->where('category_id', 8);
+                    $collection->buy();
                     $categoryName = "Buy";
                 }
             }

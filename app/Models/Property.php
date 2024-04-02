@@ -88,10 +88,10 @@ class Property extends Model implements HasMedia
         'formattedCreatedAt',
         'formattedUpdatedAt'
     ];
-      /**
+    /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
@@ -100,7 +100,7 @@ class Property extends Model implements HasMedia
     /**
      * SET Attributes
      */
-     
+
     public function getInvoiceNumAttribute()
     {
         $position = $this->strposX($this->reference_number, "-", 1) + 1;
@@ -136,35 +136,34 @@ class Property extends Model implements HasMedia
 
         return sprintf('%07d', intval($number) + 1);
     }
-    
+
     /**
      * GET Attributes
      */
-     
-     public function getVideoAttribute()
+
+    public function getVideoAttribute()
     {
         return $this->getFirstMediaUrl('videos');
     }
-    
+
     public function getQrAttribute()
     {
         return $this->getFirstMediaUrl('qrs', 'resize_qr_images');
     }
-    
-    
-    
+
+
+
     public function getFloorplansAttribute()
     {
         $floorplans = array();
-        foreach($this->getMedia('floorplans') as $image){
-           
-            array_push($floorplans, ['id'=> $image->id, 'path'=>$image->getUrl()]);
-           
+        foreach ($this->getMedia('floorplans') as $image) {
+
+            array_push($floorplans, ['id' => $image->id, 'path' => $image->getUrl()]);
         }
-       return $floorplans;
+        return $floorplans;
     }
-    
-    
+
+
     public function getMainImageAttribute()
     {
         // $mediaItems = $this->getMedia('mainImages');
@@ -175,47 +174,55 @@ class Property extends Model implements HasMedia
         //         return $lastMediaItem->getUrl('resize');
         //     }
         // }
-        
+
         // return asset('frontend/assets/images/no-image.webp');
-    
-        if(url_exists($this->getFirstMediaUrl('mainImages', 'resize'))){
+
+        if (url_exists($this->getFirstMediaUrl('mainImages', 'resize'))) {
             return $this->getFirstMediaUrl('mainImages', 'resize');
-        }else{
+        } else {
             return asset('frontend/assets/images/no-image.webp');
         }
-        
+
         //return $this->getFirstMediaUrl('mainImages', 'resize');
     }
     public function getSubImagesAttribute()
     {
-    //     $subImages = array();
-    //     foreach($this->getMedia('subImages') as $image){
-    //         array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
-    //     }
-    //   return $subImages;
-       
-       $gallery = array();
-        foreach($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {  $order = $mediaItem->getCustomProperty('order'); return $order ?? PHP_INT_MAX; }) as $image){
-            if($image->hasGeneratedConversion('resize_images')){
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl('resize_images'),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
-            }else{
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl(),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
+        //     $subImages = array();
+        //     foreach($this->getMedia('subImages') as $image){
+        //         array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
+        //     }
+        //   return $subImages;
+
+        $gallery = array();
+        foreach ($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {
+            $order = $mediaItem->getCustomProperty('order');
+            return $order ?? PHP_INT_MAX;
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_images')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_images'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
             }
         }
-       return $gallery;
-       
+        return $gallery;
     }
-    public function registerMediaConversions(Media $media = null) : void
+    public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
@@ -224,15 +231,15 @@ class Property extends Model implements HasMedia
             // ->watermarkPosition(Manipulations::POSITION_CENTER)
             // ->watermarkHeight(20, Manipulations::UNIT_PERCENT)
             // ->watermarkOpacity(60)
-            
+
             // ->watermark(public_path('frontend/assets/images/range_blue.png'))
             // ->watermarkPosition(Manipulations::POSITION_CENTER)
             // ->watermarkHeight(15, Manipulations::UNIT_PERCENT)
             // ->watermarkOpacity(50)
             ->performOnCollections('mainImages')
             ->nonQueued();
-            
-            
+
+
         $this->addMediaConversion('resize_images')
             ->format(Manipulations::FORMAT_WEBP)
             ->height(400)
@@ -242,9 +249,9 @@ class Property extends Model implements HasMedia
             ->watermarkOpacity(50)
             ->performOnCollections('subImages')
             ->nonQueued();
-            
-            
-        
+
+
+
         // $this->addMediaConversion('resize')
         //     ->format(Manipulations::FORMAT_WEBP)
         //     //->width(800)
@@ -263,9 +270,9 @@ class Property extends Model implements HasMedia
         //     ->height(800)
         //     ->performOnCollections('subImages')
         //     ->nonQueued();
-        
-        
-        
+
+
+
         // $this->addMediaConversion('resize_images')
         //     ->format(Manipulations::FORMAT_WEBP)
         //     //->width(800)
@@ -275,14 +282,14 @@ class Property extends Model implements HasMedia
         //     ->watermarkPadding(80, 20, Manipulations::UNIT_PIXELS) 
         //     ->watermarkHeight(8, Manipulations::UNIT_PERCENT)
         //     ->watermarkOpacity(60)
-            
+
         //     ->performOnCollections('subImages')
         //     ->nonQueued();
 
-            // $this->addMediaConversion('resize_qr_images')
-            // ->format(Manipulations::FORMAT_WEBP)
-            // ->performOnCollections('qrs')
-            // ->nonQueued();
+        // $this->addMediaConversion('resize_qr_images')
+        // ->format(Manipulations::FORMAT_WEBP)
+        // ->performOnCollections('qrs')
+        // ->nonQueued();
     }
     // public function getFloorPlanAttribute()
     // {
@@ -296,12 +303,12 @@ class Property extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('saleOffers');
     }
-    
+
     public function getFormattedCreatedAtAttribute($value)
     {
         return Carbon::parse($this->created_at)->format('d m Y');
     }
-    
+
     public function getFormattedUpdatedAtAttribute($value)
     {
         return Carbon::parse($this->updated_at)->format('d m Y');
@@ -309,8 +316,9 @@ class Property extends Model implements HasMedia
     /**
      * FIND Relationship
      */
-    public function approval(){
-        return $this->belongsTo(User::class,'approval_id');
+    public function approval()
+    {
+        return $this->belongsTo(User::class, 'approval_id');
     }
     public function updatedBy()
     {
@@ -340,8 +348,8 @@ class Property extends Model implements HasMedia
     {
         return $this->belongsTo(Project::class, 'sub_project_id', 'id');
     }
-    
-    
+
+
     public function communities()
     {
         return $this->belongsTo(Community::class, 'community_id', 'id');
@@ -365,7 +373,7 @@ class Property extends Model implements HasMedia
     }
     public function propertygallery()
     {
-        return $this->hasMany(PropertyGallery::class,'property_id', 'id');
+        return $this->hasMany(PropertyGallery::class, 'property_id', 'id');
     }
 
     // public function propertygallery()
@@ -390,14 +398,15 @@ class Property extends Model implements HasMedia
     {
         return $this->hasMany(PropertyDetail::class, 'property_id', 'id');
     }
-    public function imagegalleries(){
+    public function imagegalleries()
+    {
         return $this->hasMany(Imagegallery::class, 'property_id', 'id');
     }
-     /**
+    /**
      * FIND local scope
      */
-     
-     public function scopeApproved($query)
+
+    public function scopeApproved($query)
     {
         return $query->where('is_approved', config('constants.approved'));
     }
@@ -412,6 +421,14 @@ class Property extends Model implements HasMedia
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+    public function scopeBuy($query)
+    {
+        return $query->where('category_id', 8);
+    }
+    public function scopeRent($query)
+    {
+        return $query->where('category_id', 9);
     }
     /**
      *
