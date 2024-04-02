@@ -86,10 +86,10 @@ class WebsiteStateReportJob implements ShouldQueue
 
             $recipients = [
                 ['name' => 'Aqsa', 'email' => 'aqsa@xpertise.ae'],
-                // ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
-                // ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
-                // ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
-                // ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
+                ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
+                ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
+                ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
+                ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
             ];
 
             foreach ($recipients as $recipient) {

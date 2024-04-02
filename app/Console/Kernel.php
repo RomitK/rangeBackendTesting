@@ -22,11 +22,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->call(function () {
-            Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
-        })->everyMinute();
+        // $schedule->call(function () {
+        //     Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
+        // })->everyMinute();
 
-        $schedule->job(new WebsiteStateReportJob)->everyMinute();
+        $schedule->job(new WebsiteStateReportJob)->weeklyOn(1, '9:00');
     }
 
     /**
