@@ -54,8 +54,6 @@
                 <th style="border: 1px solid #000; padding: 8px;">Team</th>
                 <th style="border: 1px solid #000; padding: 8px;">{{ $data['teams'] }}</th>
             </tr>
-
-            Agent
         </tbody>
 
 
