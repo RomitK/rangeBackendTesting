@@ -57,7 +57,7 @@ class WebsiteStateReportJob implements ShouldQueue
         $propertiesCount = clone $propertiesCollection;
         $ready = clone $propertiesCollection;
         $offplan = clone $propertiesCollection;
-        $rent = clone $propertiesCollection;
+        $rentProperties = clone $propertiesCollection;
 
         $data = [
             'allMedias' => $medias->count(),
@@ -77,7 +77,7 @@ class WebsiteStateReportJob implements ShouldQueue
             'propertiesTypes' => [
                 'Ready' => $ready->where('completion_status_id', 286)->count(),
                 'Offplan' => $offplan->where('completion_status_id', 287)->count(),
-                'Rent' => $rent->rent()->count()
+                'Rent' => $rentProperties->rent()->count()
             ]
         ];
 
