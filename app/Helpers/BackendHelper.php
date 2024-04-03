@@ -141,35 +141,3 @@ if (!function_exists('getFrontentRouteInfo')) {
         return $frontendRoutes;
     }
 }
-if (!function_exists('CRMCampaignManagementCRM')) {
-    function CRMCampaignManagementCRM($data)
-    {
-        Log::info('CRMLeadJob Start');
-        try {
-
-            $response = Http::withHeaders([
-                'authorization-token' => config('crm_token'),
-            ])->post(config('app.crm_url'), $data);
-
-
-            if ($response->successful()) {
-                // Request was successful, handle the response
-                $responseData = $response->json(); // If expecting JSON response
-                Log::info('CRM DONE');
-                Log::info($responseData);
-                // Process the response data here
-            } else {
-                // Request failed, handle the error
-                $errorCode = $response->status();
-                $errorMessage = $response->body(); // Get the error message
-                // Handle the error here
-
-                Log::info('CRM ERROR DONE');
-                Log::info($errorMessage);
-            }
-        } catch (\Exception $exception) {
-            Log::info('CRM ERROR DONE');
-            Log::info($exception->getMessage());
-        }
-    }
-}
