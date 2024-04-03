@@ -141,8 +141,8 @@ if (!function_exists('getFrontentRouteInfo')) {
         return $frontendRoutes;
     }
 }
-if (!function_exists('CRMCampaignManagement')) {
-    function CRMCampaignManagement($data)
+if (!function_exists('CRMCampaignManagementCRM')) {
+    function CRMCampaignManagementCRM($data)
     {
         Log::info('CRMLeadJob Start');
         try {
