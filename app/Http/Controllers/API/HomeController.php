@@ -1122,7 +1122,7 @@ class HomeController extends Controller
                 if ($request->formName == "ResidentialSales&Leasing") {
                     $data = $this->CRMCampaignManagement($data, 256, 461, 2517);
                     Log::info($data);
-                    CRMLeadJob::dispatch($data);
+                    $this->CRMLeadJob($data);
                 }
                 if ($request->formName == "CommercialSales&Leasing") {
                     $data = $this->CRMCampaignManagement($data, 256, 461, 2518);

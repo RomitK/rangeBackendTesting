@@ -1,10 +1,14 @@
 <?php
-if(!function_exists('activeChildNavBar')){
+
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+
+if (!function_exists('activeChildNavBar')) {
     function activeParentNavBar($parentNav, $className)
     {
 
-        if($parentNav == 'realEstate'){
-            $childElements= [
+        if ($parentNav == 'realEstate') {
+            $childElements = [
 
                 'dashboard.projects',
                 'dashboard.properties',
@@ -23,41 +27,39 @@ if(!function_exists('activeChildNavBar')){
                 'dashboard.subCommunities',
                 'dashboard.floorPlans',
             ];
-
-        }elseif($parentNav == 'leadManagement'){
-            $childElements= [
+        } elseif ($parentNav == 'leadManagement') {
+            $childElements = [
                 'dashboard.leads',
             ];
-        }elseif($parentNav == 'contentManagement'){
-            $childElements= [
+        } elseif ($parentNav == 'contentManagement') {
+            $childElements = [
                 'dashboard.articles',
                 'dashboard.latestNews',
                 'dashboard.video-gallery'
             ];
-        }elseif($parentNav == 'websiteSettings'){
-            $childElements= [
+        } elseif ($parentNav == 'websiteSettings') {
+            $childElements = [
                 'dashboard.bulk-sms',
                 'dashboard.recaptcha-site-key',
                 'dashboard.social-info',
                 'dashboard.basic-info'
             ];
-        }elseif($parentNav == 'SEO'){
-            $childElements= [
+        } elseif ($parentNav == 'SEO') {
+            $childElements = [
                 'dashboard.page-tags',
             ];
-        }elseif($parentNav == 'userManagement'){
-            $childElements= [
+        } elseif ($parentNav == 'userManagement') {
+            $childElements = [
                 'dashboard.users',
                 'dashboard.roles',
             ];
-        }elseif($parentNav == 'SEO'){
-            $childElements= [
+        } elseif ($parentNav == 'SEO') {
+            $childElements = [
                 'dashboard.page-tags',
             ];
-        }
-        elseif($parentNav == 'pageContents'){
+        } elseif ($parentNav == 'pageContents') {
 
-            $childElements= [
+            $childElements = [
                 'contents',
                 'faqs',
                 'dashboard.banners',
@@ -84,44 +86,90 @@ if(!function_exists('activeChildNavBar')){
             ];
         }
 
-        foreach($childElements as $child){
+        foreach ($childElements as $child) {
 
-            if(str_contains(Route::currentRouteName(), $child) == 1)
-            {
+            if (str_contains(Route::currentRouteName(), $child) == 1) {
                 return $className;
             }
         }
     }
 }
-if(!function_exists('activeChildNavBar')){
+if (!function_exists('activeChildNavBar')) {
     function activeChildNavBar($routeName)
     {
         return (str_contains(Route::currentRouteName(), $routeName) == 1) ? 'active' : '';
     }
 }
-if(!function_exists('getFrontentRouteInfo')){
+if (!function_exists('getFrontentRouteInfo')) {
     function getFrontentRouteInfo()
     {
         $frontendRoutes = [];
         $allRoutes = Route::getRoutes();
-        foreach( $allRoutes as $key=>$route){
-            if($route->action['namespace'] == 'App\Http\Controllers\Frontend'){
-                array_push($frontendRoutes,$route);
+        foreach ($allRoutes as $key => $route) {
+            if ($route->action['namespace'] == 'App\Http\Controllers\Frontend') {
+                array_push($frontendRoutes, $route);
             }
         }
         return $frontendRoutes;
     }
 }
 
-function get_pagination(){
+function get_pagination()
+{
 
-  $pagination = [
-                  25  => 'Show up to 25 items',
-                  50  => '50 items',
-                  100 => '100 items',
-                  200 => '200 items',
-                  500 => '500 items'
-                ];
-  return $pagination;
+    $pagination = [
+        25  => 'Show up to 25 items',
+        50  => '50 items',
+        100 => '100 items',
+        200 => '200 items',
+        500 => '500 items'
+    ];
+    return $pagination;
 }
-?>
+
+
+if (!function_exists('getFrontentRouteInfo')) {
+    function getFrontentRouteInfo()
+    {
+        $frontendRoutes = [];
+        $allRoutes = Route::getRoutes();
+        foreach ($allRoutes as $key => $route) {
+            if ($route->action['namespace'] == 'App\Http\Controllers\Frontend') {
+                array_push($frontendRoutes, $route);
+            }
+        }
+        return $frontendRoutes;
+    }
+}
+if (!CRMCampaignManagement('getFrontentRouteInfo')) {
+    function CRMCampaignManagement($data)
+    {
+        Log::info('CRMLeadJob Start');
+        try {
+
+            $response = Http::withHeaders([
+                'authorization-token' => config('crm_token'),
+            ])->post(config('app.crm_url'), $data);
+
+
+            if ($response->successful()) {
+                // Request was successful, handle the response
+                $responseData = $response->json(); // If expecting JSON response
+                Log::info('CRM DONE');
+                Log::info($responseData);
+                // Process the response data here
+            } else {
+                // Request failed, handle the error
+                $errorCode = $response->status();
+                $errorMessage = $response->body(); // Get the error message
+                // Handle the error here
+
+                Log::info('CRM ERROR DONE');
+                Log::info($errorMessage);
+            }
+        } catch (\Exception $exception) {
+            Log::info('CRM ERROR DONE');
+            Log::info($exception->getMessage());
+        }
+    }
+}
