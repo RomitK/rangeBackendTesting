@@ -37,7 +37,7 @@ class CRMLeadJob implements ShouldQueue
         try {
 
             $response = Http::withHeaders([
-                'authorization-token' => config('crm_token'),
+                'authorization-token' => '3MPHJP0BC63435345341',
             ])->post(config('app.crm_url'), $this->data);
 
 
