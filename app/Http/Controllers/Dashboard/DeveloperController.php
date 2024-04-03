@@ -44,7 +44,7 @@ class DeveloperController extends Controller
         }
 
 
-        $collection = Developer::with('user')->approved();
+        $collection = Developer::with('user');
 
         if (isset($request->status)) {
             $collection->where('status', $request->status);
