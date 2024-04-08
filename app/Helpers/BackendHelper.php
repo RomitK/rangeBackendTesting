@@ -2,6 +2,19 @@
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+
+use App\Models\{
+    Project,
+    Community,
+    Property,
+    Developer,
+    Article,
+    Career,
+    Guide,
+    Agent
+};
 
 if (!function_exists('activeChildNavBar')) {
     function activeParentNavBar($parentNav, $className)
@@ -139,5 +152,64 @@ if (!function_exists('getFrontentRouteInfo')) {
             }
         }
         return $frontendRoutes;
+    }
+}
+
+if (!function_exists('sendWebsiteStatReport')) {
+    function sendWebsiteStatReport($recipients)
+    {
+        Log::info($recipients);
+        try {
+            $collection = Article::active()->approved();
+
+            $medias = clone $collection;
+            $news = clone $collection;
+            $blogs = clone $collection;
+            $awards = clone $collection;
+            $celebrations = clone $collection;
+
+            $propertiesCollection = Property::approved()->active();
+            $propertiesCount = clone $propertiesCollection;
+            $ready = clone $propertiesCollection;
+            $offplan = clone $propertiesCollection;
+            $rentProperties = clone $propertiesCollection;
+
+            $data = [
+                'allMedias' => $medias->count(),
+                'types' => [
+                    'News' => $news->news()->count(),
+                    'Blogs' => $blogs->blogs()->count(),
+                    'Awards' => $awards->awards()->count(),
+                    'Celebrations' => $celebrations->celebrations()->count(),
+                ],
+                'teams' => Agent::active()->where('is_management', 0)->count(),
+                'careers' => Career::active()->count(),
+                'guides' => Guide::active()->approved()->count(),
+                'communities' => Community::active()->approved()->count(),
+                'developers' => Developer::active()->approved()->count(),
+                'projects' => Project::approved()->active()->mainProject()->count(),
+                'properties' => $propertiesCount->count(),
+                'propertiesTypes' => [
+                    'Ready' => $ready->buy()->where('completion_status_id', 286)->count(),
+                    'Offplan' => $offplan->buy()->where('completion_status_id', 287)->count(),
+                    'Rent' => $rentProperties->rent()->count()
+                ]
+            ];
+
+            Log::info($data);
+
+            foreach ($recipients as $recipient) {
+                $name = $recipient['name'];
+                $email = $recipient['email'];
+
+                $data['userName'] = $name; // Change userName for each recipient
+
+                Mail::send('mails.websiteStatReport', ['data' => $data], function ($message) use ($email, $name) {
+                    $message->to($email, $name)->subject('Website Stat Report');
+                });
+            }
+        } catch (\Exception $error) {
+            Log::info("WeeklyWebsiteStateReportJob-error" . $error->getMessage());
+        }
     }
 }

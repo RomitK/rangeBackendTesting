@@ -7,7 +7,8 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Jobs\{
-    WebsiteStateReportJob
+    WeeklyWebsiteStateReportJob,
+    MonthlyWebsiteStateReportJob
 };
 
 class Kernel extends ConsoleKernel
@@ -26,8 +27,9 @@ class Kernel extends ConsoleKernel
         //     Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
         // })->everyMinute();
 
-        $schedule->job(new WebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
-
+        $schedule->job(new WeeklyWebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
+        $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
+        
         //$schedule->job(new WebsiteStateReportJob)->everyFiveMinutes();
     }
 
