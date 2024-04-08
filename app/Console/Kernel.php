@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new WebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
 
-        $schedule->job(new WebsiteStateReportJob)->everyFiveMinutes();
+        //$schedule->job(new WebsiteStateReportJob)->everyFiveMinutes();
     }
 
     /**
