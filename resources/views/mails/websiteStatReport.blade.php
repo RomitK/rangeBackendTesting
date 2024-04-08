@@ -7,7 +7,7 @@
 
 <body>
     <p>Hi {{$data['userName']}}, </p>
-    <p>The last report that was shared with you today contains some mistakes(offplan, ready, rent count), Please find the stat which are live on the website</p>
+    <p>Please find the stat which are live on the website</p>
 
     <table style="border-collapse: collapse;">
 
