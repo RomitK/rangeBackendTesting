@@ -7,7 +7,7 @@
 
 <body>
     <p>Hi {{$data['userName']}}, </p>
-    <p>Please find the stat which are live on the website</p>
+    <p>The last report that was shared with you today contains some mistakes(offplan, ready, rent count), Please find the stat which are live on the website</p>
 
     <table style="border-collapse: collapse;">
 
@@ -37,7 +37,7 @@
             </tr>
 
             <tr>
-                <th style="border: 1px solid #000; padding: 8px;">careers</th>
+                <th style="border: 1px solid #000; padding: 8px;">Careers</th>
                 <th style="border: 1px solid #000; padding: 8px;">{{ $data['careers'] }}</th>
             </tr>
 
