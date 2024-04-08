@@ -76,8 +76,8 @@ class WebsiteStateReportJob implements ShouldQueue
                 'projects' => Project::approved()->active()->mainProject()->count(),
                 'properties' => $propertiesCount->count(),
                 'propertiesTypes' => [
-                    'Ready' => $ready->where('completion_status_id', 286)->count(),
-                    'Offplan' => $offplan->where('completion_status_id', 287)->count(),
+                    'Ready' => $ready->buy()->where('completion_status_id', 286)->count(),
+                    'Offplan' => $offplan->buy()->where('completion_status_id', 287)->count(),
                     'Rent' => $rentProperties->rent()->count()
                 ]
             ];
@@ -86,10 +86,10 @@ class WebsiteStateReportJob implements ShouldQueue
 
             $recipients = [
                 ['name' => 'Aqsa', 'email' => 'aqsa@xpertise.ae'],
-                ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
-                ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
-                ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
-                ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
+                // ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
+                // ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
+                // ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
+                // ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
             ];
 
             foreach ($recipients as $recipient) {
