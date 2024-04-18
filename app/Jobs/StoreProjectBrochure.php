@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use App\Models\{
     Property,
     Amenity,
@@ -103,6 +104,9 @@ class StoreProjectBrochure implements ShouldQueue
                 $project->brochure_link = $project->brochure;
                 $project->updated_brochure = 1;
                 $project->save();
+
+                Cache::forget('homeProjects');
+                Cache::forget('homeProjectsFormattedPrice');
             }
             Log::info("Project Brchure has been updated successfully.");
         } catch (\Exception $error) {
