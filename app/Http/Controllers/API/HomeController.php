@@ -364,59 +364,59 @@ class HomeController extends Controller
                     'mapProjects' => $mapProjects
                 ], 24 * 60 * 60); // 24 hours
             }
+            if (Cache::has('homeProjectsFormattedPrice')) {
+                $formattedNumbers = Cache::get('homeProjectsFormattedPrice');
+            } else {
 
+                // Fetch results from the database
+                $results = DB::select("
+                        SELECT starting_price
+                        FROM projects
+                        WHERE deleted_at IS NULL
+                        AND status = 'active'
+                        AND is_approved = 'approved'
+                        AND starting_price IS NOT NULL
+                        AND starting_price REGEXP '^[0-9]+$'
+                        GROUP BY starting_price
+                        ORDER BY starting_price;
+                    ");
 
+                // Initialize arrays to store starting prices in words
+                $thousands = [];
+                $lakhs = [];
+                $crores = [];
+                $millions = [];
+                $billions = [];
 
-
-
-
-
-            // Fetch results from the database
-            $results = DB::select("
-                 SELECT starting_price
-                 FROM projects
-                 WHERE deleted_at IS NULL
-                 AND status = 'active'
-                 AND is_approved = 'approved'
-                 AND starting_price IS NOT NULL
-                 AND starting_price REGEXP '^[0-9]+$'
-                 GROUP BY starting_price
-                 ORDER BY starting_price;
-             ");
-
-            // Initialize arrays to store starting prices in words
-            $thousands = [];
-            $lakhs = [];
-            $crores = [];
-            $millions = [];
-            $billions = [];
-
-            // Convert each starting price to words and categorize them
-            foreach ($results as $row) {
-                $startingPrice = (int)$row->starting_price;
-                if ($startingPrice >= 1000000000) {
-                    $billions[] = $this->convertToWords($startingPrice);
-                } elseif ($startingPrice >= 10000000) {
-                    $crores[] = $this->convertToWords($startingPrice);
-                } elseif ($startingPrice >= 100000) {
-                    $lakhs[] = $this->convertToWords($startingPrice);
-                } elseif ($startingPrice >= 1000) {
-                    $thousands[] = $this->convertToWords($startingPrice);
-                } elseif ($startingPrice >= 1000000) {
-                    $millions[] = $this->convertToWords($startingPrice);
+                // Convert each starting price to words and categorize them
+                foreach ($results as $row) {
+                    $startingPrice = (int)$row->starting_price;
+                    if ($startingPrice >= 1000000000) {
+                        $billions[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 10000000) {
+                        $crores[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 100000) {
+                        $lakhs[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 1000) {
+                        $thousands[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 1000000) {
+                        $millions[] = $this->convertToWords($startingPrice);
+                    }
                 }
-            }
 
-            $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
+                $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
 
-            $text = [];
-            foreach ($combinedArray as $row) {
-                $text[] =  $this->convertToNumber($row);
+                $formattedNumbers = [];
+                foreach ($combinedArray as $row) {
+                    $formattedNumbers[] =  $this->convertToNumber($row);
+                }
+                $formattedNumbers = sort($formattedNumbers);
+
+                Cache::put('homeProjectsFormattedPrice', $formattedNumbers, 24 * 60 * 60); // 24 hours
             }
-            sort($text);
 
             $data = [
-                'formattedNumbers' => $text,
+                'formattedNumbers' => $formattedNumbers,
                 'projects' => $projects,
                 'newProjects' => $newProjects,
                 'mapProjects' => $mapProjects,

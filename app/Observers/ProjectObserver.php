@@ -11,5 +11,6 @@ class ProjectObserver
     public function updated(Project $project)
     {
         Cache::forget('homeProjects');
+        Cache::forget('homeProjectsFormattedPrice');
     }
 }
