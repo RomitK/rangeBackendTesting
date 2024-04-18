@@ -346,7 +346,12 @@
                                                 <i class="fas fa-file"></i>
                                                 Duplicate
                                             </a>
-
+                                            @can(config('constants.Permissions.seo'))
+                                            <a class="btn btn-secondary btn-sm" href="{{ route('dashboard.property.meta', $property->id) }}">
+                                                <i class="fas fa-database"></i>
+                                                Meta Details
+                                            </a>
+                                            @endcan
                                             <a class="btn btn-info btn-sm" href="{{ route('dashboard.properties.edit', $property->id) }}">
                                                 <i class="fas fa-pencil-alt"></i>
                                                 Edit

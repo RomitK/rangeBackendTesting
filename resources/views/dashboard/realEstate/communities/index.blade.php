@@ -202,7 +202,13 @@
                                                         <i class="fas fa-eye"></i>
                                                         View
                                                     </a>
-                                                    
+                                                    @can(config('constants.Permissions.seo'))
+                                                    <a class="btn btn-secondary btn-sm" href="{{ route('dashboard.community.meta', $community->id) }}">
+                                                        <i class="fas fa-database"></i>
+                                                        Meta Details
+                                                    </a>
+                                                    @endcan
+
                                                     <a class="btn btn-info btn-sm"
                                                         href="{{ route('dashboard.communities.edit', $community->id) }}">
                                                         <i class="fas fa-pencil-alt"></i>

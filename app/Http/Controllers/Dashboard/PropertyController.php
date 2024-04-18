@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use App\Http\Requests\Dashboard\PropertyRequest;
+use App\Http\Requests\Dashboard\{
+    PropertyRequest,
+    PropertyMetaRequest
+};
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Log;
@@ -33,8 +36,8 @@ use App\Jobs\{
     StorePropertySaleOffer
 };
 use Carbon\Carbon;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use PDF;
 
 class PropertyController extends Controller
@@ -780,6 +783,35 @@ class PropertyController extends Controller
             return redirect()->route('dashboard.properties.index')->with('success', 'Property has been deleted successfully');
         } catch (\Exception $error) {
             return redirect()->route('dashboard.properties.index')->with('error', $error->getMessage());
+        }
+    }
+
+    public function meta(Property $property)
+    {
+        return view('dashboard.realEstate.properties.meta', compact('property'));
+    }
+    public function updateMeta(PropertyMetaRequest $request, Property $property)
+    {
+        DB::beginTransaction();
+        try {
+            $property->slug = $request->slug;
+            $property->meta_title = $request->meta_title;
+            $property->meta_description = $request->meta_description;
+            $property->meta_keywords = $request->meta_keywords;
+            $property->save();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Property Meta Detail has been created successfully',
+                'redirect' => route('dashboard.properties.index'),
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.properties.index'),
+            ]);
         }
     }
     public function mediaDestroy(Property $property, $media)

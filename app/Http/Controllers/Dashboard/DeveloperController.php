@@ -4,7 +4,12 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\Dashboard\DeveloperRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\Dashboard\{
+    DeveloperRequest,
+    DeveloperMetaRequest
+};
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Str;
 use App\Models\{
@@ -13,8 +18,6 @@ use App\Models\{
     MetaDetail,
     Project
 };
-use Auth;
-use DB;
 
 class DeveloperController extends Controller
 {
@@ -357,7 +360,34 @@ class DeveloperController extends Controller
             return redirect()->route('dashboard.developers.edit', $developer->id)->with('error', $error->getMessage());
         }
     }
+    public function meta(Developer $developer)
+    {
+        return view('dashboard.realEstate.developers.meta', compact('developer'));
+    }
+    public function updateMeta(DeveloperMetaRequest $request, Developer $developer)
+    {
+        DB::beginTransaction();
+        try {
+            $developer->slug = $request->slug;
+            $developer->meta_title = $request->meta_title;
+            $developer->meta_description = $request->meta_description;
+            $developer->meta_keywords = $request->meta_keywords;
+            $developer->save();
+            DB::commit();
 
+            return response()->json([
+                'success' => true,
+                'message' => 'Developer Meta Detail has been created successfully',
+                'redirect' => route('dashboard.developers.index'),
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.developers.index'),
+            ]);
+        }
+    }
     public function details(Developer $developer)
     {
         return view('dashboard.realEstate.developers.details.index', compact('developer'));

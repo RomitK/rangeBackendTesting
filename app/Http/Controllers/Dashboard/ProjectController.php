@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Dashboard\Project\{
     ProjectRequest,
-    ProjectPaymentRequest
+    ProjectPaymentRequest,
+};
+use App\Http\Requests\Dashboard\{
+    ProjectMetaRequest
 };
 use Illuminate\Support\Str;
 use App\Models\{
@@ -36,9 +39,9 @@ use App\Models\{
 use App\Jobs\{
     StoreProjectBrochure
 };
-use Auth;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use PDF;
 
 class ProjectController extends Controller
@@ -897,6 +900,36 @@ class ProjectController extends Controller
             return redirect()->route('dashboard.projects.index')->with('error', $error->getMessage());
         }
     }
+
+    public function meta(Project $project)
+    {
+        return view('dashboard.realEstate.projects.meta', compact('project'));
+    }
+    public function updateMeta(ProjectMetaRequest $request, Project $project)
+    {
+        DB::beginTransaction();
+        try {
+            $project->slug = $request->slug;
+            $project->meta_title = $request->meta_title;
+            $project->meta_description = $request->meta_description;
+            $project->meta_keywords = $request->meta_keywords;
+            $project->save();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Project Meta Detail has been created successfully',
+                'redirect' => route('dashboard.projects.index'),
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.projects.index'),
+            ]);
+        }
+    }
+
     public function mediaDestroy(Project $project, $media)
     {
         try {

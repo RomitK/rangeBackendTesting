@@ -272,6 +272,11 @@
                                                 <i class="fas fa-eye"></i>
                                                 View
                                             </a>
+                                            <a class="btn btn-secondary btn-sm" href="{{ route('dashboard.project.meta', $project->id) }}">
+                                                <i class="fas fa-database"></i>
+                                                Meta Details
+                                            </a>
+
                                             <!--@if($project->updated_brochure ==0 && in_array(Auth::user()->role, config('constants.isAdmin'))) @endif-->
                                             @if($project->updated_brochure ==0 && in_array(Auth::user()->role, config('constants.isAdmin')))
                                             <a class="btn btn-dark btn-sm" href="{{ route('dashboard.projects.updateBrochure', $project->id) }}" target="_blanket">
@@ -289,11 +294,12 @@
                                                 <i class="fas fa-tasks"></i>
                                                 Payment Plan({{$project->mPaymentPlans->count()}})
                                             </a>
-
+                                            @can(config('constants.Permissions.seo'))
                                             <a class="btn btn-warning btn-sm" href="{{ route('dashboard.projects.subProjects', $project->id) }}">
                                                 <i class="fas fa-project-diagram"></i>
                                                 Unit ({{ $project->subProjects->count() }})
                                             </a>
+                                            @endcan
 
                                             <a class="btn btn-info btn-sm" href="{{ route('dashboard.projects.edit', $project->id) }}">
                                                 <i class="fas fa-pencil-alt"></i>

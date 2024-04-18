@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\View;
 use App\Models\WebsiteSetting;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,7 +34,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrap();
         Validator::extend('slug', function ($attribute, $value, $parameters, $validator) {
-            return preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)$/', $value);
+            //dd(Str::slug($value));
+            return $value === Str::slug($value);
         });
         Paginator::useBootstrap();
 
