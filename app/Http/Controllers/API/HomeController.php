@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Cache;
 use App\Models\{
     Project,
     Community,
@@ -257,42 +257,50 @@ class HomeController extends Controller
 
         return $total;
     }
+
+
     public function homeData()
     {
         try {
             // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
-            $communities = HomeCommunitiesResource::collection(DB::table('communities')
-                ->select('name', 'slug', 'banner_image', 'id')
-                ->where('status', config('constants.active'))
-                ->where('is_approved', config('constants.approved'))
-                ->where('display_on_home', 1)
-                ->whereNull('deleted_at')
-                ->limit(12)
-                ->orderByRaw('ISNULL(communityOrder)')
-                ->orderBy('communityOrder', 'asc')
-                ->get());
+            $communities = Cache::remember('homeCommunities', 24 * 60 * 60, function () {
+                return  HomeCommunitiesResource::collection(DB::table('communities')
+                    ->select('name', 'slug', 'banner_image', 'id')
+                    ->where('status', config('constants.active'))
+                    ->where('is_approved', config('constants.approved'))
+                    ->where('display_on_home', 1)
+                    ->whereNull('deleted_at')
+                    ->limit(12)
+                    ->orderByRaw('ISNULL(communityOrder)')
+                    ->orderBy('communityOrder', 'asc')
+                    ->get());
+            });
+
+
 
             //$testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
-            $testimonials =  HomeTestimonial::collection(DB::table('testimonials')
-                ->select('id', 'feedback', 'client_name', 'rating')
-                ->where('status', config('constants.active'))
-                ->whereNull('deleted_at')
-                ->orderBy('created_at', 'desc')
-                ->get());
-
+            $testimonials =  Cache::remember('homeTestimonials', 24 * 60 * 60, function () {
+                return HomeTestimonial::collection(DB::table('testimonials')
+                    ->select('id', 'feedback', 'client_name', 'rating')
+                    ->where('status', config('constants.active'))
+                    ->whereNull('deleted_at')
+                    ->orderBy('created_at', 'desc')
+                    ->get());
+            });
 
             //$developers = DeveloperListResource::collection(Developer::active()->approved()->home()->orderByRaw('ISNULL(developerOrder)')->orderBy('developerOrder', 'asc')->get());
 
-            $developers = DeveloperListResource::collection(DB::table('developers')
-                ->select('id', 'logo_image', 'slug', 'name', 'developerOrder')
-                ->where('status', config('constants.active'))
-                ->where('is_approved', config('constants.approved'))
-                ->where('display_on_home', 1)
-                ->whereNull('deleted_at')
-                ->orderByRaw('ISNULL(developerOrder)')
-                ->orderBy('developerOrder', 'asc')
-                ->get());
-
+            $developers = Cache::remember('homeDevelopers', 24 * 60 * 60, function () {
+                return DeveloperListResource::collection(DB::table('developers')
+                    ->select('id', 'logo_image', 'slug', 'name', 'developerOrder')
+                    ->where('status', config('constants.active'))
+                    ->where('is_approved', config('constants.approved'))
+                    ->where('display_on_home', 1)
+                    ->whereNull('deleted_at')
+                    ->orderByRaw('ISNULL(developerOrder)')
+                    ->orderBy('developerOrder', 'asc')
+                    ->get());
+            });
             //$allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
 
             $allProjects =  DB::table('projects')
@@ -345,113 +353,7 @@ class HomeController extends Controller
             $mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
 
 
-            // Function to convert number to words
-            function convertToWords($number)
-            {
-                // Define arrays for number names
-                $ones = array(
-                    0 => 'zero', 1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five', 6 => 'six', 7 => 'seven', 8 => 'eight', 9 => 'nine',
-                    10 => 'ten', 11 => 'eleven', 12 => 'twelve', 13 => 'thirteen', 14 => 'fourteen', 15 => 'fifteen', 16 => 'sixteen', 17 => 'seventeen', 18 => 'eighteen', 19 => 'nineteen'
-                );
-                $tens = array(
-                    0 => 'zero', 1 => 'ten', 2 => 'twenty', 3 => 'thirty', 4 => 'forty', 5 => 'fifty', 6 => 'sixty', 7 => 'seventy', 8 => 'eighty', 9 => 'ninety'
-                );
 
-                // If the number is less than 20, return its name directly from $ones array
-                if ($number < 20) {
-                    return $ones[$number];
-                }
-
-                // If the number is greater than or equal to 100 crore, process crore part
-                if ($number >= 10000000) {
-                    $crore = floor($number / 10000000);
-                    $remaining = $number % 10000000;
-                    $croreStr = convertToWords($crore) . ' crore ';
-                    return $croreStr;
-                }
-
-                // If the number is greater than or equal to 1 million, process million part
-                if ($number >= 1000000) {
-                    $million = floor($number / 1000000);
-                    $remaining = $number % 1000000;
-                    $millionStr = convertToWords($million) . ' million ';
-                    return $millionStr;
-                }
-
-                // If the number is greater than or equal to 1 lakh, process lakh part
-                if ($number >= 100000) {
-                    $lakh = floor($number / 100000);
-                    $remaining = $number % 100000;
-                    $lakhStr = convertToWords($lakh) . ' lakh ';
-                    return $lakhStr;
-                }
-
-                // If the number is greater than or equal to 1 thousand, process thousand part
-                if ($number >= 1000) {
-                    $thousand = floor($number / 1000);
-                    $remaining = $number % 1000;
-                    $thousandStr = convertToWords($thousand) . ' thousand ';
-                    return $thousandStr;
-                }
-
-                // If the number is greater than 100, process hundred part
-                if ($number >= 100) {
-                    $hundred = floor($number / 100);
-                    $remaining = $number % 100;
-                    $hundredStr = convertToWords($hundred) . ' hundred ';
-                    return $hundredStr;
-                }
-
-                // If the number is greater than 20 and not a multiple of 10, process tens and ones parts
-                $ten = floor($number / 10);
-                $one = $number % 10;
-                return $tens[$ten] . ' ' . $ones[$one];
-            }
-
-
-            // Function to convert words to number
-            function convertToNumber($word)
-            {
-                // Define arrays for number names
-                $ones = array(
-                    'zero' => 0, 'one' => 1, 'two' => 2, 'three' => 3, 'four' => 4, 'five' => 5, 'six' => 6, 'seven' => 7, 'eight' => 8, 'nine' => 9,
-                    'ten' => 10, 'eleven' => 11, 'twelve' => 12, 'thirteen' => 13, 'fourteen' => 14, 'fifteen' => 15, 'sixteen' => 16, 'seventeen' => 17, 'eighteen' => 18, 'nineteen' => 19,
-                    'twenty' => 20, 'thirty' => 30, 'forty' => 40, 'fifty' => 50, 'sixty' => 60, 'seventy' => 70, 'eighty' => 80, 'ninety' => 90
-                );
-
-                // Split the word by spaces and hyphens
-                $words = preg_split('/[\s-]+/', $word);
-
-                $total = 0;
-                $current = 0;
-
-                foreach ($words as $word) {
-                    if (isset($ones[$word])) {
-                        $current += $ones[$word];
-                    } elseif ($word == 'hundred') {
-                        $current *= 100;
-                    } elseif ($word == 'thousand') {
-                        $total += $current * 1000;
-                        $current = 0;
-                    } elseif ($word == 'lakh') {
-                        $total += $current * 100000;
-                        $current = 0;
-                    } elseif ($word == 'crore') {
-                        $total += $current * 10000000;
-                        $current = 0;
-                    } elseif ($word == 'million') {
-                        $total += $current * 1000000;
-                        $current = 0;
-                    } elseif ($word == 'billion') {
-                        $total += $current * 1000000000;
-                        $current = 0;
-                    }
-                }
-
-                $total += $current;
-
-                return $total;
-            }
 
             // Fetch results from the database
             $results = DB::select("
@@ -499,11 +401,11 @@ class HomeController extends Controller
 
             $data = [
                 'formattedNumbers' => $text,
-                'communities' => $communities,
                 'projects' => $projects,
                 'newProjects' => $newProjects,
-                'testimonials' => $testimonials,
                 'mapProjects' => $mapProjects,
+                'communities' => $communities,
+                'testimonials' => $testimonials,
                 'developers' => $developers,
             ];
 
