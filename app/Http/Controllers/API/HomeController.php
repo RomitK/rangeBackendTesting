@@ -302,55 +302,71 @@ class HomeController extends Controller
                     ->get());
             });
             //$allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
+            if (Cache::has('homeProjects')) {
+                $data = Cache::get('homeProjects');
 
-            $allProjects =  DB::table('projects')
-                ->select(
-                    'projects.id',
-                    'projects.title',
-                    'projects.slug',
-                    'projects.banner_image',
-                    'projects.projectOrder',
-                    'projects.address',
-                    'projects.completion_date',
-                    'projects.address_latitude',
-                    'projects.address_longitude',
-                    'accommodations.name as accommodation_name',
-                    'completion_statuses.name as completion_statuses_name'
-                )
-                ->leftJoin('accommodations', 'projects.accommodation_id', '=', 'accommodations.id')
-                ->leftJoin('completion_statuses', 'projects.completion_status_id', '=', 'completion_statuses.id')
-                ->where('projects.is_parent_project', true)
-                ->where('projects.is_approved', config('constants.approved'))
-                ->where('projects.status', config('constants.active'))
-                ->where('projects.is_display_home', 1)
-                ->whereNull('projects.deleted_at');
+                $projects = $data['projects'];
+                $newProjects = $data['newProjects'];
+                $mapProjects = $data['mapProjects'];
+            } else {
+                $allProjects =  DB::table('projects')
+                    ->select(
+                        'projects.id',
+                        'projects.title',
+                        'projects.slug',
+                        'projects.banner_image',
+                        'projects.projectOrder',
+                        'projects.address',
+                        'projects.completion_date',
+                        'projects.address_latitude',
+                        'projects.address_longitude',
+                        'accommodations.name as accommodation_name',
+                        'completion_statuses.name as completion_statuses_name'
+                    )
+                    ->leftJoin('accommodations', 'projects.accommodation_id', '=', 'accommodations.id')
+                    ->leftJoin('completion_statuses', 'projects.completion_status_id', '=', 'completion_statuses.id')
+                    ->where('projects.is_parent_project', true)
+                    ->where('projects.is_approved', config('constants.approved'))
+                    ->where('projects.status', config('constants.active'))
+                    ->where('projects.is_display_home', 1)
+                    ->whereNull('projects.deleted_at');
 
-            $displayProjects = clone $allProjects;
-            $displayProjects = $displayProjects->orderByRaw('ISNULL(projects.projectOrder)')->orderBy('projects.projectOrder', 'asc')->take(8);
+                $displayProjects = clone $allProjects;
+                $displayProjects = $displayProjects->orderByRaw('ISNULL(projects.projectOrder)')->orderBy('projects.projectOrder', 'asc')->take(8);
 
-            $projects = HomeProjectResource::collection($displayProjects->get());
+                $projects = HomeProjectResource::collection($displayProjects->get());
 
-            $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('projects.title', 'asc')->get());
+                $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('projects.title', 'asc')->get());
 
-            // Retrieve sub-projects using a recursive Common Table Expression (CTE)
-            $subProjects = DB::table('projects')
-                ->select('projects.id as sub_project_id', 'projects.area', 'projects.bedrooms', 'projects.starting_price', 'projects.parent_project_id')
-                ->where('projects.is_parent_project', false) // Fetch only sub-projects
-                ->where('projects.is_approved', config('constants.approved'))
-                ->where('projects.status', config('constants.active'))
-                ->whereNull('projects.deleted_at')
-                ->get();
+                // Retrieve sub-projects using a recursive Common Table Expression (CTE)
+                $subProjects = DB::table('projects')
+                    ->select('projects.id as sub_project_id', 'projects.area', 'projects.bedrooms', 'projects.starting_price', 'projects.parent_project_id')
+                    ->where('projects.is_parent_project', false) // Fetch only sub-projects
+                    ->where('projects.is_approved', config('constants.approved'))
+                    ->where('projects.status', config('constants.active'))
+                    ->whereNull('projects.deleted_at')
+                    ->get();
 
-            $allProjectsResult = $allProjects->get();
-            $projectsWithSubProjects = [];
+                $allProjectsResult = $allProjects->get();
+                $projectsWithSubProjects = [];
 
-            foreach ($allProjectsResult as $project) {
-                $projectsWithSubProjects[$project->id] = (array) $project;
-                $projectsWithSubProjects[$project->id]['sub_projects'] = $subProjects->where('parent_project_id', $project->id)->values()->all();
-                $projectsWithSubProjects[$project->id]['has_sub_projects'] = count($projectsWithSubProjects[$project->id]['sub_projects']) > 0;
+                foreach ($allProjectsResult as $project) {
+                    $projectsWithSubProjects[$project->id] = (array) $project;
+                    $projectsWithSubProjects[$project->id]['sub_projects'] = $subProjects->where('parent_project_id', $project->id)->values()->all();
+                    $projectsWithSubProjects[$project->id]['has_sub_projects'] = count($projectsWithSubProjects[$project->id]['sub_projects']) > 0;
+                }
+
+                $mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
+
+                Cache::put('homeProjects', [
+                    'projects' => $projects,
+                    'newProjects' => $newProjects,
+                    'mapProjects' => $mapProjects
+                ], 24 * 60 * 60); // 24 hours
             }
 
-            $mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
+
+
 
 
 

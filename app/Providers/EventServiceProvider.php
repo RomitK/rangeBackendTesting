@@ -9,12 +9,14 @@ use Illuminate\Support\Facades\Event;
 use App\Models\{
     Community,
     Developer,
-    Testimonial
+    Testimonial,
+    Project
 };
 use App\Observers\{
     CommunityObserver,
     DeveloperObserver,
-    TestimonialObserver
+    TestimonialObserver,
+    ProjectObserver
 };
 
 class EventServiceProvider extends ServiceProvider
@@ -40,6 +42,7 @@ class EventServiceProvider extends ServiceProvider
         Community::observe(CommunityObserver::class);
         Developer::observe(DeveloperObserver::class);
         Testimonial::observe(TestimonialObserver::class);
+        Project::observe(ProjectObserver::class);
     }
 
     /**
