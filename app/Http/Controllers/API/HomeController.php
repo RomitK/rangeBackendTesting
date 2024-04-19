@@ -1381,7 +1381,7 @@ class HomeController extends Controller
                     $link = PageContent::WherePageName(config('constants.home.name'))->first();
                     $link = $link->brochure;
 
-                    $data = $this->CRMCampaignManagement($data, 265, 479, 2547);
+                    $data = $this->CRMCampaignManagement($data, 270, 490, 2582);
                     CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'GoldenVisaGuideForm') {
 
