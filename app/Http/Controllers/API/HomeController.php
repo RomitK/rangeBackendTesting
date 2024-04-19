@@ -1140,7 +1140,8 @@ class HomeController extends Controller
 
                             // Add additional details to the message
                             $data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
-                            $data = $this->CRMCampaignManagement($data, 263, 470, 2537);
+                            //$data = $this->CRMCampaignManagement($data, 263, 470, 2537);
+                            $data = $this->CRMCampaignManagement($data, 270, 494, 2586);
                             CRMLeadJob::dispatch($data);
                         }
                         // Process the response data here
