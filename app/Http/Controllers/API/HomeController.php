@@ -1165,30 +1165,31 @@ class HomeController extends Controller
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "CallBackRequestForm") {
-                    $data = $this->CRMCampaignManagement($data, 254, 458, 2514);
-                    // CRMLeadJob::dispatch($data);
+                    //$data = $this->CRMCampaignManagement($data, 254, 458, 2514);
+                    $data = $this->CRMCampaignManagement($data, 270, 491, 2583);
+                    CRMLeadJob::dispatch($data);
 
 
-                    $response = Http::withHeaders([
-                        'authorization-token' => config('crm_token'),
-                    ])->post(config('app.crm_url'), $data);
+                    // $response = Http::withHeaders([
+                    //     'authorization-token' => config('crm_token'),
+                    // ])->post(config('app.crm_url'), $data);
 
 
-                    if ($response->successful()) {
-                        // Request was successful, handle the response
-                        $responseData = $response->json(); // If expecting JSON response
-                        Log::info('CRM DONE');
-                        Log::info($responseData);
-                        // Process the response data here
-                    } else {
-                        // Request failed, handle the error
-                        $errorCode = $response->status();
-                        $errorMessage = $response->body(); // Get the error message
-                        // Handle the error here
+                    // if ($response->successful()) {
+                    //     // Request was successful, handle the response
+                    //     $responseData = $response->json(); // If expecting JSON response
+                    //     Log::info('CRM DONE');
+                    //     Log::info($responseData);
+                    //     // Process the response data here
+                    // } else {
+                    //     // Request failed, handle the error
+                    //     $errorCode = $response->status();
+                    //     $errorMessage = $response->body(); // Get the error message
+                    //     // Handle the error here
 
-                        Log::info('CRM ERROR DONE');
-                        Log::info($errorMessage);
-                    }
+                    //     Log::info('CRM ERROR DONE');
+                    //     Log::info($errorMessage);
+                    // }
                 }
 
                 if ($request->formName == "ResidentialSales&Leasing") {
