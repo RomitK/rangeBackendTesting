@@ -434,11 +434,7 @@ class HomeController extends Controller
     {
         try {
 
-            return $this->success('Home Data', Cache::remember('homeDataCopy', 24 * 60 * 60, function () {
-
-
-                return $data = [];
-            }), 200);
+            return $this->success('Home Data',  [], 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }
