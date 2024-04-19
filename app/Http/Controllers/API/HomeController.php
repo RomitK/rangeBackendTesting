@@ -430,6 +430,159 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
+    public function homeDataCopy()
+    {
+        try {
+
+            return $this->success('Home Data', Cache::remember('homeData', 24 * 60 * 60, function () {
+                // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
+                $communities =  HomeCommunitiesResource::collection(DB::table('communities')
+                    ->select('name', 'slug', 'banner_image', 'id')
+                    ->where('status', config('constants.active'))
+                    ->where('is_approved', config('constants.approved'))
+                    ->where('display_on_home', 1)
+                    ->whereNull('deleted_at')
+                    ->limit(12)
+                    ->orderByRaw('ISNULL(communityOrder)')
+                    ->orderBy('communityOrder', 'asc')
+                    ->get());
+
+
+
+
+                //$testimonials =  HomeTestimonial::collection(Testimonial::select()->active()->latest()->get());
+                $testimonials =  HomeTestimonial::collection(DB::table('testimonials')
+                    ->select('id', 'feedback', 'client_name', 'rating')
+                    ->where('status', config('constants.active'))
+                    ->whereNull('deleted_at')
+                    ->orderBy('created_at', 'desc')
+                    ->get());
+
+
+                //$developers = DeveloperListResource::collection(Developer::active()->approved()->home()->orderByRaw('ISNULL(developerOrder)')->orderBy('developerOrder', 'asc')->get());
+
+                $developers =  DeveloperListResource::collection(DB::table('developers')
+                    ->select('id', 'logo_image', 'slug', 'name', 'developerOrder')
+                    ->where('status', config('constants.active'))
+                    ->where('is_approved', config('constants.approved'))
+                    ->where('display_on_home', 1)
+                    ->whereNull('deleted_at')
+                    ->orderByRaw('ISNULL(developerOrder)')
+                    ->orderBy('developerOrder', 'asc')
+                    ->get());
+
+                //$allProjects = Project::with(['accommodation', 'subProjects', 'completionStatus'])->mainProject()->approved()->active()->home();
+
+                $allProjects =  DB::table('projects')
+                    ->select(
+                        'projects.id',
+                        'projects.title',
+                        'projects.slug',
+                        'projects.banner_image',
+                        'projects.projectOrder',
+                        'projects.address',
+                        'projects.completion_date',
+                        'projects.address_latitude',
+                        'projects.address_longitude',
+                        'accommodations.name as accommodation_name',
+                        'completion_statuses.name as completion_statuses_name'
+                    )
+                    ->leftJoin('accommodations', 'projects.accommodation_id', '=', 'accommodations.id')
+                    ->leftJoin('completion_statuses', 'projects.completion_status_id', '=', 'completion_statuses.id')
+                    ->where('projects.is_parent_project', true)
+                    ->where('projects.is_approved', config('constants.approved'))
+                    ->where('projects.status', config('constants.active'))
+                    ->where('projects.is_display_home', 1)
+                    ->whereNull('projects.deleted_at');
+
+                $displayProjects = clone $allProjects;
+                $displayProjects = $displayProjects->orderByRaw('ISNULL(projects.projectOrder)')->orderBy('projects.projectOrder', 'asc')->take(8);
+
+                $projects = HomeProjectResource::collection($displayProjects->get());
+
+                $newProjects = ProjectOptionResource::collection($allProjects->OrderBy('projects.title', 'asc')->get());
+
+                // Retrieve sub-projects using a recursive Common Table Expression (CTE)
+                $subProjects = DB::table('projects')
+                    ->select('projects.id as sub_project_id', 'projects.area', 'projects.bedrooms', 'projects.starting_price', 'projects.parent_project_id')
+                    ->where('projects.is_parent_project', false) // Fetch only sub-projects
+                    ->where('projects.is_approved', config('constants.approved'))
+                    ->where('projects.status', config('constants.active'))
+                    ->whereNull('projects.deleted_at')
+                    ->get();
+
+                $allProjectsResult = $allProjects->get();
+                $projectsWithSubProjects = [];
+
+                foreach ($allProjectsResult as $project) {
+                    $projectsWithSubProjects[$project->id] = (array) $project;
+                    $projectsWithSubProjects[$project->id]['sub_projects'] = $subProjects->where('parent_project_id', $project->id)->values()->all();
+                    $projectsWithSubProjects[$project->id]['has_sub_projects'] = count($projectsWithSubProjects[$project->id]['sub_projects']) > 0;
+                }
+
+                $mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
+
+                // Fetch results from the database
+                $results = DB::select("
+                    SELECT starting_price
+                    FROM projects
+                    WHERE deleted_at IS NULL
+                    AND status = 'active'
+                    AND is_approved = 'approved'
+                    AND starting_price IS NOT NULL
+                    AND starting_price REGEXP '^[0-9]+$'
+                    GROUP BY starting_price
+                    ORDER BY starting_price;
+                ");
+
+                // Initialize arrays to store starting prices in words
+                $thousands = [];
+                $lakhs = [];
+                $crores = [];
+                $millions = [];
+                $billions = [];
+
+                // Convert each starting price to words and categorize them
+                foreach ($results as $row) {
+                    $startingPrice = (int)$row->starting_price;
+                    if ($startingPrice >= 1000000000) {
+                        $billions[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 10000000) {
+                        $crores[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 100000) {
+                        $lakhs[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 1000) {
+                        $thousands[] = $this->convertToWords($startingPrice);
+                    } elseif ($startingPrice >= 1000000) {
+                        $millions[] = $this->convertToWords($startingPrice);
+                    }
+                }
+
+                $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
+
+                $formattedNumbers = [];
+                foreach ($combinedArray as $row) {
+                    $formattedNumbers[] =  $this->convertToNumber($row);
+                }
+                $formattedNumbers = sort($formattedNumbers);
+
+
+
+                return $data = [
+                    'formattedNumbers' => $formattedNumbers,
+                    'projects' => $projects,
+                    'newProjects' => $newProjects,
+                    'mapProjects' => $mapProjects,
+                    'communities' => $communities,
+                    'testimonials' => $testimonials,
+                    'developers' => $developers,
+                ];
+            }), 200);
+        } catch (\Exception $exception) {
+            return $this->failure($exception->getMessage());
+        }
+    }
+
     public function homeData()
     {
         try {
