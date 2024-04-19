@@ -1217,7 +1217,8 @@ class HomeController extends Controller
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "GoldenVisaForm") {
-                    $data = $this->CRMCampaignManagement($data, 257, 462, 2523);
+                    // $data = $this->CRMCampaignManagement($data, 257, 462, 2523);
+                    $data = $this->CRMCampaignManagement($data, 270, 493, 2585);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "sellContactForm") {
