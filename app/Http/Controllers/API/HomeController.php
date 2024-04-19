@@ -430,15 +430,6 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    public function homeDataCopy()
-    {
-        try {
-
-            return $this->success('Home Data',  [], 200);
-        } catch (\Exception $exception) {
-            return $this->failure($exception->getMessage());
-        }
-    }
 
     public function homeData()
     {

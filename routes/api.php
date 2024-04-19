@@ -36,9 +36,6 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('sellerGuideData', 'HomeController@sellerGuideData');
     Route::get('/getHomeData', 'HomeController@getHomeData');
     Route::get('/homeData', 'HomeController@homeData');
-    Route::get('/homeDataCopy', 'HomeController@homeDataCopy');
-
-
 
     Route::get('/homeCommunities', 'CommunityController@getHomeCommunities');
 
