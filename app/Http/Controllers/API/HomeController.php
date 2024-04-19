@@ -1155,12 +1155,13 @@ class HomeController extends Controller
                     }
                 }
                 if ($request->formName == "FooterContactForm") {
-                    $data = $this->CRMCampaignManagement($data, 1, 1, 1);
+                    $data = $this->CRMCampaignManagement($data, 270, 490, 2580);
+                    CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "bookACall") {
                     $data['message'] = "Page Url: " . $request->page . ", Date:" . $request->date . " , Time:" . $request->time . " , Message:" . $request->message;
 
-                    $data = $this->CRMCampaignManagement($data, 265, 479, 2546);
+                    $data = $this->CRMCampaignManagement($data, 270, 490, 2581);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "CallBackRequestForm") {
