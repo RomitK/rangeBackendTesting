@@ -434,7 +434,7 @@ class HomeController extends Controller
     {
         try {
 
-            return $this->success('Home Data', Cache::remember('homeData', 24 * 60 * 60, function () {
+            return $this->success('Home Data', Cache::remember('homeDataCopy', 24 * 60 * 60, function () {
                 // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
                 $communities =  HomeCommunitiesResource::collection(DB::table('communities')
                     ->select('name', 'slug', 'banner_image', 'id')
