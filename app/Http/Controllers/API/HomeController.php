@@ -1194,27 +1194,33 @@ class HomeController extends Controller
                 }
 
                 if ($request->formName == "ResidentialSales&Leasing") {
-                    $data = $this->CRMCampaignManagement($data, 256, 461, 2517);
+                    //$data = $this->CRMCampaignManagement($data, 256, 461, 2517);
+                    $data = $this->CRMCampaignManagement($data, 270, 492, '', '', true, $request->formName, $request->formName);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "CommercialSales&Leasing") {
-                    $data = $this->CRMCampaignManagement($data, 256, 461, 2518);
+                    $data = $this->CRMCampaignManagement($data, 270, 492, '', '', true, $request->formName, $request->formName);
+                    //$data = $this->CRMCampaignManagement($data, 256, 461, 2518);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "Property/PortfolioManagement") {
-                    $data = $this->CRMCampaignManagement($data, 256, 461, 2519);
+                    $data = $this->CRMCampaignManagement($data, 270, 492, '', '', true, $request->formName, $request->formName);
+                    //$data = $this->CRMCampaignManagement($data, 256, 461, 2519);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "HolidayHomes") {
-                    $data = $this->CRMCampaignManagement($data, 256, 461, 2520);
+                    $data = $this->CRMCampaignManagement($data, 270, 492, '', '', true, $request->formName, $request->formName);
+                    //$data = $this->CRMCampaignManagement($data, 256, 461, 2520);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "MortgageServices") {
-                    $data = $this->CRMCampaignManagement($data, 256, 461, 2521);
+                    $data = $this->CRMCampaignManagement($data, 270, 492, '', '', true, $request->formName, $request->formName);
+                    //$data = $this->CRMCampaignManagement($data, 256, 461, 2521);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "InvestmentConsultancy") {
-                    $data = $this->CRMCampaignManagement($data, 256, 461, 2522);
+                    $data = $this->CRMCampaignManagement($data, 270, 492, '', '', true, $request->formName, $request->formName);
+                    //$data = $this->CRMCampaignManagement($data, 256, 461, 2522);
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "GoldenVisaForm") {
@@ -1227,9 +1233,6 @@ class HomeController extends Controller
                     CRMLeadJob::dispatch($data);
                 }
             }
-
-
-
 
             // Log::info("Form-" . $request->formName . "Data-");
             // Log::info($data);
@@ -1250,13 +1253,14 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '')
+    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '', $subSourceReference = '')
     {
         $data["campaignId"] = $campaignId;
         $data["sourceId"] = $sourceId;
         $data["subSourceId"] = $subSourceId;
         $data['needToCreateSubSource'] = $needToCreateSubSource;
         $data['subSourceName'] = $subSourceName;
+        $data['reference'] = $subSourceReference;
         // Check if $agentEmail is empty, assign default value if so
         if (empty($agentEmail)) {
             $agentEmail = 'ian@xpertise.ae';
