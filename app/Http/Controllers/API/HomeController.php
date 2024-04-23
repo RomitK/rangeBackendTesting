@@ -1254,7 +1254,7 @@ class HomeController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
-    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '', $subSourceReference = '')
+    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '', $subSourceReference = '', $requestFormName = '')
     {
         $data["campaignId"] = $campaignId;
         $data["sourceId"] = $sourceId;
@@ -1262,6 +1262,7 @@ class HomeController extends Controller
         $data['needToCreateSubSource'] = $needToCreateSubSource;
         $data['subSourceName'] = $subSourceName;
         $data['reference'] = $subSourceReference;
+        $data['requestFormName'] = $requestFormName;
         // Check if $agentEmail is empty, assign default value if so
         if (empty($agentEmail)) {
             $agentEmail = 'ian@xpertise.ae';
@@ -1426,8 +1427,8 @@ class HomeController extends Controller
                     }
 
                     $data['message'] = $request->formName;
-                    $data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
-
+                    //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
+                    $data = $this->CRMCampaignManagement($data, 270, 498, '', '', true, $property->name, $property->reference_number, $request->formName);
                     Log::info($data);
                     CRMLeadJob::dispatch($data);
                 }
