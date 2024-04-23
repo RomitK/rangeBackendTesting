@@ -1428,7 +1428,13 @@ class HomeController extends Controller
 
                     $data['message'] = $request->formName;
                     //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
-                    $data = $this->CRMCampaignManagement($data, 270, 498, '', '', true, $property->name, $property->reference_number, $request->formName);
+                    $email = $property->agent ? $property->agent->email : '';
+
+                    if ($email == 'lester@range.ae') {
+                        $email = "";
+                    }
+                    $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
+
                     Log::info($data);
                     CRMLeadJob::dispatch($data);
                 }
