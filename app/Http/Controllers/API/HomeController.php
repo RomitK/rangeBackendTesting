@@ -1426,7 +1426,7 @@ class HomeController extends Controller
                         $link = $property->brochure;
                     }
 
-                    $data['message'] = $request->formName;
+                    $data['message'] = "Property URL-" . $property->slug;
                     //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
                     $email = $property->agent ? $property->agent->email : '';
 
