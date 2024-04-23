@@ -1413,7 +1413,10 @@ class HomeController extends Controller
                 } elseif ($request->formName == 'projectBrochure') {
                     $project = Project::where('slug', $request->project)->first();
                     $link = $project->brochure;
-                    $data = $this->CRMCampaignManagement($data, 266, 480, "", '', true, $project->title);
+                    //$data = $this->CRMCampaignManagement($data, 266, 480, "", '', true, $project->title);
+
+                    $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $request->title, $project->reference_number);
+
                     Log::info($data);
                     CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
