@@ -1229,7 +1229,8 @@ class HomeController extends Controller
                     CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "sellContactForm") {
-                    $data = $this->CRMCampaignManagement($data, 258, 463, 2524);
+                    //$data = $this->CRMCampaignManagement($data, 258, 463, 2524);
+                    $data = $this->CRMCampaignManagement($data, 270, 496, '', '', true, $request->formName, $request->formName);
                     CRMLeadJob::dispatch($data);
                 }
             }
@@ -1401,9 +1402,10 @@ class HomeController extends Controller
                 } elseif ($request->formName == 'InvestmentGuideForm') {
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->propertiesGuide;
-                } elseif ($request->formName == 'SellerGuideDownloadForm') {
+                } elseif ($request->formName == 'SellerGuideDownload') {
 
-                    $data = $this->CRMCampaignManagement($data, 258, 463, 2527);
+                    //$data = $this->CRMCampaignManagement($data, 258, 463, 2527);
+                    $data = $this->CRMCampaignManagement($data, 270, 496, '', '', true, $request->formName, $request->formName);
                     CRMLeadJob::dispatch($data);
 
                     $link = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
