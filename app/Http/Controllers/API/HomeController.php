@@ -1415,7 +1415,7 @@ class HomeController extends Controller
                     $link = $project->brochure;
                     //$data = $this->CRMCampaignManagement($data, 266, 480, "", '', true, $project->title);
 
-                    $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $request->title, $project->reference_number);
+                    $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
 
                     Log::info($data);
                     CRMLeadJob::dispatch($data);
