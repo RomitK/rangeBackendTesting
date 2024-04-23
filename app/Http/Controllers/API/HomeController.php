@@ -1095,7 +1095,7 @@ class HomeController extends Controller
                     'email' => $request->email,
                     'name' => $request->name,
                     'phone' => $request->phone,
-                    'message' => "Page Url:" . $request->page . " Message-" . $request->message,
+                    'message' => "Message-" . $request->message,
                     'agentEmail' =>  'ian@xpertise.ae',
 
                 ];
@@ -1139,7 +1139,7 @@ class HomeController extends Controller
                             })->implode(", ");
 
                             // Add additional details to the message
-                            $data['message'] = "Page Url: " . $request->page . ", " . $messageDetails;
+                            $data['message'] = $messageDetails;
                             //$data = $this->CRMCampaignManagement($data, 263, 470, 2537);
                             $data = $this->CRMCampaignManagement($data, 270, 494, 2586);
                             CRMLeadJob::dispatch($data);
