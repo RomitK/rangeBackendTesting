@@ -47,6 +47,7 @@ class Agent extends Model implements HasMedia
      */
     protected $appends = [
         'image',
+        'additionalImage',
         'video',
         'formattedCreatedAt',
         'firstName'
@@ -88,6 +89,18 @@ class Agent extends Model implements HasMedia
             return asset('frontend/assets/images/no-user.webp');
         }
     }
+
+    public function getAdditionalImageAttribute()
+    {
+        // return $this->getFirstMediaUrl('images', 'resize');
+
+        if ($this->getFirstMediaUrl('additional_images', 'resize')) {
+            return $this->getFirstMediaUrl('additional_images', 'resize');
+        } else {
+            return asset('frontend/assets/images/no-user.webp');
+        }
+    }
+
     public function getFirstNameAttribute($value)
     {
         return strtok($this->name, " ");

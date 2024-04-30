@@ -20,7 +20,7 @@ class AgentController extends Controller
 {
     function __construct()
     {
-        $this->middleware('permission:'.config('constants.Permissions.teams'), ['only' => ['index','create', 'edit', 'update', 'destroy']]);
+        $this->middleware('permission:' . config('constants.Permissions.teams'), ['only' => ['index', 'create', 'edit', 'update', 'destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -31,7 +31,7 @@ class AgentController extends Controller
     {
         $agents = Agent::with('user')
             ->applyFilters($request->only(['status']))
-            ->orderBy('id','desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         return view('dashboard.realEstate.agents.index', compact('agents'));
@@ -50,7 +50,7 @@ class AgentController extends Controller
         $communities = Community::active()->latest()->get();
         $projects = Project::mainProject()->active()->latest()->get();
 
-        return view('dashboard.realEstate.agents.create', compact('projects','communities','developers','languages','services'));
+        return view('dashboard.realEstate.agents.create', compact('projects', 'communities', 'developers', 'languages', 'services'));
     }
 
     /**
@@ -61,7 +61,7 @@ class AgentController extends Controller
      */
     public function store(AgentRequest $request)
     {
-        try{
+        try {
             $agent = new Agent;
             $agent->name = $request->name;
             $agent->status = $request->status;
@@ -87,51 +87,57 @@ class AgentController extends Controller
             if ($request->hasFile('image')) {
                 $img =  $request->file('image');
                 $imgExt = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name).'.'.$imgExt;
+                $imageName =  Str::slug($request->name) . '.' . $imgExt;
                 $agent->addMediaFromRequest('image')->usingFileName($imageName)->withResponsiveImages()->toMediaCollection('images', 'agentFiles');
             }
-            
+            if ($request->hasFile('additional_image')) {
+                $img =  $request->file('additional_image');
+                $imgExt = $img->getClientOriginalExtension();
+                $imageName =  Str::slug($request->name) . '.' . $imgExt;
+                $agent->addMediaFromRequest('additional_image')->usingFileName($imageName)->withResponsiveImages()->toMediaCollection('additional_images', 'agentFiles');
+            }
+
+
             if ($request->hasFile('video')) {
                 $video =  $request->file('video');
                 $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->title).'.'.$ext;
+                $videoName =  Str::slug($request->title) . '.' . $ext;
                 $agent->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'agentFiles');
             }
-            
-            if(in_array(Auth::user()->role, config('constants.isAdmin'))){
-                $agent->is_approved = config('constants.approved' );
+
+            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
+                $agent->is_approved = config('constants.approved');
                 $agent->approval_id = Auth::user()->id;
-                
-            }else{
-                $agent->is_approved = config('constants.requested' );
+            } else {
+                $agent->is_approved = config('constants.requested');
             }
             $agent->updated_by = Auth::user()->id;
-            
+
             $agent->save();
-            if($request->has('languageIds')){
+            if ($request->has('languageIds')) {
                 $agent->languages()->attach($request->languageIds);
             }
-            if($request->has('serviceIds')){
+            if ($request->has('serviceIds')) {
                 $agent->services()->attach($request->serviceIds);
             }
-            if($request->has('communityIds')){
+            if ($request->has('communityIds')) {
                 $agent->communities()->attach($request->communityIds);
             }
-            if($request->has('developerIds')){
+            if ($request->has('developerIds')) {
                 $agent->developers()->attach($request->developerIds);
             }
-            if($request->has('projectIds')){
+            if ($request->has('projectIds')) {
                 $agent->projects()->attach($request->projectIds);
             }
             return response()->json([
                 'success' => true,
-                'message'=> 'Agent has been created successfully.',
+                'message' => 'Agent has been created successfully.',
                 'redirect' => route('dashboard.agents.index'),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route('dashboard.agents.index'),
             ]);
         }
@@ -161,7 +167,7 @@ class AgentController extends Controller
         $developers = Developer::active()->latest()->get();
         $communities = Community::active()->latest()->get();
         $projects = Project::mainProject()->active()->latest()->get();
-        return view('dashboard.realEstate.agents.edit',compact('projects','developers','communities','agent','languages','services'));
+        return view('dashboard.realEstate.agents.edit', compact('projects', 'developers', 'communities', 'agent', 'languages', 'services'));
     }
 
     /**
@@ -173,7 +179,7 @@ class AgentController extends Controller
      */
     public function update(AgentRequest $request, Agent $agent)
     {
-        try{
+        try {
             $agent->name = $request->name;
             $agent->generateSlug();
             $agent->status = $request->status;
@@ -201,62 +207,70 @@ class AgentController extends Controller
                 $img =  $request->file('image');
                 $imgExt = $img->getClientOriginalExtension();
 
-                $imageName =  Str::slug($request->name).'.'.$imgExt;
+                $imageName =  Str::slug($request->name) . '.' . $imgExt;
                 $agent->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'agentFiles');
             }
-            
+
+
+            if ($request->hasFile('additional_image')) {
+                $agent->clearMediaCollection('additional_image');
+                $img =  $request->file('additional_image');
+                $imgExt = $img->getClientOriginalExtension();
+                $imageName =  Str::slug($request->name) . '.' . $imgExt;
+                $agent->addMediaFromRequest('additional_image')->usingFileName($imageName)->withResponsiveImages()->toMediaCollection('additional_images', 'agentFiles');
+            }
+
+
             if ($request->hasFile('video')) {
                 $agent->clearMediaCollection('videos');
                 $video =  $request->file('video');
                 $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->title).'.'.$ext;
+                $videoName =  Str::slug($request->title) . '.' . $ext;
                 $agent->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'agentFiles');
             }
-            
-            if(in_array(Auth::user()->role, config('constants.isAdmin'))){
+
+            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
                 $agent->approval_id = Auth::user()->id;
-                
-                if(in_array($request->is_approved, ["approved", "rejected"]) ){
+
+                if (in_array($request->is_approved, ["approved", "rejected"])) {
                     $agent->is_approved = $request->is_approved;
                 }
-            }else{
+            } else {
                 $agent->is_approved = "requested";
                 $agent->approval_id = null;
             }
             $agent->updated_by = Auth::user()->id;
-            
+
             $agent->save();
-            if($request->has('languageIds')){
+            if ($request->has('languageIds')) {
                 $agent->languages()->detach();
                 $agent->languages()->attach($request->languageIds);
-
             }
-            if($request->has('serviceIds')){
+            if ($request->has('serviceIds')) {
                 $agent->services()->detach();
                 $agent->services()->attach($request->serviceIds);
-
             }
-            if($request->has('communityIds')){
+            if ($request->has('communityIds')) {
                 $agent->communities()->detach();
                 $agent->communities()->attach($request->communityIds);
             }
-            if($request->has('developerIds')){
+            if ($request->has('developerIds')) {
                 $agent->developers()->detach();
                 $agent->developers()->attach($request->developerIds);
             }
-            if($request->has('projectIds')){
+            if ($request->has('projectIds')) {
                 $agent->projects()->detach();
                 $agent->projects()->attach($request->projectIds);
             }
             return response()->json([
                 'success' => true,
-                'message'=> 'Agent has been updated successfully.',
+                'message' => 'Agent has been updated successfully.',
                 'redirect' => route('dashboard.agents.index'),
             ]);
         } catch (\Exception $error) {
             return response()->json([
                 'success' => false,
-                'message'=> $error->getMessage(),
+                'message' => $error->getMessage(),
                 'redirect' => route('dashboard.agents.index'),
             ]);
         }
@@ -270,7 +284,7 @@ class AgentController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             $agent = Agent::find($id);
             // foreach($agent->testimonals as $testimonal){
             //     $testimonal->status = config('constant.Inactive');
@@ -278,10 +292,9 @@ class AgentController extends Controller
             // }
             $agent->delete();
 
-            return redirect()->route('dashboard.agents.index')->with('success','Agent has been deleted successfully');
-
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.agents.index')->with('error',$error->getMessage());
+            return redirect()->route('dashboard.agents.index')->with('success', 'Agent has been deleted successfully');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.agents.index')->with('error', $error->getMessage());
         }
     }
 }

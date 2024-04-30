@@ -21,7 +21,6 @@ use App\Models\{
     Community,
     Property,
     CompletionStatus
-    
 };
 use DB;
 use Illuminate\Support\Arr;
@@ -37,13 +36,14 @@ class SingleManagementResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => "management_".$this->id,
+            'id' => "management_" . $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'email' => $this->email,
             'designation' => $this->designation,
             'contact' => $this->contact_number,
             'image' => $this->image,
+            'additionalImage' => $this->additionalImage,
             'video' => $this->video,
             'message' => $this->message->render(),
 
