@@ -213,7 +213,7 @@ class AgentController extends Controller
 
 
             if ($request->hasFile('additional_image')) {
-                $agent->clearMediaCollection('additional_image');
+                $agent->clearMediaCollection('additional_images');
                 $img =  $request->file('additional_image');
                 $imgExt = $img->getClientOriginalExtension();
                 $imageName =  Str::slug($request->name) . '.' . $imgExt;
