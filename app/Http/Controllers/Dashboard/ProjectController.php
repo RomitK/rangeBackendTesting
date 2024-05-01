@@ -49,7 +49,7 @@ class ProjectController extends Controller
     function __construct()
     {
         $this->middleware(
-            'permission:' . config('constants.Permissions.offplan'),
+            'permission:' . config('constants.Permissions.offplan') . '|' . config('constants.Permissions.seo'),
             [
                 'only' => [
                     'index', 'create', 'edit', 'update', 'destroy', 'mediaDestroy',

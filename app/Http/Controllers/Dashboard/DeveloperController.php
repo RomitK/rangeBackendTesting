@@ -21,15 +21,28 @@ use App\Models\{
 
 class DeveloperController extends Controller
 {
-    function __construct()
+     function __construct()
     {
-        $this->middleware(
-            'permission:' . config('constants.Permissions.real_estate'),
-            ['only' => [
-                'index', 'create', 'edit', 'update', 'destroy',
-                'details', 'createDetail', 'storeDetail', 'editDetail', 'updateDetail', 'destroyDetail'
-            ]]
-        );
+        $this->middleware(function ($request, $next) {
+            // Check if the user has the "real_estate" permission
+            if (Auth::user()->hasPermissionTo(config('constants.Permissions.real_estate'))) {
+                // Apply middleware only for these actions
+                $this->middleware('permission:' . config('constants.Permissions.real_estate'))->only([
+                    'index', 'create', 'edit', 'update', 'destroy',
+                    'details', 'createDetail', 'storeDetail', 'editDetail', 'updateDetail', 'destroyDetail'
+                ]);
+            }
+
+            // Check if the user has the "seo" permission
+            if (Auth::user()->hasPermissionTo(config('constants.Permissions.seo'))) {
+                // Apply middleware only for these actions
+                $this->middleware('permission:' . config('constants.Permissions.seo'))->only([
+                    'updateMeta', 'index'
+                ]);
+            }
+
+            return $next($request);
+        });
     }
     /**
      * Display a listing of the resource.

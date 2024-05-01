@@ -40,10 +40,12 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="row float-right">
-                                <a href="{{ route('dashboard.projects.create') }}" class="btn btn-block btn-primary">
-                                    <i class="fa fa-plus" aria-hidden="true"></i>
-                                    New Project
-                                </a>
+                                @can(config('constants.Permissions.real_estate'))
+                                    <a href="{{ route('dashboard.projects.create') }}" class="btn btn-block btn-primary">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        New Project
+                                    </a>
+                                @endcan
                             </div>
                         </div>
 
@@ -326,8 +328,7 @@
                                                         Meta Details
                                                     </a>
 
-                                                    <!--@if ($project->updated_brochure == 0 && in_array(Auth::user()->role, config('constants.isAdmin')))
-    @endif-->
+                                                    
                                                     @if ($project->updated_brochure == 0 && in_array(Auth::user()->role, config('constants.isAdmin')))
                                                         <a class="btn btn-dark btn-sm"
                                                             href="{{ route('dashboard.projects.updateBrochure', $project->id) }}"
@@ -343,12 +344,13 @@
                                                             View Brochure
                                                         </a>
                                                     @endif
+                                                    @can(config('constants.Permissions.real_estate'))
                                                     <a class="btn btn-success btn-sm"
                                                         href="{{ route('dashboard.projects.paymentPlans', $project->id) }}">
                                                         <i class="fas fa-tasks"></i>
                                                         Payment Plan({{ $project->mPaymentPlans->count() }})
                                                     </a>
-
+                                                    
                                                     <a class="btn btn-warning btn-sm"
                                                         href="{{ route('dashboard.projects.subProjects', $project->id) }}">
                                                         <i class="fas fa-project-diagram"></i>
@@ -361,6 +363,7 @@
                                                         <i class="fas fa-pencil-alt"></i>
                                                         Edit
                                                     </a>
+                                                    @endcan
                                                     @if (Auth::user()->role != 'user')
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
                                                             <i class="fas fa-trash"></i>
