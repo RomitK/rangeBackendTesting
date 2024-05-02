@@ -113,7 +113,7 @@
                             <!--    </a>-->
                             <!--</li>-->
 
-                            @canany([config('constants.Permissions.seo')])
+                            @canany([config('constants.Permissions.offplan'), config('constants.Permissions.seo')])
 
                                 <li class="nav-item">
                                     <a href="{{ url('dashboard/communities') }}"
