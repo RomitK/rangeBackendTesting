@@ -138,35 +138,42 @@ class SingleProjectResource extends JsonResource
                 `projects`.`status` = 'active' and `projects`.`is_approved` = 'approved'
                 having `distance` < 10 order by `distance` asc limit 0,12;"));
         }
-        $rentProperties =  DB::select(
-            "
-                            SELECT properties.id, properties.name, properties.status,properties.category_id, properties.price, properties.is_approved,properties.slug, properties.property_source, properties.bedrooms, properties.area, properties.property_banner, accommodations.name as accommodationName, properties.bedrooms, properties.bathrooms
-                            FROM properties
-                            JOIN accommodations ON accommodations.id = properties.accommodation_id
-                            WHERE properties.project_id = ?
-                              AND properties.category_id = ?
-                              AND properties.status = ?
-                              AND properties.is_approved = ?
-                              AND properties.deleted_at is null
-                            ORDER BY properties.created_at DESC
-                            LIMIT 8",
-            [$this->id, config('constants.rentId'), 'active', 'approved']
-        );
+        if ($this->permit_number) {
+            $rentProperties =  DB::select(
+                "
+                                SELECT properties.id, properties.name, properties.status,properties.category_id, properties.price, properties.is_approved,properties.slug, properties.property_source, properties.bedrooms, properties.area, properties.property_banner, accommodations.name as accommodationName, properties.bedrooms, properties.bathrooms
+                                FROM properties
+                                JOIN accommodations ON accommodations.id = properties.accommodation_id
+                                WHERE properties.project_id = ?
+                                  AND properties.category_id = ?
+                                  AND properties.status = ?
+                                  AND properties.is_approved = ?
+                                  AND properties.deleted_at is null
+                                ORDER BY properties.created_at DESC
+                                LIMIT 8",
+                [$this->id, config('constants.rentId'), 'active', 'approved']
+            );
 
-        $buyProperties =  DB::select(
-            "
-                            SELECT properties.id, properties.name, properties.status,properties.category_id,properties.price, properties.is_approved, properties.slug, properties.property_source, properties.bedrooms, properties.area, properties.property_banner, accommodations.name as accommodationName, properties.bedrooms, properties.bathrooms
-                            FROM properties
-                            JOIN accommodations ON accommodations.id = properties.accommodation_id
-                            WHERE properties.project_id = ?
-                              AND properties.category_id = ?
-                              AND properties.status = ?
-                              AND properties.is_approved = ?
-                              AND properties.deleted_at is null
-                            ORDER BY properties.created_at DESC
-                            LIMIT 8",
-            [$this->id, config('constants.buyId'), 'active', 'approved']
-        );
+            $buyProperties =  DB::select(
+                "
+                                SELECT properties.id, properties.name, properties.status,properties.category_id,properties.price, properties.is_approved, properties.slug, properties.property_source, properties.bedrooms, properties.area, properties.property_banner, accommodations.name as accommodationName, properties.bedrooms, properties.bathrooms
+                                FROM properties
+                                JOIN accommodations ON accommodations.id = properties.accommodation_id
+                                WHERE properties.project_id = ?
+                                  AND properties.category_id = ?
+                                  AND properties.status = ?
+                                  AND properties.is_approved = ?
+                                  AND properties.deleted_at is null
+                                ORDER BY properties.created_at DESC
+                                LIMIT 8",
+                [$this->id, config('constants.buyId'), 'active', 'approved']
+            );
+        } else {
+            $rentProperties = [];
+            $buyProperties = [];
+        }
+
+
         $exteriorGallery = $this->exteriorGallery;
 
         $count = count($exteriorGallery);
