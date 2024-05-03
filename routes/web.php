@@ -84,6 +84,8 @@ Route::get('/clear-cache', function () {
 /*******************
  * FRONTEND ROUTES  *
  *******************/
+
+Route::get('inactiveProperties', 'App\Http\Controllers\CronController@inactiveProperties');
 Route::get('cronjob/subProjects', 'App\Http\Controllers\CronController@subProjects');
 
 Route::get('makeRequest', 'App\Http\Controllers\CronController@makeRequest');
