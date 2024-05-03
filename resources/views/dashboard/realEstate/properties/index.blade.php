@@ -302,6 +302,7 @@
                                         <th>SR.NO</th>
                                         <th>Name</th>
                                         <th>Refernce No.</th>
+                                        <th>Permit Number</th>
                                         <th>Exclusive</th>
                                         <th>Agent</th>
                                         <th>Category</th>
@@ -325,6 +326,7 @@
                                             <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $property->name }}</td>
                                             <td>{{ $property->reference_number }}</td>
+                                            <td>{{ $property->project->permit_number }}</td>
                                             <td> <span
                                                     class="badge @if ($property->exclusive === 1) bg-success @else bg-danger @endif">
                                                     @if ($property->exclusive === 1)
@@ -407,11 +409,11 @@
                                                     @endif
 
                                                     @can(config('constants.Permissions.real_estate'))
-                                                    <a class="btn btn-primary btn-sm"
-                                                        href="{{ route('dashboard.properties.duplicate', $property->id) }}">
-                                                        <i class="fas fa-file"></i>
-                                                        Duplicate
-                                                    </a>
+                                                        <a class="btn btn-primary btn-sm"
+                                                            href="{{ route('dashboard.properties.duplicate', $property->id) }}">
+                                                            <i class="fas fa-file"></i>
+                                                            Duplicate
+                                                        </a>
                                                     @endcan
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
@@ -421,11 +423,11 @@
                                                         </a>
                                                     @endcan
                                                     @can(config('constants.Permissions.real_estate'))
-                                                    <a class="btn btn-info btn-sm"
-                                                        href="{{ route('dashboard.properties.edit', $property->id) }}">
-                                                        <i class="fas fa-pencil-alt"></i>
-                                                        Edit
-                                                    </a>
+                                                        <a class="btn btn-info btn-sm"
+                                                            href="{{ route('dashboard.properties.edit', $property->id) }}">
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                            Edit
+                                                        </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">

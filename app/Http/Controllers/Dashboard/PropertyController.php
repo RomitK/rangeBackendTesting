@@ -61,7 +61,7 @@ class PropertyController extends Controller
             $sr_no_start = 1;
         }
 
-        $collection = Property::with('developer', 'agent', 'category', 'user');
+        $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
 
         if (isset($request->agent_ids) && !empty(array_filter($request->agent_ids))) {
             $agent_ids = $request->agent_ids;
