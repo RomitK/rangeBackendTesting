@@ -303,6 +303,8 @@
                                         <th>Name</th>
                                         <th>Refernce No.</th>
                                         <th>Permit Number</th>
+                                        <th>Project</th>
+                                        <th>Price</th>
                                         <th>Exclusive</th>
                                         <th>Agent</th>
                                         <th>Category</th>
@@ -327,6 +329,8 @@
                                             <td>{{ $property->name }}</td>
                                             <td>{{ $property->reference_number }}</td>
                                             <td>{{ $property->project->permit_number }}</td>
+                                            <td>{{ $property->project->title }}</td>
+                                            <td>{{ $property->price }}</td>
                                             <td> <span
                                                     class="badge @if ($property->exclusive === 1) bg-success @else bg-danger @endif">
                                                     @if ($property->exclusive === 1)
