@@ -329,7 +329,7 @@
                                             <td>{{ $property->name }}</td>
                                             <td>{{ $property->reference_number }}</td>
                                             <td>{{ $property->project->permit_number }}</td>
-                                            <td>{{ $property->project->title }}</td>
+                                            <td>{{ $property->project->title }} ({{ $property->subProject->title }})</td>
                                             <td>{{ $property->price }}</td>
                                             <td> <span
                                                     class="badge @if ($property->exclusive === 1) bg-success @else bg-danger @endif">
