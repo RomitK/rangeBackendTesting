@@ -193,7 +193,88 @@ if (!function_exists('sendWebsiteStatReport')) {
                     'Ready' => $ready->buy()->where('completion_status_id', 286)->count(),
                     'Offplan' => $offplan->buy()->where('completion_status_id', 287)->count(),
                     'Rent' => $rentProperties->rent()->count()
-                ]
+                ],
+                'new_last_week' =>
+                (array) DB::select("
+                            SELECT 
+                                DATE_SUB(CURDATE(), INTERVAL 7 DAY) AS start_date,
+                                DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS end_date
+                        ")[0],
+                'prev_last_week' =>
+                (array) DB::select("
+                        SELECT 
+                        DATE_SUB(CURDATE(), INTERVAL 14 DAY) AS start_date,
+                        DATE_SUB(CURDATE(), INTERVAL 8 DAY) AS end_date
+                    ")[0],
+                'careers_weekly' => (array)  DB::select("
+                                            SELECT
+                                                SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                                SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                            FROM
+                                            careers
+                                            Where deleted_at is NULL
+                                        ")[0],
+
+                'guides_weekly' => (array) DB::select("
+                                            SELECT
+                                                SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                                SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                            FROM
+                                                guides
+                                            Where deleted_at is NULL
+                                        ")[0],
+                'agents_weekly' => (array) DB::select("
+                                        SELECT
+                                            SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                            SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                        FROM
+                                            agents
+                                        Where deleted_at is NULL
+                                    ")[0],
+                'articles_weekly' => (array) DB::select("
+                                            SELECT
+                                                SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                                SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                            FROM
+                                                articles
+                                            Where deleted_at is NULL
+                                        ")[0],
+
+                'developers_weekly' => (array) DB::select("
+                                            SELECT
+                                                SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                                SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                            FROM
+                                                developers
+                                            Where deleted_at is NULL
+                                        ")[0],
+
+                'communities_weekly' => (array) DB::select("
+                                        SELECT
+                                            SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                            SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                        FROM
+                                            communities
+                                        Where deleted_at is NULL
+                                    ")[0],
+
+                'projects_weekly' => (array) DB::select("
+                                    SELECT
+                                        SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                        SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                    FROM
+                                        projects
+                                    Where deleted_at is NULL AND is_parent_project = 1
+                                ")[0],
+
+                'properties_weekly' => (array)  DB::select("
+                                            SELECT
+                                                SUM(CASE WHEN created_at >= CURDATE() - INTERVAL 7 DAY THEN 1 ELSE 0 END) AS new_last_week_count,
+                                                SUM(CASE WHEN created_at < CURDATE() - INTERVAL 7 DAY AND created_at >= CURDATE() - INTERVAL 14 DAY THEN 1 ELSE 0 END) AS prev_last_week_count
+                                            FROM
+                                                properties
+                                            Where deleted_at is NULL
+                                        ")[0]
             ];
 
             Log::info($data);
@@ -203,6 +284,7 @@ if (!function_exists('sendWebsiteStatReport')) {
                 $email = $recipient['email'];
 
                 $data['userName'] = $name; // Change userName for each recipient
+                $data['email'] = $email;
 
                 Mail::send('mails.websiteStatReport', ['data' => $data], function ($message) use ($email, $name) {
                     $message->to($email, $name)->subject('Website Stat Report');

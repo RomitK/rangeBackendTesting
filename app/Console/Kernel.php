@@ -29,12 +29,12 @@ class Kernel extends ConsoleKernel
 
         $schedule->job(new WeeklyWebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
         $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
-        
+
 
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:run')->daily()->at('01:30');
 
-        //$schedule->job(new WebsiteStateReportJob)->everyFiveMinutes();
+        //$schedule->job(new MonthlyWebsiteStateReportJob)->everyTwoMinutes();
     }
 
     /**
