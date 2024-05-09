@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Jobs\{
     WeeklyWebsiteStateReportJob,
-    MonthlyWebsiteStateReportJob
+    MonthlyWebsiteStateReportJob,
+    InactivePropertyJob
 };
 
 class Kernel extends ConsoleKernel
@@ -30,6 +31,8 @@ class Kernel extends ConsoleKernel
         $schedule->job(new WeeklyWebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
         $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
 
+
+        $schedule->job(new InactivePropertyJob)->daily()->timezone('02:00');
 
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:run')->daily()->at('01:30');
