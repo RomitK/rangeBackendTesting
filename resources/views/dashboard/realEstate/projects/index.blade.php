@@ -183,11 +183,27 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="permit_number">Permit Number </label>
+                                            <select class="form-control" id="permit_number" name="permit_number">
+                                                <option value="">All</option>
+                                                <option value="1" @if (request()->permit_number === '0') selected @endif>
+                                                    Null</option>
+                                                <option value="0" @if (request()->permit_number === '1') selected @endif>
+                                                    Not Null</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="community_ids">Added By</label>
-                                            <select multiple="multiple" data-placeholder="Select User" style="width: 100%;"
-                                                class=" form-control select1" id="added_user_ids" name="added_user_ids[]">
+                                            <select multiple="multiple" data-placeholder="Select User"
+                                                style="width: 100%;" class=" form-control select1" id="added_user_ids"
+                                                name="added_user_ids[]">
                                                 @foreach ($users as $key => $value)
                                                     <option value="{{ $key }}"
                                                         @if (in_array($key, $seletectAddedUsers)) selected @endif>
@@ -225,16 +241,17 @@
                                         <button type="submit" class="btn btn-block btn-primary search_clear_btn"
                                             name="submit_filter" value="1">Search</button>
                                     </div>
-
+                                    <div class="col-md-3">
+                                        <a class="btn btn-block btn-info search_clear_btn" id="exportProject"
+                                            href="{{ url('dashboard/projects') }}">Download</a>
+                                    </div>
                                     <div class="col-md-3">
                                         @if (request()->submit_filter)
                                             <a class="btn btn-block btn-warning search_clear_btn"
                                                 href="{{ url('dashboard/projects') }}">Clear Search</a>
                                         @endif
                                     </div>
-
                                 </div>
-
                             </form>
 
                             <table class="table table-hover text-nowrap table-striped propertyDatatable">
@@ -328,7 +345,7 @@
                                                         Meta Details
                                                     </a>
 
-                                                    
+
                                                     @if ($project->updated_brochure == 0 && in_array(Auth::user()->role, config('constants.isAdmin')))
                                                         <a class="btn btn-dark btn-sm"
                                                             href="{{ route('dashboard.projects.updateBrochure', $project->id) }}"
@@ -345,24 +362,24 @@
                                                         </a>
                                                     @endif
                                                     @can(config('constants.Permissions.real_estate'))
-                                                    <a class="btn btn-success btn-sm"
-                                                        href="{{ route('dashboard.projects.paymentPlans', $project->id) }}">
-                                                        <i class="fas fa-tasks"></i>
-                                                        Payment Plan({{ $project->mPaymentPlans->count() }})
-                                                    </a>
-                                                    
-                                                    <a class="btn btn-warning btn-sm"
-                                                        href="{{ route('dashboard.projects.subProjects', $project->id) }}">
-                                                        <i class="fas fa-project-diagram"></i>
-                                                        Unit ({{ $project->subProjects->count() }})
-                                                    </a>
+                                                        <a class="btn btn-success btn-sm"
+                                                            href="{{ route('dashboard.projects.paymentPlans', $project->id) }}">
+                                                            <i class="fas fa-tasks"></i>
+                                                            Payment Plan({{ $project->mPaymentPlans->count() }})
+                                                        </a>
+
+                                                        <a class="btn btn-warning btn-sm"
+                                                            href="{{ route('dashboard.projects.subProjects', $project->id) }}">
+                                                            <i class="fas fa-project-diagram"></i>
+                                                            Unit ({{ $project->subProjects->count() }})
+                                                        </a>
 
 
-                                                    <a class="btn btn-info btn-sm"
-                                                        href="{{ route('dashboard.projects.edit', $project->id) }}">
-                                                        <i class="fas fa-pencil-alt"></i>
-                                                        Edit
-                                                    </a>
+                                                        <a class="btn btn-info btn-sm"
+                                                            href="{{ route('dashboard.projects.edit', $project->id) }}">
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                            Edit
+                                                        </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">

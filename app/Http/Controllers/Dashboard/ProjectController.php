@@ -37,7 +37,8 @@ use App\Models\{
     User
 };
 use App\Jobs\{
-    StoreProjectBrochure
+    StoreProjectBrochure,
+    ProjectExportAndEmailData
 };
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,14 @@ class ProjectController extends Controller
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }
+
+        if (isset($request->permit_number)) {
+            if ($request->permit_number == '1') {
+                $collection->whereNotNull('permit_number');
+            } elseif ($request->permit_number == '0') {
+                $collection->whereNull('permit_number');
+            }
+        }
         if (isset($request->completion_status_ids)) {
             $collection->whereIn('completion_status_id', $request->completion_status_ids);
         }
@@ -115,6 +124,14 @@ class ProjectController extends Controller
         }
         if (isset($request->updated_brochure)) {
             $collection->where('updated_brochure', $request->updated_brochure);
+        }
+        if (isset($request->export)) {
+            ProjectExportAndEmailData::dispatch();
+            return response()->json([
+                'success' => true,
+                'message' => 'Project has been created successfully.',
+                //'redirect' => route('dashboard.projects.index'),
+            ]);
         }
 
         if (isset($request->orderby)) {

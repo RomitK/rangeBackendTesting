@@ -467,6 +467,36 @@
                         </ul>
                     </li>
                 @endcan
+
+                <li class="nav-item {{ activeParentNavBar('websiteSettings', 'menu-open') }}">
+                    <a href="#" class="nav-link {{ activeParentNavBar('websiteSettings', 'active') }}">
+                        <i class="nav-icon fa fa-cogs"></i>
+                        <p>
+                            Reports
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ url('dashboard/general-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.social-info') }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>General Report</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('dashboard/community-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.social-info') }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Communities Report</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
                 @can(config('constants.Permissions.website_setting'))
                     <li class="nav-item {{ activeParentNavBar('websiteSettings', 'menu-open') }}">
                         <a href="#" class="nav-link {{ activeParentNavBar('websiteSettings', 'active') }}">
@@ -494,7 +524,7 @@
                         </ul>
                     </li>
                 @endcan
-                @can(config('constants.Permissions.cronJobs'))
+                {{-- @can(config('constants.Permissions.cronJobs'))
                     <li class="nav-item">
                         <a href="{{ url('dashboard/cronJobs') }}"
                             class="nav-link {{ activeChildNavBar('dashboard.cronJobs') }}">
@@ -502,7 +532,7 @@
                             <p>Cron Jobs</p>
                         </a>
                     </li>
-                @endcan
+                @endcan --}}
                 @can(config('constants.Permissions.user_management'))
                     <li class="nav-item {{ activeParentNavBar('userManagement', 'menu-open') }}">
                         <a href="#" class="nav-link {{ activeParentNavBar('userManagement', 'active') }}">
