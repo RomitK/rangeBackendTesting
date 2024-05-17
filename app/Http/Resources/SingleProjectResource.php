@@ -222,7 +222,7 @@ class SingleProjectResource extends JsonResource
 
             'rentProperties' => ProjectPropertiesResource::collection($rentProperties),
             'buyProperties' => ProjectPropertiesResource::collection($buyProperties),
-
+            'qr' => $this->qr,
             'interiorGallery' => $this->interiorGallery,
             'exteriorGallery' => $exteriorGallery,
             'shortDescription' => $this->short_description->render(),
