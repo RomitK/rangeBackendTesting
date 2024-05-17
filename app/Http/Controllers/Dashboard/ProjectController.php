@@ -390,6 +390,14 @@ class ProjectController extends Controller
                 $project->addMediaFromRequest('clusterPlan')->usingFileName($imageName)->toMediaCollection('clusterPlans', 'projectFiles');
             }
 
+            if ($request->hasFile('qr')) {
+                $img =  $request->file('qr');
+                $ext = $img->getClientOriginalExtension();
+                $imageName =  Str::slug($request->title) . '_qr.' . $ext;
+
+                $project->addMediaFromRequest('qr')->usingFileName($imageName)->toMediaCollection('qrs', 'projectFiles');
+            }
+
 
             if ($request->hasFile('video')) {
                 $video =  $request->file('video');
@@ -693,6 +701,15 @@ class ProjectController extends Controller
                 $imageName =  Str::slug($request->title) . '.' . $ext;
 
                 $project->addMediaFromRequest('clusterPlan')->usingFileName($imageName)->toMediaCollection('clusterPlans', 'projectFiles');
+            }
+
+            if ($request->hasFile('qr')) {
+                $project->clearMediaCollection('qrs');
+                $img =  $request->file('qr');
+                $ext = $img->getClientOriginalExtension();
+                $imageName =  Str::slug($request->title) . '_qr.' . $ext;
+
+                $project->addMediaFromRequest('qr')->usingFileName($imageName)->toMediaCollection('qrs', 'projectFiles');
             }
 
             if ($request->hasFile('video')) {

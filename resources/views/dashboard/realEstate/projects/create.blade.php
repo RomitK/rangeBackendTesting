@@ -89,21 +89,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="sub_community_id">Sub Community</label>-->
-                                    <!--        <select data-placeholder="Select Community"-->
-                                    <!--            class=" form-control select1 @error('sub_community_id') is-invalid @enderror"-->
-                                    <!--            id="sub_community_id" name="sub_community_id">-->
-                                    <!--                <option></option>-->
-                                    <!--        </select>-->
-                                    <!--        @error('sub_community_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     
                                     <div class="col-sm-6">
                                         <div class="form-group">
@@ -161,38 +146,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-3">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="is_feature">Is New Lanuch?</label>-->
-                                    <!--        <select class="form-control @error('is_new_launch') is-invalid @enderror"-->
-                                    <!--            id="is_new_launch" name="is_new_launch">-->
-                                    <!--            @foreach (config('constants.booleanOptions') as $key=>$value)-->
-                                    <!--            <option value="{{ $key }}">{{ $value }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('is_new_launch')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-3">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="is_feature">Is Featured?</label>-->
-                                    <!--        <select class="form-control @error('is_featured') is-invalid @enderror"-->
-                                    <!--            id="is_featured" name="is_featured">-->
-                                    <!--            @foreach (config('constants.booleanOptions') as $key=>$value)-->
-                                    <!--            <option value="{{ $key }}">{{ $value }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('is_featured')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
+                                    
                                     
                                     <div class="col-sm-2">
                                         <div class="form-group">
@@ -406,40 +360,6 @@
                                     <!--    </div>-->
                                     <!--</div>-->
                                     
-                                   
-
-                                    
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="factsheet">FactSheet</label>-->
-                                    <!--        <div class="custom-file  @error('factsheet') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input @error('factsheet') is-invalid @enderror" id="floorPlan"-->
-                                    <!--                name="factsheet" accept=".pdf">-->
-                                    <!--            <label class="custom-file-label" for="factsheet">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('factsheet')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="paymentPlan">Payment Plan</label>-->
-                                    <!--        <div class="custom-file  @error('paymentPlan') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input @error('paymentPlan') is-invalid @enderror" id="paymentPlan"-->
-                                    <!--                name="paymentPlan" accept=".pdf">-->
-                                    <!--            <label class="custom-file-label" for="paymentPlan">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('paymentPlan')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     
                                     <div class="col-sm-12">
                                         <div class="form-group">
@@ -510,7 +430,7 @@
                                             
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="mainImage">Main Image <small class="text-danger">(Prefer Dimension 600X300)</small></label>
                                             <div class="custom-file   @error('mainImage') is-invalid @enderror">
@@ -527,24 +447,9 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="video">Video</label>-->
-                                    <!--        <div class="custom-file   @error('video') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input @error('video') is-invalid @enderror" id="video"-->
-                                    <!--                name="video" accept=".mp4, .mov, .ogg">-->
-                                    <!--            <label class="custom-file-label" for="video">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('video')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
+                                  
                                     
-                                    
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="clusterPlan">Cluster Plan <small class="text-danger">(Prefer Dimension 600X1000)</small></label>
                                             <div class="custom-file   @error('clusterPlan') is-invalid @enderror">
@@ -561,48 +466,23 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
-                                    
-                                    <!--<div class="col-sm-3">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="exteriorGallery">Exterior Gallery <small class="text-danger">(Prefer Dimension 1600x800)</small></label>-->
-                                    <!--        <div class="custom-file  @error('exteriorGallery') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input @error('exteriorGallery') is-invalid @enderror @error('exteriorGallery.*') is-invalid @enderror" id="exteriorGallery"-->
-                                    <!--                name="exteriorGallery[]" multiple accept="image/*">-->
-                                    <!--            <label class="custom-file-label" for="exteriorGallery">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('exteriorGallery')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--        @error('exteriorGallery.*')-->
-                                    <!--            <span class="invalid-feedback" role="alert" style="display: block">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-3">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="interiorGallery">Interior Gallery <small class="text-danger">(Prefer Dimension 600x600)</small></label>-->
-                                    <!--        <div class="custom-file  @error('interiorGallery') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input  @error('interiorGallery') is-invalid @enderror @error('interiorGallery.*') is-invalid @enderror" id="interiorGallery"-->
-                                    <!--                name="interiorGallery[]" multiple accept="image/*">-->
-                                    <!--            <label class="custom-file-label" for="interiorGallery">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('interiorGallery')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--        @error('interiorGallery.*')-->
-                                    <!--            <span class="invalid-feedback" role="alert" style="display: block">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="qr">QR </label>
+                                            <div class="custom-file   @error('qr') is-invalid @enderror">
+                                                <input type="file" class="custom-file-input   @error('qr') is-invalid @enderror" id="qr"
+                                                    name="qr" accept="image/*">
+                                                <label class="custom-file-label" for="qr">Choose file</label>
+                                            </div>
+                                            <img id="qrPreview" style="display: none;" />
+                                            
+                                            @error('qr')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
                                     
                                     <div class="col-sm-12">
                                         <div class="table-responsive">
@@ -996,6 +876,10 @@
         document.getElementById('clusterPlan').addEventListener('change', function(event) {
             showPreview(event, 'clusterPlanPreview');
         });
+        document.getElementById('qr').addEventListener('change', function(event) {
+            showPreview(event, 'qrPreview');
+        });
+
         
         
         function showPreview(event, previewId) {

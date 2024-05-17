@@ -48,6 +48,7 @@ class Project extends Model implements HasMedia
      * @var array
      */
     protected $appends = [
+        'qr',
         'clusterPlan',
         'mainImage',
         'video',
@@ -102,6 +103,11 @@ class Project extends Model implements HasMedia
 
         //return $this->getFirstMediaUrl('mainImages', 'resize');
     }
+    public function getQrAttribute()
+    {
+        return $this->getFirstMediaUrl('qrs', 'resize');
+    }
+
     public function getClusterPlanAttribute()
     {
         return $this->getFirstMediaUrl('clusterPlans', 'resize');
