@@ -340,10 +340,11 @@
                                                 </td>
                                             </tr>
                                         @endif
-                                        @if ($project->qr)
+                                        @if ($property->project->qr)
                                             <td class="clum3Bar bg-primery">Permit Number</td>
                                             <td class="clum2Bar bg-gray">
-                                                <img src="{{ $project->qr }}" alt="{{ $project->qr }}">
+                                                <img src="{{ $property->project->qr }}"
+                                                    alt="{{ $property->project->qr }}">
                                             </td>
                                         @endif
 
