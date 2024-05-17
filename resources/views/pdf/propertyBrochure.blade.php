@@ -449,7 +449,7 @@
             <div class="headerSection">
                 <table style="width:100%">
                     <tr>
-                        <th>
+                        <th colspan="2">
                             <h4 class="h1Title" style="line-height: 1;">{{ $property->name }}</h5>
                         </th>
                     </tr>
@@ -460,7 +460,8 @@
 
                         @if ($property->project->qr)
                             <td>
-                                <img src="{{ $property->project->qr }}" alt="{{ $property->project->qr }}">
+                                <img src="{{ $property->project->qr }}" alt="{{ $property->project->qr }}"
+                                    style="padding:10px">
                             </td>
                         @endif
 
