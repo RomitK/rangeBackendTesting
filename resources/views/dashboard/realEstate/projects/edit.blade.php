@@ -494,7 +494,7 @@
                                                 <label class="custom-file-label" for="qr">Choose file</label>
                                             </div>
                                             <img id="qrPreview" style="display: none;" />
-                                            @if ($project->clusterPlan)
+                                            @if ($project->qr)
                                                 <img src="{{ $project->qr }}" alt="{{ $project->qr }}">
                                             @endif
                                             @error('qr')

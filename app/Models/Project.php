@@ -220,6 +220,13 @@ class Project extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null): void
     {
+
+        $this->addMediaConversion('resize')
+            ->format(Manipulations::FORMAT_WEBP)
+            ->performOnCollections('qrs')
+            ->nonQueued();
+
+
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             //->width(800)
