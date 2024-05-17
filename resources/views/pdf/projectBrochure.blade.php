@@ -328,7 +328,7 @@
                         </td>
                         @if ($project->qr)
                             <td>
-                                <img src="{{ $project->qr }}" alt="{{ $project->qr }}" style="padding:5px">
+                                <img src="{{ $project->qr }}" alt="{{ $project->qr }}" style="padding:10px">
                             </td>
                         @endif
                     </tr>
