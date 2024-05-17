@@ -449,10 +449,12 @@
             <div class="headerSection">
                 <table style="width:100%">
                     <tr>
-                        <th colspan="2">
+                        <th>
                             <h4 class="h1Title" style="line-height: 1;">{{ $property->name }}</h5>
                         </th>
                     </tr>
+                </table>
+                <table style="width:100%">
                     <tr>
                         <td>
                             {{ $property->short_description }}
