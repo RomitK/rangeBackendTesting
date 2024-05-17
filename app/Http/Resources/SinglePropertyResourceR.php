@@ -77,7 +77,7 @@ class SinglePropertyResourceR extends JsonResource
             'name' => $this->name,
             'rental_period' => $this->rental_period,
             'permit_number' => $this->project->permit_number,
-            'qr' => $this->project->qr,
+            'qr' => $this->project ? $this->project->qr : '',
             'reference_number' => $this->reference_number,
             'slug' => $this->slug,
             'youtube_video' => $this->youtube_video ? $this->youtube_video : 'https://www.youtube.com/watch?v=-6jlrq7idl8&list=PLiPk70af-7kf5A4vVxIWXr1yMaaoBTOb4',
