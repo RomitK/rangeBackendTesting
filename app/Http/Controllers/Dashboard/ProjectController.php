@@ -78,6 +78,14 @@ class ProjectController extends Controller
 
         $collection = Project::mainProject()->with('user');
 
+        if (isset($request->data_range_input)) {
+            $dateRange = $request->data_range_input;
+            // Use explode to split the date range by " - "
+            $dates = explode(' - ', $dateRange);
+            $startDate = $dates[0];
+            $endDate = $dates[1];
+            $collection->whereBetween('created_at', [$startDate, $endDate]);
+        }
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }
@@ -131,7 +139,7 @@ class ProjectController extends Controller
             ProjectExportAndEmailData::dispatch($request->all());
             return response()->json([
                 'success' => true,
-                'message' => 'Project has been created successfully.',
+                'message' => 'Please Check Email, Report has been sent.',
                 //'redirect' => route('dashboard.projects.index'),
             ]);
         }

@@ -274,7 +274,7 @@
                     success: function(response) {
                         // Handle success response
                         console.log('Ajax request successful');
-                        toastr.success('Export successful');
+                        toastr.success(response.message);
                     },
                     error: function(xhr, status, error) {
                         // Handle errors
@@ -428,6 +428,26 @@
             }
             return dates;
         }
+
+        //Date range as a button
+        $('#date_range').daterangepicker({
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf(
+                        'month')]
+                },
+                // startDate: moment().subtract(7, 'days'),
+                // endDate: moment()
+            },
+            function(start, end) {
+                $('#date_range_show').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            })
+
         //Date range as a button
         $('#daterange-btn').daterangepicker({
                 ranges: {
