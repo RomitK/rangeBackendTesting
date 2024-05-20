@@ -189,9 +189,9 @@
                                             <select class="form-control" id="permit_number" name="permit_number">
                                                 <option value="">All</option>
                                                 <option value="1" @if (request()->permit_number === '0') selected @endif>
-                                                    Null</option>
+                                                    Exist</option>
                                                 <option value="0" @if (request()->permit_number === '1') selected @endif>
-                                                    Not Null</option>
+                                                    Not Exist</option>
 
                                             </select>
                                         </div>

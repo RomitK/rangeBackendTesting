@@ -126,7 +126,9 @@ class ProjectController extends Controller
             $collection->where('updated_brochure', $request->updated_brochure);
         }
         if (isset($request->export)) {
-            ProjectExportAndEmailData::dispatch();
+            $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+            ProjectExportAndEmailData::dispatch($request->all());
             return response()->json([
                 'success' => true,
                 'message' => 'Project has been created successfully.',

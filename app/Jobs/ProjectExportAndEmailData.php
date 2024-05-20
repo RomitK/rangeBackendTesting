@@ -11,10 +11,11 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DataExport;
-use App\Mail\DataExportMail;
+use App\Exports\ProjectDataExport;
+use App\Mail\ProjectDataExportMail;
 use Illuminate\Support\Facades\Log;
 use App\Models\Project;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectExportAndEmailData implements ShouldQueue
 {
@@ -25,9 +26,11 @@ class ProjectExportAndEmailData implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
+    public $request;
+
+    public function __construct($request)
     {
-        //
+        $this->request = $request;
     }
 
     /**
@@ -37,16 +40,21 @@ class ProjectExportAndEmailData implements ShouldQueue
      */
     public function handle()
     {
-        // Export data to Excel using Laravel Excel
-        $export = Project::active()->latest()->get();
 
+        $export = new ProjectDataExport($this->request);
+        //$export = $export->query()->latest()->limit(1)->get();
+        $excelFile = Excel::raw($export, \Maatwebsite\Excel\Excel::XLSX);
+
+        // Log the export data (optional)
         Log::info('ProjectExportAndEmailData');
-        Log::info($export);
-
-        $excelFile = Excel::download($export, 'data.xlsx')->getFile();
+        //Log::info($export);
 
         // Send email with the exported data as attachment
-        Mail::to('aqsa@xpertise.ae')
-            ->send(new DataExportMail($excelFile));
+        if ($this->request['email'] === 'admin@gmail.com') {
+            $email = 'aqsa@xpertise.ae';
+        } else {
+            $email = $this->request['email'];
+        }
+        Mail::to($email)->send(new ProjectDataExportMail($excelFile, $this->request['userName']));
     }
 }
