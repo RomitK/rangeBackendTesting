@@ -135,6 +135,12 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->middleware('auth')->name('home');
 
 Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dashboard', 'middleware' => 'auth'], function () {
+
+    Route::get('community-report', 'Reports\CommunityReport@index')->name('reports.communities');
+    Route::get('general-report', 'Reports\CommunityReport@general')->name('reports.general-report');
+
+    Route::get('ajaxData','Reports\CommunityReport@ajaxData')->name('reports.ajax-data');
+
     Route::resource('roles', RoleController::class, ['as' => 'dashboard']);
     Route::resource('tags', TagController::class, ['as' => 'dashboard']);
     Route::resource('offer-types', OfferTypeController::class, ['as' => 'dashboard']);
@@ -211,6 +217,9 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::get('properties/{property}/medias', 'PropertyController@mediasDestroy')->name('dashboard.properties.medias.delete');
 
     Route::resource('projects', ProjectController::class, ['as' => 'dashboard']);
+
+    //Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.project.meta');
+
     Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.project.meta');
     Route::post('projects/{project}/meta', 'ProjectController@updateMeta')->name('dashboard.project.meta.store');
     Route::get('project/mainImage', 'ProjectController@mainImage');

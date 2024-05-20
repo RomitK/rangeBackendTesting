@@ -9,7 +9,8 @@
     <title> @yield('title')</title>
     <meta name="description" content=@yield('description')>
     <meta name="keywords" content=@yield('keywords')>
-    <link rel="icon" type="image/png" href="@if($favicon) {{  $favicon }} @else {{ asset('frontend/assets/images/favicon.png') }} @endif">
+    <link rel="icon" type="image/png"
+        href="@if ($favicon) {{ $favicon }} @else {{ asset('frontend/assets/images/favicon.png') }} @endif">
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -30,13 +31,20 @@
     <link rel="stylesheet" href="{{ asset('dashboard/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <!-- Daterange picker -->
     <link rel="stylesheet" href="{{ asset('dashboard/plugins/daterangepicker/daterangepicker.css') }}">
+
+
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet"
+        href="{{ asset('dashboard/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
+
+
     <!-- summernote -->
     <link rel="stylesheet" href="{{ asset('dashboard/plugins/summernote/summernote-bs4.min.css') }}">
 
 
     <!-- Ekko Lightbox -->
     <link rel="stylesheet" href="{{ asset('dashboard/plugins/ekko-lightbox/ekko-lightbox.css') }}">
-  
+
     <!-- DataTables -->
     <link rel="stylesheet" href="{{ asset('dashboard/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet"
@@ -48,29 +56,33 @@
     <link rel="stylesheet" href="{{ asset('dashboard/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet" />
-    
-    <!-- Include jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Include jQuery UI -->
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Include jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 
     @yield('head')
 
 </head>
 <style>
-.arrow {
-    cursor: pointer;
-    opacity: 0.5; /* Dull appearance */
-}
+    .arrow {
+        cursor: pointer;
+        opacity: 0.5;
+        /* Dull appearance */
+    }
 
-.arrow.active {
-    opacity: 1; /* Highlighted appearance */
-}
+    .arrow.active {
+        opacity: 1;
+        /* Highlighted appearance */
+    }
+
     .select2-container .select2-selection--single {
         height: calc(2.25rem + 2px) !important;
     }
+
     .image-area {
         position: relative;
         width: 100%;
@@ -81,6 +93,7 @@
         max-width: 100%;
         height: auto;
     }
+
     .remove-image {
         display: none;
         position: absolute;
@@ -112,21 +125,25 @@
         top: -10px;
         right: -11px;
     }
+
     .nav-tabs .nav-link {
         color: white;
     }
+
     .nav-tabs .nav-link {
         background: #0d6efd;
     }
-    .nav-tabs .nav-link.active{
+
+    .nav-tabs .nav-link.active {
         color: #0d6efd;
     }
+
     /*.select2-container--default .select2-selection--multiple .select2-selection__rendered li {*/
     /*    background: black;*/
     /*}*/
     .select2-container--default .select2-selection--multiple .select2-selection__choice {
         background-color: black;
-        
+
     }
 </style>
 
@@ -192,7 +209,7 @@
     <script src="{{ asset('dashboard/plugins/summernote/summernote-bs4.min.js') }}"></script>
     <!-- overlayScrollbars -->
     <script src="{{ asset('dashboard/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
-    
+
     <!-- Ekko Lightbox -->
     <script src="{{ asset('dashboard/plugins/ekko-lightbox/ekko-lightbox.min.js') }}"></script>
     <!-- AdminLTE App -->
@@ -216,6 +233,8 @@
     <script src="{{ asset('dashboard/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('dashboard/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('dashboard/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="{{ asset('dashboard/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
 
     <!-- bs-custom-file-input -->
     <script src="{{ asset('dashboard/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
@@ -236,38 +255,68 @@
             @elseif (Session::has('success'))
                 toastr.success('{{ Session::get('success') }}');
             @endif
+
+
+            $('#exportProject').click(function(e) {
+                e.preventDefault(); // Prevent default link behavior
+
+                var url = $(this).attr('href'); // Get the URL of the link
+                var queryParams = new URLSearchParams(window.location.search); // Get query parameters
+                queryParams.set('export', '1');
+                // Construct the final URL with query parameters
+                var finalUrl = queryParams.toString();
+                console.log(finalUrl)
+                // Perform an AJAX request with the final URL
+                $.ajax({
+                    url: '/dashboard/projects',
+                    type: 'GET',
+                    data: finalUrl,
+                    success: function(response) {
+                        // Handle success response
+                        console.log('Ajax request successful');
+                        toastr.success('Export successful');
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors
+                        console.error('Ajax request error:', error);
+                    }
+                });
+            });
+
+
         });
-        
+
         $(function() {
             bsCustomFileInput.init();
         });
-        
+
         // Initialize select2
-    $('.select2').select2();
+        $('.select2').select2();
 
-    // Update original select element based on the order in Select2
-    function updateOriginalSelect(selectId) {
-        var select = $('#' + selectId);
-        var orderedValues = select.next('.select2-container').find('.select2-selection__rendered').children('li[title]').map(function() {
-            return $(this).attr('title');
-        }).get();
+        // Update original select element based on the order in Select2
+        function updateOriginalSelect(selectId) {
+            var select = $('#' + selectId);
+            var orderedValues = select.next('.select2-container').find('.select2-selection__rendered').children('li[title]')
+                .map(function() {
+                    return $(this).attr('title');
+                }).get();
 
-        select.children('option').sort(function(a, b) {
-            var aIndex = orderedValues.indexOf($(a).text());
-            var bIndex = orderedValues.indexOf($(b).text());
-            return aIndex - bIndex;
-        }).appendTo(select);
-    }
-
-    // Apply sortable functionality to select2 options
-    $('.select2-selection__rendered').sortable({
-        items: 'li:not(.select2-search)',
-        stop: function(event, ui) {
-            var selectId = $(this).closest('.select2-container').prev('select').attr('id');
-            updateOriginalSelect(selectId);
+            select.children('option').sort(function(a, b) {
+                var aIndex = orderedValues.indexOf($(a).text());
+                var bIndex = orderedValues.indexOf($(b).text());
+                return aIndex - bIndex;
+            }).appendTo(select);
         }
-    });
-    
+
+        // Apply sortable functionality to select2 options
+        $('.select2-selection__rendered').sortable({
+            items: 'li:not(.select2-search)',
+            stop: function(event, ui) {
+                var selectId = $(this).closest('.select2-container').prev('select').attr('id');
+                updateOriginalSelect(selectId);
+            }
+        });
+
         $('.select1').select2({
             allowClear: true
 
@@ -310,6 +359,150 @@
                 });
         });
 
+        $(function() {
+            $('#reservation').daterangepicker({
+                startDate: moment().subtract(6, 'days'), // Start date is today minus 6 days (7 days ago)
+                endDate: moment(), // End date is today
+                ranges: {
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                        'month').endOf('month')]
+                }
+            });
+        });
+
+
+        const xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+
+        const myChart = new Chart("myChart", {
+            type: "line",
+
+            data: {
+                labels: xValues,
+                datasets: [{
+                    label: "communities",
+                    data: [],
+                    borderColor: "red",
+                    fill: false
+                }, {
+                    label: "Developers",
+                    data: [],
+                    borderColor: "orange",
+                    fill: false
+                }, {
+                    label: "Projects",
+                    data: [],
+                    borderColor: "green",
+                    fill: false
+                }, {
+                    label: "Properties",
+                    data: [],
+                    borderColor: "blue",
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                    display: true,
+
+                }
+            }
+        });
+
+        var startDate = moment().subtract(7, 'days');
+        var endDate = moment();
+
+        // Set the initial content of the reportrange span
+        $('#reportrange').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format('MMMM D, YYYY'));
+
+        function generateDateRange(startDate, endDate) {
+            const dates = [];
+            const currentDate = moment(startDate);
+            while (currentDate <= endDate) {
+                dates.push(currentDate.format('MMMM D, YYYY'));
+                currentDate.add(1, 'days');
+            }
+            return dates;
+        }
+        //Date range as a button
+        $('#daterange-btn').daterangepicker({
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf(
+                        'month')]
+                },
+                startDate: moment().subtract(7, 'days'),
+                endDate: moment()
+            },
+            function(start, end) {
+                $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+
+                // Generate x-axis values for all dates within the selected range
+                const xValues = generateDateRange(start, end);
+
+                // Update chart labels with new x-axis values
+                myChart.data.labels = xValues;
+                myChart.update();
+
+                console.log('pppp')
+
+                $.ajax({
+                    url: '/dashboard/ajaxData',
+                    type: 'GET',
+                    data: {
+                        startDate: start.format('YYYY-MM-DD'),
+                        endDate: end.format('YYYY-MM-DD')
+                    },
+                    success: function(response) {
+                        // Extract data from response
+                        const interval = response.interval;
+                        const communityCounts = response.communityCounts;
+                        const developerCounts = response.developerCounts;
+                        const projectCounts = response.projectCounts;
+                        const propertyCounts = response.propertyCounts;
+
+                        // Generate x-axis values for all dates within the selected range
+                        const xValues = generateDateRange(start, end);
+
+                        // Update chart labels with new x-axis values
+                        myChart.data.labels = xValues;
+
+                        // Update chart datasets with new data
+                        updateChart(myChart, communityCounts, developerCounts, projectCounts,
+                            propertyCounts);
+
+                        // Update the chart
+                        myChart.update();
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors
+                        console.error(error);
+                    }
+                });
+            })
+
+        function updateChart(chart, communityCounts, developerCounts, projectCounts, propertyCounts) {
+            chart.data.datasets[0].data = mapCountsToDates(chart.data.labels, communityCounts);
+            chart.data.datasets[1].data = mapCountsToDates(chart.data.labels, developerCounts);
+            chart.data.datasets[2].data = mapCountsToDates(chart.data.labels, projectCounts);
+            chart.data.datasets[3].data = mapCountsToDates(chart.data.labels, propertyCounts);
+        }
+
+        function mapCountsToDates(labels, counts) {
+            return labels.map(label => {
+                // Convert the label format to match the format of counts
+                const formattedLabel = moment(label, 'MMMM D, YYYY').format('YYYY-MM-DD');
+                return counts[formattedLabel] || 0;
+            });
+        }
         $(function() {
             // Summernote
             $('#summernote').summernote({
@@ -365,10 +558,10 @@
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#propertyTable_wrapper .col-md-6:eq(0)');
         });
-        
+
         $(document).ready(function() {
 
-            var table1 = $('#applicantswithcareer').DataTable( {
+            var table1 = $('#applicantswithcareer').DataTable({
                 "ordering": true,
                 "info": true,
                 "searching": true,
@@ -377,47 +570,51 @@
                 "lengthMenu": [10, 25, 50, 75, 100, 150, 200, 250, 500, 1000],
                 "autoWidth": true,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-                } );
-
-            var table2 = $('#applicantswithoutcareer').DataTable( {
-                "ordering": true,
-                "info": true,
-                "searching": true,
-                "responsive": true,
-                "lengthChange": true,
-                "lengthMenu": [10, 25, 50, 75, 100, 150, 200, 250, 500, 1000],
-                "autoWidth": true,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            } );
-
-            var table3 = $('#allapplicants').DataTable( {
-                "ordering": true,
-                "info": true,
-                "searching": true,
-                "responsive": true,
-                "lengthChange": true,
-                "lengthMenu": [10, 25, 50, 75, 100, 150, 200, 250, 500, 1000],
-                "autoWidth": true,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            } );
-            $('#cronTable').DataTable({
-                order: [[1, 'asc']],
             });
 
-            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (event) {
-                
+            var table2 = $('#applicantswithoutcareer').DataTable({
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "responsive": true,
+                "lengthChange": true,
+                "lengthMenu": [10, 25, 50, 75, 100, 150, 200, 250, 500, 1000],
+                "autoWidth": true,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            });
+
+            var table3 = $('#allapplicants').DataTable({
+                "ordering": true,
+                "info": true,
+                "searching": true,
+                "responsive": true,
+                "lengthChange": true,
+                "lengthMenu": [10, 25, 50, 75, 100, 150, 200, 250, 500, 1000],
+                "autoWidth": true,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            });
+            $('#cronTable').DataTable({
+                order: [
+                    [1, 'asc']
+                ],
+            });
+
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(event) {
+
                 var tabID = $(event.target).attr('data-bs-target');
-                if ( tabID === '#career' ) {
+                if (tabID === '#career') {
                     table1.columns.adjust().responsive.recalc();
-                }if ( tabID == '#withoutcareer' ) {
+                }
+                if (tabID == '#withoutcareer') {
                     console.log('lll')
                     table2.columns.adjust().responsive.recalc();
-                }if ( tabID === '#all' ) {
+                }
+                if (tabID === '#all') {
                     table3.columns.adjust().responsive.recalc();
                 }
-            } );
+            });
 
-        } );
+        });
 
         $("#storeForm").submit(function(e) {
             e.preventDefault();
@@ -441,69 +638,76 @@
 
                 contentType: false,
                 success: function(response) {
-                    if(response.success == true){
+                    if (response.success == true) {
                         toastr.success(response.message, 'Success');
                         setTimeout(function() {
                             location.href = response.redirect
                         }, 800);
-                        
-                    }else{
+
+                    } else {
                         toastr.error(response.message);
                     }
                 },
                 complete: function() {
-                    
+
                     $(this).attr('disabled', false);
-                    
+
                 },
                 error: function(response) {
-                    
-                    if(response.status == 500 ){
+
+                    if (response.status == 500) {
                         toastr.error(response.responseJSON.message);
-                    } else if(response.status == 422){
+                    } else if (response.status == 422) {
                         // toastr.error('Fill the Mandatory fields');
-                        $.each(response.responseJSON.errors,function(field_name,error){
-                            if(field_name.includes(".")){
+                        $.each(response.responseJSON.errors, function(field_name, error) {
+                            if (field_name.includes(".")) {
                                 toastr.error(error);
                                 new_field_name = field_name.split(".")[0];
                                 console.log(new_field_name);
-                                $(document).find('[id='+new_field_name+']').addClass('is-invalid')
-                                $(document).find('[id='+new_field_name+']').after('<span class="invalid-feedback" role="alert"><strong>' +error+ '</strong></span>')
+                                $(document).find('[id=' + new_field_name + ']').addClass(
+                                    'is-invalid')
+                                $(document).find('[id=' + new_field_name + ']').after(
+                                    '<span class="invalid-feedback" role="alert"><strong>' +
+                                    error + '</strong></span>')
                             }
-                            $(document).find('[name='+field_name+']').addClass('is-invalid')
-                            $(document).find('[name='+field_name+']').after('<span class="invalid-feedback" role="alert"><strong>' +error+ '</strong></span>')
+                            $(document).find('[name=' + field_name + ']').addClass('is-invalid')
+                            $(document).find('[name=' + field_name + ']').after(
+                                '<span class="invalid-feedback" role="alert"><strong>' +
+                                error + '</strong></span>')
                         })
-                    }else{
+                    } else {
                         toastr.error(response);
                     }
                 }
             });
         });
-        
+
         $('#showItems').on('change', function() {
-        	var items = this.value;
-        	var currentUrl = window.location.href;
-        	var url = new URL(currentUrl);
-        	url.searchParams.set("page", 1);
-        	url.searchParams.set("item", items);
-        	var newUrl = url.href;
-          	window.location.href = newUrl;
+            var items = this.value;
+            var currentUrl = window.location.href;
+            var url = new URL(currentUrl);
+            url.searchParams.set("page", 1);
+            url.searchParams.set("item", items);
+            var newUrl = url.href;
+            window.location.href = newUrl;
         });
-        
-        $(function () {
+
+        $(function() {
             $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-              event.preventDefault();
-              $(this).ekkoLightbox({
-                alwaysShowClose: true
-              });
+                event.preventDefault();
+                $(this).ekkoLightbox({
+                    alwaysShowClose: true
+                });
             });
-        
-            $('.filter-container').filterizr({gutterPixels: 3});
+
+            $('.filter-container').filterizr({
+                gutterPixels: 3
+            });
             $('.btn[data-filter]').on('click', function() {
-              $('.btn[data-filter]').removeClass('active');
-              $(this).addClass('active');
+                $('.btn[data-filter]').removeClass('active');
+                $(this).addClass('active');
             });
-         })
+        })
     </script>
 
     @yield('js')
