@@ -13,16 +13,23 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Illuminate\Http\Request;
 
-
-class ProjectDataExport implements FromQuery, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
+class ProjectDataExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
 {
-    protected $request;
 
-    public function __construct($request)
+    protected $collection;
+
+    public function __construct($collection)
     {
-        $this->request = $request;
+        $this->collection = $collection;
     }
 
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function collection()
+    {
+        return $this->collection;
+    }
 
     public function headings(): array
     {
@@ -44,21 +51,6 @@ class ProjectDataExport implements FromQuery, WithHeadings, WithMapping, WithSty
             'Created At',
             'Updated At',
         ];
-    }
-    public function query()
-    {
-        $collection = Project::mainProject()->with('user');
-        Log::info($this->request);
-        Log::info(isset($this->request['permit_number']));
-        if (isset($this->request['permit_number'])) {
-            if ($this->request['permit_number'] == '1') {
-                $collection->whereNotNull('permit_number');
-            } elseif ($this->request['permit_number'] == '0') {
-                $collection->whereNull('permit_number');
-            }
-        }
-
-        return $collection;
     }
 
     public function map($project): array

@@ -86,9 +86,6 @@ class ProjectController extends Controller
             $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
 
             $collection->whereBetween('created_at', [$startDate, $endDate]);
-
-            Log::info($startDate);
-            Log::info($endDate);
         }
         if (isset($request->status)) {
             $collection->where('status', $request->status);
@@ -137,23 +134,39 @@ class ProjectController extends Controller
         if (isset($request->updated_brochure)) {
             $collection->where('updated_brochure', $request->updated_brochure);
         }
-        if (isset($request->export)) {
-            $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
 
-            ProjectExportAndEmailData::dispatch($request->all());
-            return response()->json([
-                'success' => true,
-                'message' => 'Please Check Email, Report has been sent.',
-                //'redirect' => route('dashboard.projects.index'),
-            ]);
-        }
 
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $projects = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy($orderBy, $direction)->paginate($current_page);
+            $collection = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy($orderBy, $direction);
+
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                ProjectExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $projects = $collection->paginate($current_page);
+            }
         } else {
-            $projects = $collection->latest()->paginate($current_page);
+            $collection = $collection->latest();
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                ProjectExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $projects = $collection->paginate($current_page);
+            }
         }
 
 

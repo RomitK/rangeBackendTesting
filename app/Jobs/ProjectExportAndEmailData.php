@@ -26,11 +26,12 @@ class ProjectExportAndEmailData implements ShouldQueue
      *
      * @return void
      */
-    public $request;
+    public $request, $collection;
 
-    public function __construct($request)
+    public function __construct($request, $collection)
     {
         $this->request = $request;
+        $this->collection = $collection;
     }
 
     /**
@@ -41,7 +42,7 @@ class ProjectExportAndEmailData implements ShouldQueue
     public function handle()
     {
 
-        $export = new ProjectDataExport($this->request);
+        $export = new ProjectDataExport($this->collection);
         //$export = $export->query()->latest()->limit(1)->get();
         $excelFile = Excel::raw($export, \Maatwebsite\Excel\Excel::XLSX);
 

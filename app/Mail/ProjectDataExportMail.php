@@ -26,7 +26,7 @@ class ProjectDataExportMail extends Mailable
     {
         return $this->view('mails.project-data-export')
             ->subject('Project Data')
-            ->attachData($this->excelFile, 'data.xlsx', [
+            ->attachData($this->excelFile, 'Projects.xlsx', [
                 'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             ])->with('userName', $this->userName);
     }
