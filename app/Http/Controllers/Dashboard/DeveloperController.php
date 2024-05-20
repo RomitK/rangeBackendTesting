@@ -18,10 +18,13 @@ use App\Models\{
     MetaDetail,
     Project
 };
+use App\Jobs\{
+    DeveloperExportAndEmailData
+};
 
 class DeveloperController extends Controller
 {
-     function __construct()
+    function __construct()
     {
         $this->middleware(function ($request, $next) {
             // Check if the user has the "real_estate" permission
@@ -78,9 +81,34 @@ class DeveloperController extends Controller
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $developers = $collection->orderByRaw('ISNULL(developerOrder)')->orderBy($orderBy, $direction)->paginate($current_page);
+            $collection = $collection->orderByRaw('ISNULL(developerOrder)')->orderBy($orderBy, $direction);
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                DeveloperExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $developers = $collection->paginate($current_page);
+            }
         } else {
-            $developers = $collection->latest()->paginate($current_page);
+
+            $collection = $collection->latest();
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                DeveloperExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $developers = $collection->paginate($current_page);
+            }
         }
 
         return view('dashboard.realEstate.developers.index', compact(

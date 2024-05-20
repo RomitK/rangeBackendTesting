@@ -295,3 +295,31 @@ if (!function_exists('sendWebsiteStatReport')) {
         }
     }
 }
+if (!function_exists('countPropertiesForDeveloper')) {
+    function countPropertiesForDeveloper($developerId)
+    {
+        // Load the developer with projects and count properties using eager loading with count
+        $developer = Developer::with(['projects' => function ($query) {
+            $query->withCount('properties');
+        }])->findOrFail($developerId);
+
+        // Calculate the total properties count
+        $totalPropertiesCount = $developer->projects->sum('properties_count');
+
+        return $totalPropertiesCount;
+    }
+}
+if (!function_exists('countPropertiesForCommunity')) {
+    function countPropertiesForCommunity($communityId)
+    {
+        // Load the developer with projects and count properties using eager loading with count
+        $community = Community::with(['projects' => function ($query) {
+            $query->withCount('properties');
+        }])->findOrFail($communityId);
+
+        // Calculate the total properties count
+        $totalPropertiesCount = $community->projects->sum('properties_count');
+
+        return $totalPropertiesCount;
+    }
+}

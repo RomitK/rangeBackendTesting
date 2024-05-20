@@ -82,10 +82,24 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-3">
                                         <label for="keyword"> Keyword</label>
                                         <input type="text" value="{{ request()->keyword }}" class="form-control"
                                             id="keyword" placeholder="Enter Name" name="keyword">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label for="date_range">Added At <span
+                                                    id="date_range_show">{{ request()->data_range_input }}</span></label>
+                                            <input type="hidden" value="{{ request()->data_range_input }}"
+                                                name="data_range_input" id="data_range_input">
+                                            <div class="input-group">
+                                                <button type="button" class="btn btn-default float-right" id="date_range">
+                                                    <i class="far fa-calendar-alt"></i> Date Range
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <br>
@@ -95,7 +109,10 @@
                                         <button type="submit" class="btn btn-block btn-primary search_clear_btn"
                                             name="submit_filter" value="1">Search</button>
                                     </div>
-
+                                    <div class="col-md-3">
+                                        <a class="btn btn-block btn-info search_clear_btn" id="exportDeveloper"
+                                            href="{{ url('dashboard/developers') }}">Download</a>
+                                    </div>
                                     <div class="col-md-3">
                                         @if (request()->submit_filter)
                                             <a class="btn btn-block btn-warning search_clear_btn"
@@ -184,10 +201,10 @@
                                                     </a>
 
                                                     <!-- <a class="btn btn-secondary btn-sm"
-                                                           href="{{ route('dashboard.developer.details', $developer->id) }}">
-                                                           <i class="fas fa-database"></i>
-                                                           Details
-                                                        </a> -->
+                                                                   href="{{ route('dashboard.developer.details', $developer->id) }}">
+                                                                   <i class="fas fa-database"></i>
+                                                                   Details
+                                                                </a> -->
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
                                                             href="{{ route('dashboard.developer.meta', $developer->id) }}">

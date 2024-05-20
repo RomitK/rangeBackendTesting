@@ -35,7 +35,7 @@ class Community extends Model implements HasMedia
      */
     protected $richTextFields = [
         'description',
-       // 'short_description'
+        // 'short_description'
     ];
     /**
      * The attributes that should be append with arrays.
@@ -49,12 +49,12 @@ class Community extends Model implements HasMedia
         //'imageGallery',
         // 'video',
         //'formattedCreatedAt',
-        
+
     ];
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
@@ -68,22 +68,22 @@ class Community extends Model implements HasMedia
      */
     public function getMainImageAttribute()
     {
-        if(url_exists($this->getFirstMediaUrl('mainImages', 'resize'))){
+        if (url_exists($this->getFirstMediaUrl('mainImages', 'resize'))) {
             return $this->getFirstMediaUrl('mainImages', 'resize');
         }
         return false;
         //return $this->getFirstMediaUrl('mainImages', 'resize');
     }
-    
+
     public function getListMainImageAttribute()
     {
-        if(url_exists($this->getFirstMediaUrl('listMainImages', 'resize'))){
+        if (url_exists($this->getFirstMediaUrl('listMainImages', 'resize'))) {
             return $this->getFirstMediaUrl('listMainImages', 'resize');
         }
         return false;
         //return $this->getFirstMediaUrl('mainImages', 'resize');
     }
-    
+
     public function getClusterPlanAttribute()
     {
         return $this->getFirstMediaUrl('clusterPlans', 'resize');
@@ -100,56 +100,65 @@ class Community extends Model implements HasMedia
     //     }
     //   return $subImages;
     // }
-    
-    
-     public function getImageGalleryAttribute()
+
+
+    public function getImageGalleryAttribute()
     {
         $gallery = array();
-        foreach($this->getMedia('imageGalleries')->sortBy(function ($mediaItem, $key) {  $order = $mediaItem->getCustomProperty('order'); return $order ?? PHP_INT_MAX;}) as $image){
-            if($image->hasGeneratedConversion('resize_gallery')){
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl('resize_gallery'),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
-            }else{
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl(),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
+        foreach ($this->getMedia('imageGalleries')->sortBy(function ($mediaItem, $key) {
+            $order = $mediaItem->getCustomProperty('order');
+            return $order ?? PHP_INT_MAX;
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_gallery')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_gallery'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
             }
         }
-       return $gallery;
+        return $gallery;
     }
-    
+
     public function getvideoAttribute()
     {
         return $this->getFirstMediaUrl('videos');
     }
-    public function registerMediaConversions(Media $media = null) : void
+    public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             //->height(600)
             ->performOnCollections('mainImages')
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
-           // ->height(400)
+            // ->height(400)
             ->performOnCollections('listMainImages')
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             //->width(800)
             ->height(1000)
             ->performOnCollections('clusterPlans')
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize_images')
             ->format(Manipulations::FORMAT_WEBP)
             //->height(600)
@@ -160,6 +169,10 @@ class Community extends Model implements HasMedia
     {
         return Carbon::parse($this->created_at)->format('d m Y');
     }
+    public function getFormattedUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($this->updated_at)->format('d m Y');
+    }
     /**
      * FIND Relationship
      */
@@ -167,7 +180,7 @@ class Community extends Model implements HasMedia
     {
         return $this->morphMany(Stat::class, 'statable');
     }
-     public function amenities()
+    public function amenities()
     {
         return $this->belongsToMany(Amenity::class, 'community_amenities', 'community_id', 'amenity_id');
     }
@@ -196,8 +209,9 @@ class Community extends Model implements HasMedia
     {
         return $this->morphMany(Tag::class, 'tagable');
     }
-    public function approval(){
-        return $this->belongsTo(User::class,'approval_id');
+    public function approval()
+    {
+        return $this->belongsTo(User::class, 'approval_id');
     }
     public function updatedBy()
     {
@@ -227,9 +241,9 @@ class Community extends Model implements HasMedia
 
 
     /**
-    * FIND local scope
-    */
-     public function scopeApproved($query)
+     * FIND local scope
+     */
+    public function scopeApproved($query)
     {
         return $query->where('is_approved', config('constants.approved'));
     }

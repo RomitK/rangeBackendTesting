@@ -7,7 +7,7 @@
 
 <body>
     <p>Hi {{ $userName }}, </p>
-    <p>Please find the filter report for the Projects</p>
+    <p>Please find the filter report for the Communities</p>
 
 </body>
 

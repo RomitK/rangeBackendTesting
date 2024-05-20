@@ -7,15 +7,15 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use App\Exports\CommunityDataExport;
+use App\Mail\CommunityDataExportMail;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ProjectDataExport;
-use App\Mail\ProjectDataExportMail;
 use Illuminate\Support\Facades\Log;
 
-class ProjectExportAndEmailData implements ShouldQueue
+
+class CommunityExportAndEmailData implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -39,12 +39,13 @@ class ProjectExportAndEmailData implements ShouldQueue
      */
     public function handle()
     {
+        // Log the export data (optional)
+        Log::info('CommunityExportAndEmailData');
 
-        $export = new ProjectDataExport($this->collection);
+        $export = new CommunityDataExport($this->collection);
         $excelFile = Excel::raw($export, \Maatwebsite\Excel\Excel::XLSX);
 
-        // Log the export data (optional)
-        Log::info('ProjectExportAndEmailData');
+
 
         // Send email with the exported data as attachment
         if ($this->request['email'] === 'admin@gmail.com') {
@@ -52,6 +53,6 @@ class ProjectExportAndEmailData implements ShouldQueue
         } else {
             $email = $this->request['email'];
         }
-        Mail::to($email)->send(new ProjectDataExportMail($excelFile, $this->request['userName']));
+        Mail::to($email)->send(new CommunityDataExportMail($excelFile, $this->request['userName']));
     }
 }

@@ -17,7 +17,7 @@ use Carbon\Carbon;
 
 class Developer extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText,HasSlug;
+    use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText, HasSlug;
     /**
      * The dates attributes
      *
@@ -48,13 +48,14 @@ class Developer extends Model implements HasMedia
         'video',
         'image',
         'gallery',
-        'formattedCreatedAt'
+        'formattedCreatedAt',
+        'formattedUpdatedAt'
     ];
 
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
@@ -66,28 +67,37 @@ class Developer extends Model implements HasMedia
     /**
      * GET Attributes
      */
-     
+
     public function getGalleryAttribute()
     {
         $gallery = array();
-        foreach($this->getMedia('gallery')->sortBy(function ($mediaItem, $key) {  $order = $mediaItem->getCustomProperty('order'); return $order ?? PHP_INT_MAX; }) as $image){
-            if($image->hasGeneratedConversion('resize_gallery')){
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl('resize_gallery'),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
-            }else{
-                array_push($gallery, 
-                ['id'=> $image->id, 
-                'path'=>$image->getUrl(),
-                'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                ]);
+        foreach ($this->getMedia('gallery')->sortBy(function ($mediaItem, $key) {
+            $order = $mediaItem->getCustomProperty('order');
+            return $order ?? PHP_INT_MAX;
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_gallery')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_gallery'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
             }
         }
-       return $gallery;
+        return $gallery;
     }
     public function getLogoAttribute()
     {
@@ -105,20 +115,26 @@ class Developer extends Model implements HasMedia
     {
         return Carbon::parse($this->created_at)->format('d m Y');
     }
-    public function registerMediaConversions(Media $media = null) : void
+    public function getFormattedUpdatedAtAttribute($value)
+    {
+        return Carbon::parse($this->updated_at)->format('d m Y');
+    }
+
+    
+    public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
             //->height(427)
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('logos')
             ->nonQueued();
-        
+
         $this->addMediaConversion('resize_images')
             // ->height(300)
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('images')
             ->nonQueued();
-            
+
         $this->addMediaConversion('resize_gallery')
             ->format(Manipulations::FORMAT_WEBP)
             //->height(600)
@@ -128,13 +144,14 @@ class Developer extends Model implements HasMedia
             // ->watermarkHeight(70, Manipulations::UNIT_PERCENT)
             // ->watermarkOpacity(30)
             ->performOnCollections('gallery')
-            ->nonQueued();    
+            ->nonQueued();
     }
     /**
      * FIND Relationship
      */
-    public function approval(){
-        return $this->belongsTo(User::class,'approval_id');
+    public function approval()
+    {
+        return $this->belongsTo(User::class, 'approval_id');
     }
     public function updatedBy()
     {
@@ -156,6 +173,7 @@ class Developer extends Model implements HasMedia
     {
         return $this->hasMany(Property::class, 'developer_id', 'id');
     }
+
     public function tags()
     {
         return $this->morphMany(Tag::class, 'tagable');
@@ -178,8 +196,8 @@ class Developer extends Model implements HasMedia
         return $this->hasMany(Award::class);
     }
     /**
-    * FIND local scope
-    */
+     * FIND local scope
+     */
     public function scopeApproved($query)
     {
         return $query->where('is_approved', config('constants.approved'));

@@ -13,8 +13,7 @@ use App\Exports\PropertyDataExport;
 use App\Mail\PropertyDataExportMail;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
-use App\Models\Project;
-use Illuminate\Support\Facades\Auth;
+
 
 class PropertyExportAndEmailData implements ShouldQueue
 {

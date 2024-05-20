@@ -8,8 +8,6 @@ use App\Http\Requests\Dashboard\{
     CommunityRequest,
     CommunityMetaRequest
 };
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Str;
 use App\Models\{
@@ -26,6 +24,12 @@ use App\Models\{
     Stat,
     Highlight,
     Project
+};
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\{
+    CommunityExportAndEmailData
 };
 
 class CommunityController extends Controller
@@ -78,7 +82,15 @@ class CommunityController extends Controller
         $collection = Community::with(['user' => function ($query) {
             return $query->select('id', 'name');
         }]);
+        if (isset($request->data_range_input)) {
+            $dateRange = $request->data_range_input;
+            // Use explode to split the date range by " - "
+            $dates = explode(' - ', $dateRange);
+            $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
+            $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
 
+            $collection->whereBetween('created_at', [$startDate, $endDate]);
+        }
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }
@@ -106,9 +118,35 @@ class CommunityController extends Controller
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $communities = $collection->orderByRaw('ISNULL(communityOrder)')->orderBy($orderBy, $direction)->paginate($current_page);
+            $collection = $collection->orderByRaw('ISNULL(communityOrder)')->orderBy($orderBy, $direction);
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                CommunityExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $communities = $collection->paginate($current_page);
+            }
         } else {
-            $communities = $collection->latest()->paginate($current_page);
+            $collection = $collection->latest();
+
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                CommunityExportAndEmailData::dispatch($request->all(), $collection->get());
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $communities = $collection->paginate($current_page);
+            }
         }
 
 

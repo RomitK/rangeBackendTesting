@@ -118,6 +118,20 @@
                                         <input type="text" value="{{ request()->keyword }}" class="form-control"
                                             id="keyword" placeholder="Enter Name" name="keyword">
                                     </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <label for="date_range">Added At <span
+                                                    id="date_range_show">{{ request()->data_range_input }}</span></label>
+                                            <input type="hidden" value="{{ request()->data_range_input }}"
+                                                name="data_range_input" id="data_range_input">
+                                            <div class="input-group">
+                                                <button type="button" class="btn btn-default float-right" id="date_range">
+                                                    <i class="far fa-calendar-alt"></i> Date Range
+                                                    <i class="fas fa-caret-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                 <div class="row">
@@ -126,7 +140,10 @@
                                         <button type="submit" class="btn btn-block btn-primary search_clear_btn"
                                             name="submit_filter" value="1">Search</button>
                                     </div>
-
+                                    <div class="col-md-3">
+                                        <a class="btn btn-block btn-info search_clear_btn" id="exportCommunity"
+                                            href="{{ url('dashboard/communities') }}">Download</a>
+                                    </div>
                                     <div class="col-md-3">
                                         @if (request()->submit_filter)
                                             <a class="btn btn-block btn-warning search_clear_btn"
@@ -226,11 +243,11 @@
                                                         </a>
                                                     @endcan
                                                     @can(config('constants.Permissions.real_estate'))
-                                                    <a class="btn btn-info btn-sm"
-                                                        href="{{ route('dashboard.communities.edit', $community->id) }}">
-                                                        <i class="fas fa-pencil-alt"></i>
-                                                        Edit
-                                                    </a>
+                                                        <a class="btn btn-info btn-sm"
+                                                            href="{{ route('dashboard.communities.edit', $community->id) }}">
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                            Edit
+                                                        </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
