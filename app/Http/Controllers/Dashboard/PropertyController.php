@@ -33,7 +33,8 @@ use App\Models\{
 };
 use App\Jobs\{
     StorePropertyBrochure,
-    StorePropertySaleOffer
+    StorePropertySaleOffer,
+    PropertyExportAndEmailData
 };
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +63,15 @@ class PropertyController extends Controller
         }
 
         $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
+
+
+        if (isset($request->data_range_input)) {
+            $dateRange = $request->data_range_input;
+            $dates = explode(' - ', $dateRange);
+            $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
+            $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
+            $collection->whereBetween('created_at', [$startDate, $endDate]);
+        }
 
         if (isset($request->agent_ids) && !empty(array_filter($request->agent_ids))) {
             $agent_ids = $request->agent_ids;
@@ -135,9 +145,35 @@ class PropertyController extends Controller
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy($orderBy, $direction)->paginate($current_page);
+            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy($orderBy, $direction);
+
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                PropertyExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $properties = $collection->paginate($current_page);
+            }
         } else {
-            $properties = $collection->latest()->paginate($current_page);
+            $collection = $collection->latest();
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                PropertyExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $projects = $collection->paginate($current_page);
+            }
+
+            $properties = $collection->paginate($current_page);
         }
 
         //$properties = $collection->latest()->paginate($current_page);

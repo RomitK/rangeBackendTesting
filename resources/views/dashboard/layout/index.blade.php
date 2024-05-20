@@ -259,31 +259,41 @@
 
             $('#exportProject').click(function(e) {
                 e.preventDefault(); // Prevent default link behavior
-
                 var url = $(this).attr('href'); // Get the URL of the link
                 var queryParams = new URLSearchParams(window.location.search); // Get query parameters
                 queryParams.set('export', '1');
-                // Construct the final URL with query parameters
                 var finalUrl = queryParams.toString();
-                console.log(finalUrl)
-                // Perform an AJAX request with the final URL
                 $.ajax({
                     url: '/dashboard/projects',
                     type: 'GET',
                     data: finalUrl,
                     success: function(response) {
-                        // Handle success response
-                        console.log('Ajax request successful');
                         toastr.success(response.message);
                     },
                     error: function(xhr, status, error) {
-                        // Handle errors
                         console.error('Ajax request error:', error);
                     }
                 });
             });
 
-
+            $('#exportProperty').click(function(e) {
+                e.preventDefault(); // Prevent default link behavior
+                var url = $(this).attr('href'); // Get the URL of the link
+                var queryParams = new URLSearchParams(window.location.search); // Get query parameters
+                queryParams.set('export', '1');
+                var finalUrl = queryParams.toString();
+                $.ajax({
+                    url: '/dashboard/properties',
+                    type: 'GET',
+                    data: finalUrl,
+                    success: function(response) {
+                        toastr.success(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ajax request error:', error);
+                    }
+                });
+            });
         });
 
         $(function() {
