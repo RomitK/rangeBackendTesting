@@ -136,10 +136,23 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->midd
 
 Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dashboard', 'middleware' => 'auth'], function () {
 
-    Route::get('community-report', 'Reports\CommunityReport@index')->name('reports.communities');
-    Route::get('general-report', 'Reports\CommunityReport@general')->name('reports.general-report');
 
-    Route::get('ajaxData','Reports\CommunityReport@ajaxData')->name('reports.ajax-data');
+    Route::get('general-report', 'Reports\GeneralReport@index')->name('dashboard.reports.general-report');
+    Route::get('ajaxData', 'Reports\GeneralReport@ajaxData')->name('reports.ajax-data');
+
+    Route::get('communities-report', 'Reports\CommunityReport@index')->name('dashboard.reports.communities');
+    Route::get('ajaxCommunityReport', 'Reports\CommunityReport@ajaxCommunityReportData');
+
+    Route::get('developers-report', 'Reports\DeveloperReport@index')->name('dashboard.reports.developers');
+    Route::get('ajaxDeveloperReport', 'Reports\DeveloperReport@ajaxDeveloperReport');
+
+    Route::get('projects-report', 'Reports\ProjectReport@index')->name('dashboard.reports.projects');
+    Route::get('ajaxProjectReport', 'Reports\ProjectReport@ajaxProjectReport');
+
+
+    Route::get('properties-report', 'Reports\PropertyReport@index')->name('dashboard.reports.properties');
+    Route::get('ajaxPropertyReport', 'Reports\PropertyReport@ajaxPropertyReport');
+
 
     Route::resource('roles', RoleController::class, ['as' => 'dashboard']);
     Route::resource('tags', TagController::class, ['as' => 'dashboard']);

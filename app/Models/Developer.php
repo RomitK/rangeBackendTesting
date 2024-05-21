@@ -120,7 +120,7 @@ class Developer extends Model implements HasMedia
         return Carbon::parse($this->updated_at)->format('d m Y');
     }
 
-    
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('resize')
@@ -171,8 +171,13 @@ class Developer extends Model implements HasMedia
     }
     public function properties()
     {
-        return $this->hasMany(Property::class, 'developer_id', 'id');
+        return $this->projects()->withCount('properties');
     }
+
+    // public function properties()
+    // {
+    //     return $this->hasMany(Property::class, 'developer_id', 'id');
+    // }
 
     public function tags()
     {

@@ -4,31 +4,18 @@ namespace App\Http\Controllers\Dashboard\Reports;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{
-    Amenity,
-    Accommodation,
-    Category,
-    CompletionStatus,
-    Community,
-    CommunityProximities,
-    Subcommunity,
-    Developer,
-    OfferType,
-    TagCategory,
-    Stat,
-    Highlight,
-    Project,
-    Property
-};
 use Carbon\Carbon;
+use App\Models\{
+    Developer
+};
 
-class CommunityReport extends Controller
+class DeveloperReport extends Controller
 {
     public function index(Request $request)
     {
-        return view('dashboard.reports.communities.index');
+        return view('dashboard.reports.developers.index');
     }
-    public function ajaxCommunityReportData(Request $request)
+    public function ajaxDeveloperReport(Request $request)
     {
         try {
             $colorMappingStatus = [
@@ -42,7 +29,7 @@ class CommunityReport extends Controller
                 'rejected' => '#6c757d', // Gray
             ];
 
-            $collection = Community::query();
+            $collection = Developer::query();
 
             if (isset($request->startDate) && isset($request->endDate)) {
                 $startDate = Carbon::parse($request->startDate);
@@ -78,16 +65,16 @@ class CommunityReport extends Controller
                 })
                 ->toArray();
 
-            // Fetch communities with project and property counts
+            // Fetch developers with project and property counts
             $projectPropertiseWiseData = $projectPropertiseWiseCollection->with(['projects', 'projects.properties'])
                 ->get()
-                ->map(function ($community) {
-                    $projectCount = $community->projects->count();
-                    $propertyCount = $community->projects->sum(function ($project) {
+                ->map(function ($developer) {
+                    $projectCount = $developer->projects->count();
+                    $propertyCount = $developer->projects->sum(function ($project) {
                         return $project->properties->count();
                     });
                     return [
-                        'name' => $community->name,
+                        'name' => $developer->name,
                         'projects' => $projectCount,
                         'properties' => $propertyCount,
                     ];
@@ -100,7 +87,7 @@ class CommunityReport extends Controller
                 'projectPropertiseWiseData' => $projectPropertiseWiseData
             ];
 
-            return $this->success('Communities Report', $data, 200);
+            return $this->success('Developer Report', $data, 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }

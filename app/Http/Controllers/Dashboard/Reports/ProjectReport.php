@@ -4,31 +4,18 @@ namespace App\Http\Controllers\Dashboard\Reports;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{
-    Amenity,
-    Accommodation,
-    Category,
-    CompletionStatus,
-    Community,
-    CommunityProximities,
-    Subcommunity,
-    Developer,
-    OfferType,
-    TagCategory,
-    Stat,
-    Highlight,
-    Project,
-    Property
-};
 use Carbon\Carbon;
+use App\Models\{
+    Project
+};
 
-class CommunityReport extends Controller
+class ProjectReport extends Controller
 {
     public function index(Request $request)
     {
-        return view('dashboard.reports.communities.index');
+        return view('dashboard.reports.projects.index');
     }
-    public function ajaxCommunityReportData(Request $request)
+    public function ajaxProjectReport(Request $request)
     {
         try {
             $colorMappingStatus = [
@@ -42,7 +29,7 @@ class CommunityReport extends Controller
                 'rejected' => '#6c757d', // Gray
             ];
 
-            $collection = Community::query();
+            $collection = Project::mainProject();
 
             if (isset($request->startDate) && isset($request->endDate)) {
                 $startDate = Carbon::parse($request->startDate);
@@ -50,7 +37,10 @@ class CommunityReport extends Controller
                 $collection = $collection->whereBetween('created_at', [$startDate, $endDate]);
             }
 
-            $projectPropertiseWiseCollection = clone $collection;
+            $unitPropertiseWiseCollection = clone $collection;
+            $approvalDataCollection = clone $collection;
+            $permitWiseCollection = clone $collection;
+
 
             // Status-wise data
             $statusData = $collection->selectRaw('status, COUNT(*) as count')
@@ -65,8 +55,9 @@ class CommunityReport extends Controller
                 })
                 ->toArray();
 
+
             // Approval-wise data
-            $approvalData = $collection->selectRaw('is_approved, COUNT(*) as count')
+            $approvalData = $approvalDataCollection->selectRaw('is_approved, COUNT(*) as count')
                 ->groupBy('is_approved')
                 ->get()
                 ->map(function ($item) use ($colorMappingApproval) {
@@ -78,29 +69,48 @@ class CommunityReport extends Controller
                 })
                 ->toArray();
 
-            // Fetch communities with project and property counts
-            $projectPropertiseWiseData = $projectPropertiseWiseCollection->with(['projects', 'projects.properties'])
-                ->get()
-                ->map(function ($community) {
-                    $projectCount = $community->projects->count();
-                    $propertyCount = $community->projects->sum(function ($project) {
-                        return $project->properties->count();
-                    });
-                    return [
-                        'name' => $community->name,
-                        'projects' => $projectCount,
-                        'properties' => $propertyCount,
-                    ];
-                })->toArray();
 
+
+            $permitCollection = $permitWiseCollection->get();
+
+            $permitWiseCollection = $permitCollection->whereNotNull('permit_number');
+
+            $notpermitWiseCollection = $permitCollection->whereNull('permit_number');
+
+            // Permit number-wise data
+            $permitData = [
+                [
+                    'status' => 'With Permit Number',
+                    'count' => count($permitWiseCollection->all()),
+                    'color' => '#17a2b8', // Info
+                ],
+                [
+                    'status' => 'Without Permit Number',
+                    'count' => count($notpermitWiseCollection->all()),
+                    'color' => '#6c757d', // Secondary
+                ]
+            ];
+
+            // Fetch projects with project and property counts
+            $propertiseWiseData = $unitPropertiseWiseCollection->with(['properties', 'subProjects'])
+                ->get()
+                ->map(function ($project) {
+                    return [
+                        'name' => $project->title,
+                        'units' => $project->subProjects->count(),
+                        'properties' => $project->properties->count(),
+                    ];
+                })
+                ->toArray();
 
             $data = [
                 'statusWiseData' => $statusData,
                 'approvalWiseData' => $approvalData,
-                'projectPropertiseWiseData' => $projectPropertiseWiseData
+                'permitWiseData' => $permitData,
+                'propertiseWiseData' => $propertiseWiseData
             ];
 
-            return $this->success('Communities Report', $data, 200);
+            return $this->success('Project Report', $data, 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }

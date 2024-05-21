@@ -4,12 +4,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Communities Report</h1>
+                    <h1 class="m-0">Developers Report</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                        <li class="breadcrumb-item active">Communities Report</li>
+                        <li class="breadcrumb-item active">Developers Report</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -27,7 +27,7 @@
                                 <label>Select Date: (<span id="reportrange"></span>)</label>
 
                                 <div class="input-group">
-                                    <button type="button" class="btn btn-default float-right" id="daterange-communities">
+                                    <button type="button" class="btn btn-default float-right" id="daterange-developers">
                                         <i class="far fa-calendar-alt"></i> Date Range
                                         <i class="fas fa-caret-down"></i>
                                     </button>
@@ -161,7 +161,7 @@
 
             function generateProjectPropertiesDataHTML(data) {
                 let html =
-                    '<h5>Project Properties Data:</h5><table class="table"><thead><tr><th>Community Name</th><th>Projects</th><th>Properties</th></tr></thead><tbody>';
+                    '<h5>Project Properties Data:</h5><table class="table"><thead><tr><th>Developer Name</th><th>Projects</th><th>Properties</th></tr></thead><tbody>';
                 data.forEach(item => {
                     html +=
                         `<tr><td>${item.name}</td><td>${item.projects}</td><td>${item.properties}</td></tr>`;
@@ -194,7 +194,7 @@
 
             function fetchAndRenderData(startDate, endDate) {
                 $.ajax({
-                    url: '/dashboard/ajaxCommunityReport',
+                    url: '/dashboard/ajaxDeveloperReport',
                     type: 'GET',
                     data: {
                         startDate: startDate.format('YYYY-MM-DD'),
@@ -299,7 +299,7 @@
                 });
             }
 
-            $('#daterange-communities').daterangepicker({
+            $('#daterange-developers').daterangepicker({
                 ranges: {
                     'Today': [moment(), moment()],
                     'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -312,14 +312,14 @@
                 startDate: moment().subtract(7, 'days'),
                 endDate: moment()
             }, function(start, end) {
-                $('#daterange-communities').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                $('#daterange-developers').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
                     'MMMM D, YYYY'));
                 fetchAndRenderData(start, end);
             });
 
             $(document).ready(function() {
                 const currentPathName = window.location.pathname;
-                if (currentPathName === '/dashboard/communities-report') {
+                if (currentPathName === '/dashboard/developers-report') {
                     const endDate = moment();
                     const startDate = moment().subtract(7, 'days');
 

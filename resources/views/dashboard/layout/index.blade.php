@@ -250,54 +250,16 @@
     <script>
         $(document).ready(function() {
 
-            let CurrentPathName = window.location.pathname;
-            if (CurrentPathName === '/dashboard/general-report') {
+            // Get the current date
+            let endDate = new Date();
+            // Subtract 7 days from the current date
+            let startDate = new Date();
+            startDate.setDate(startDate.getDate() - 7);
+            // Format the dates as 'YYYY-MM-DD'
+            let formattedStartDate = startDate.toISOString().split('T')[0];
+            let formattedEndDate = endDate.toISOString().split('T')[0];
+            $('#reportrange').html(formattedStartDate + ' - ' + formattedStartDate);
 
-                // Get the current date
-                let endDate = new Date();
-
-                // Subtract 7 days from the current date
-                let startDate = new Date();
-                startDate.setDate(startDate.getDate() - 7);
-
-                // Format the dates as 'YYYY-MM-DD'
-                let formattedStartDate = startDate.toISOString().split('T')[0];
-                let formattedEndDate = endDate.toISOString().split('T')[0];
-
-                $.ajax({
-                    url: '/dashboard/ajaxData',
-                    type: 'GET',
-                    data: {
-                        startDate: formattedStartDate,
-                        endDate: formattedEndDate
-                    },
-                    success: function(response) {
-                        // Extract data from response
-                        const interval = response.interval;
-                        const communityCounts = response.communityCounts;
-                        const developerCounts = response.developerCounts;
-                        const projectCounts = response.projectCounts;
-                        const propertyCounts = response.propertyCounts;
-
-                        // Generate x-axis values for all dates within the selected range
-                        const xValues = generateDateRange(new Date(startDate), new Date(endDate));
-
-                        // Update chart labels with new x-axis values
-                        myChart.data.labels = xValues;
-
-                        // Update chart datasets with new data
-                        updateChart(myChart, communityCounts, developerCounts, projectCounts,
-                            propertyCounts);
-
-                        // Update the chart
-                        myChart.update();
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle errors
-                        console.error(error);
-                    }
-                });
-            }
 
             toastr.options.timeOut = 10000;
             toastr.options.closeButton = true;
@@ -306,9 +268,6 @@
             @elseif (Session::has('success'))
                 toastr.success('{{ Session::get('success') }}');
             @endif
-
-
-
 
 
             $('#exportProject').click(function(e) {
@@ -477,154 +436,7 @@
         });
 
 
-        const xValues = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
-        const myChart = new Chart("myChart", {
-            type: "line",
-
-            data: {
-                labels: xValues,
-                datasets: [{
-                    label: "communities",
-                    data: [],
-                    borderColor: "red",
-                    fill: false
-                }, {
-                    label: "Developers",
-                    data: [],
-                    borderColor: "orange",
-                    fill: false
-                }, {
-                    label: "Projects",
-                    data: [],
-                    borderColor: "green",
-                    fill: false
-                }, {
-                    label: "Properties",
-                    data: [],
-                    borderColor: "blue",
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                    display: true,
-
-                }
-            }
-        });
-
-        var startDate = moment().subtract(7, 'days');
-        var endDate = moment();
-
-        // Set the initial content of the reportrange span
-        $('#reportrange').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format('MMMM D, YYYY'));
-
-        function generateDateRange(startDate, endDate) {
-            const dates = [];
-            const currentDate = moment(startDate);
-            while (currentDate <= endDate) {
-                dates.push(currentDate.format('MMMM D, YYYY'));
-                currentDate.add(1, 'days');
-            }
-            return dates;
-        }
-
-        //Date range as a button
-        $('#date_range').daterangepicker({
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf(
-                        'month')]
-                },
-                // startDate: moment().subtract(7, 'days'),
-                // endDate: moment()
-            },
-            function(start, end) {
-                $('#date_range_show').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
-                $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-            })
-
-
-        //Date range as a button
-        $('#daterange-btn').daterangepicker({
-                ranges: {
-                    'Today': [moment(), moment()],
-                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf(
-                        'month')]
-                },
-                startDate: moment().subtract(7, 'days'),
-                endDate: moment()
-            },
-            function(start, end) {
-                $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
-
-                // Generate x-axis values for all dates within the selected range
-                const xValues = generateDateRange(start, end);
-
-                // Update chart labels with new x-axis values
-                myChart.data.labels = xValues;
-                myChart.update();
-
-                $.ajax({
-                    url: '/dashboard/ajaxData',
-                    type: 'GET',
-                    data: {
-                        startDate: start.format('YYYY-MM-DD'),
-                        endDate: end.format('YYYY-MM-DD')
-                    },
-                    success: function(response) {
-                        // Extract data from response
-                        const interval = response.interval;
-                        const communityCounts = response.communityCounts;
-                        const developerCounts = response.developerCounts;
-                        const projectCounts = response.projectCounts;
-                        const propertyCounts = response.propertyCounts;
-
-                        // Generate x-axis values for all dates within the selected range
-                        const xValues = generateDateRange(start, end);
-
-                        // Update chart labels with new x-axis values
-                        myChart.data.labels = xValues;
-
-                        // Update chart datasets with new data
-                        updateChart(myChart, communityCounts, developerCounts, projectCounts,
-                            propertyCounts);
-
-                        // Update the chart
-                        myChart.update();
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle errors
-                        console.error(error);
-                    }
-                });
-            })
-
-        function updateChart(chart, communityCounts, developerCounts, projectCounts, propertyCounts) {
-            chart.data.datasets[0].data = mapCountsToDates(chart.data.labels, communityCounts);
-            chart.data.datasets[1].data = mapCountsToDates(chart.data.labels, developerCounts);
-            chart.data.datasets[2].data = mapCountsToDates(chart.data.labels, projectCounts);
-            chart.data.datasets[3].data = mapCountsToDates(chart.data.labels, propertyCounts);
-        }
-
-        function mapCountsToDates(labels, counts) {
-            return labels.map(label => {
-                // Convert the label format to match the format of counts
-                const formattedLabel = moment(label, 'MMMM D, YYYY').format('YYYY-MM-DD');
-                return counts[formattedLabel] || 0;
-            });
-        }
         $(function() {
             // Summernote
             $('#summernote').summernote({

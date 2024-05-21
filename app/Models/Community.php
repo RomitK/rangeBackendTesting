@@ -205,6 +205,10 @@ class Community extends Model implements HasMedia
     {
         return $this->hasMany(Project::class);
     }
+    public function properties()
+    {
+        return $this->projects()->withCount('properties');
+    }
     public function tags()
     {
         return $this->morphMany(Tag::class, 'tagable');
@@ -222,10 +226,10 @@ class Community extends Model implements HasMedia
         return $this->belongsTo(User::class);
     }
 
-    public function properties()
-    {
-        return $this->hasMany(Property::class);
-    }
+    // public function properties()
+    // {
+    //     return $this->hasMany(Property::class);
+    // }
     public function subCommunities()
     {
         return $this->hasMany(Subcommunity::class);

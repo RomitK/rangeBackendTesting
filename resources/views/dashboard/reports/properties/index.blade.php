@@ -4,12 +4,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Communities Report</h1>
+                    <h1 class="m-0">Properties Report</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                        <li class="breadcrumb-item active">Communities Report</li>
+                        <li class="breadcrumb-item active">Properties Report</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -27,7 +27,7 @@
                                 <label>Select Date: (<span id="reportrange"></span>)</label>
 
                                 <div class="input-group">
-                                    <button type="button" class="btn btn-default float-right" id="daterange-communities">
+                                    <button type="button" class="btn btn-default float-right" id="daterange-properties">
                                         <i class="far fa-calendar-alt"></i> Date Range
                                         <i class="fas fa-caret-down"></i>
                                     </button>
@@ -39,40 +39,35 @@
                             <div class="row">
                                 <div class="col-md-9">
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="chart">
                                                 <canvas id="donutChartStatus"
                                                     style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="chart">
                                                 <canvas id="pieChartApproval"
                                                     style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <div class="chart">
+                                                <canvas id="permitChartStatus"
+                                                    style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div id="statusWiseData"></div>
                                     <div id="approvalWiseData"></div>
+                                    <div id="permitWiseData"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <div class="">
-                                        <canvas id="barChart"
-                                            style="min-height: 250px; height: 450px; max-height: 250px; max-width: 100%;"></canvas>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div id="projectPropertiesData"></div>
-                                </div>
-                            </div>
 
-                        </div>
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
@@ -84,28 +79,33 @@
 @section('js')
     <script>
         $(function() {
+
             let donutChartStatus;
             let pieChartApproval;
+            let barChartPermit;
             let barChart;
+
 
             const donutOptions = {
                 maintainAspectRatio: false,
                 responsive: true,
             };
 
-            function createOrUpdateDonutChartStatus(data) {
-                if (donutChartStatus) {
-                    donutChartStatus.data = data;
-                    donutChartStatus.update();
+            function createOrUpdateDonutChartStatus(chart, data, id) {
+                if (chart) {
+                    chart.data = data;
+                    chart.update();
                 } else {
-                    const donutChartCanvas = $('#donutChartStatus').get(0).getContext('2d');
-                    donutChartStatus = new Chart(donutChartCanvas, {
+                    const chartCanvas = $('#' + id).get(0).getContext('2d');
+                    chart = new Chart(chartCanvas, {
                         type: 'doughnut',
                         data: data,
                         options: donutOptions
                     });
                 }
+                return chart;
             }
+
 
             function createOrUpdatePieChartApproval(data) {
                 if (pieChartApproval) {
@@ -159,12 +159,23 @@
                 return html;
             }
 
+            function generatePermitWiseDataHTML(data) {
+               
+                let html =
+                    '<h5>Permit Wise Data:</h5><table class="table"><thead><tr><th>Permit</th><th>Count</th></tr></thead><tbody>';
+                data.forEach(item => {
+                    html += `<tr><td>${item.status}</td><td>${item.count}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                return html;
+            }
+
             function generateProjectPropertiesDataHTML(data) {
                 let html =
-                    '<h5>Project Properties Data:</h5><table class="table"><thead><tr><th>Community Name</th><th>Projects</th><th>Properties</th></tr></thead><tbody>';
+                    '<h5>Project Properties Data:</h5><table class="table"><thead><tr><th>Project Name</th><th>Units</th><th>Properties</th></tr></thead><tbody>';
                 data.forEach(item => {
                     html +=
-                        `<tr><td>${item.name}</td><td>${item.projects}</td><td>${item.properties}</td></tr>`;
+                        `<tr><td>${item.name}</td><td>${item.units}</td><td>${item.properties}</td></tr>`;
                 });
                 html += '</tbody></table>';
                 return html;
@@ -184,6 +195,11 @@
                 $('#statusWiseData').html(generateStatusWiseDataHTML(data));
             }
 
+            function updatePermitWiseDataText(data) {
+
+                $('#permitWiseData').html(generatePermitWiseDataHTML(data));
+            }
+
             function updateApprovalWiseDataText(data) {
                 $('#approvalWiseData').html(generateApprovalWiseDataHTML(data));
             }
@@ -194,7 +210,7 @@
 
             function fetchAndRenderData(startDate, endDate) {
                 $.ajax({
-                    url: '/dashboard/ajaxCommunityReport',
+                    url: '/dashboard/ajaxPropertyReport',
                     type: 'GET',
                     data: {
                         startDate: startDate.format('YYYY-MM-DD'),
@@ -203,17 +219,22 @@
                     success: function(response) {
                         const transformedDataStatus = transformDataForDonutChart(response.data[
                             'statusWiseData']);
-                        createOrUpdateDonutChartStatus(transformedDataStatus);
+                        createOrUpdateDonutChartStatus(donutChartStatus, transformedDataStatus,
+                            'donutChartStatus');
+                        updateStatusWiseDataText(response.data['statusWiseData']);
+
+                        const permitDataStatus = transformDataForDonutChart(response.data[
+                            'permitWiseData']);
+                        createOrUpdateDonutChartStatus(barChartPermit, permitDataStatus,
+                            'permitChartStatus');
+                        updatePermitWiseDataText(response.data['permitWiseData']);
 
                         const transformedDataApproval = transformDataForPieChart(response.data[
                             'approvalWiseData']);
                         createOrUpdatePieChartApproval(transformedDataApproval);
-
-                        updateStatusWiseDataText(response.data['statusWiseData']);
                         updateApprovalWiseDataText(response.data['approvalWiseData']);
 
-                        renderBarChart(response.data['projectPropertiseWiseData']);
-                        updateProjectPropertiesDataText(response.data['projectPropertiseWiseData']);
+
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
@@ -223,14 +244,15 @@
 
             // Function to generate data for the bar chart
             function generateBarChartData(data) {
+
                 const communityNames = data.map(item => item.name);
-                const projectCounts = data.map(item => item.projects);
+                const projectCounts = data.map(item => item.units);
                 const propertyCounts = data.map(item => item.properties);
 
                 return {
                     labels: communityNames,
                     datasets: [{
-                            label: 'Projects',
+                            label: 'Units',
                             backgroundColor: 'rgba(54, 162, 235, 0.5)',
                             borderColor: 'rgba(54, 162, 235, 1)',
                             borderWidth: 1,
@@ -283,6 +305,7 @@
 
             // Function to render the bar chart
             function renderBarChart(data) {
+
                 const barChartCanvas = $('#barChart').get(0).getContext('2d');
                 const barChartData = generateBarChartData(data);
                 const barChartOptions = generateBarChartOptions();
@@ -299,7 +322,7 @@
                 });
             }
 
-            $('#daterange-communities').daterangepicker({
+            $('#daterange-properties').daterangepicker({
                 ranges: {
                     'Today': [moment(), moment()],
                     'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -312,14 +335,14 @@
                 startDate: moment().subtract(7, 'days'),
                 endDate: moment()
             }, function(start, end) {
-                $('#daterange-communities').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                $('#daterange-properties').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
                     'MMMM D, YYYY'));
                 fetchAndRenderData(start, end);
             });
 
             $(document).ready(function() {
                 const currentPathName = window.location.pathname;
-                if (currentPathName === '/dashboard/communities-report') {
+                if (currentPathName === '/dashboard/properties-report') {
                     const endDate = moment();
                     const startDate = moment().subtract(7, 'days');
 

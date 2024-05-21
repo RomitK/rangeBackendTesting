@@ -315,13 +315,7 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/dynamicPages') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.dynamic-pages') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Dynamic Pages</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
+
                             <li class="nav-item">
                                 <a href="{{ url('dashboard/pageContents/home-page') }}"
                                     class="nav-link {{ activeChildNavBar('dashboard.pageContents.home-page') }}">
@@ -350,111 +344,6 @@
                                     <p>Career Page</p>
                                 </a>
                             </li>
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/about-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.about-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>About</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/properties-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.properties-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Properties</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/rent-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.rent-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Rent</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/resale-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.resale-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Resale</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/offPlan-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.offPlan-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Off-Plan</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/developers-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.developers-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Developers</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/communities-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.communities-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Communities</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/whyInvest-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.whyInvest-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Why Invest in Dubai</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/aboutDubai-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.aboutDubai-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>About Dubai</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/factFigure-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.factFigure-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Facts & Figures</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/buyerGuide-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.buyerGuide-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Buyer`s Guide</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/sellerGuide-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.sellerGuide-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Seller`s Guide</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/relocatingToDubai-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.relocatingToDubai-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Relocating to Dubai</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/termCondition-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.termCondition-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Terms & Conditions </p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
-                            <!--        <li class="nav-item">-->
-                            <!--            <a href="{{ url('dashboard/pageContents/privacyPolicy-page') }}"-->
-                            <!--                class="nav-link {{ activeChildNavBar('dashboard.pageContents.privacyPolicy-page') }}">-->
-                            <!--                <i class="far fa-circle nav-icon"></i>-->
-                            <!--                <p>Privacy Policy</p>-->
-                            <!--            </a>-->
-                            <!--        </li>-->
 
                             <li class="nav-item">
                                 <a href="{{ url('dashboard/pageContents/faqs-page') }}"
@@ -468,8 +357,8 @@
                     </li>
                 @endcan
 
-                <li class="nav-item {{ activeParentNavBar('websiteSettings', 'menu-open') }}">
-                    <a href="#" class="nav-link {{ activeParentNavBar('websiteSettings', 'active') }}">
+                <li class="nav-item {{ activeParentNavBar('reports', 'menu-open') }}">
+                    <a href="#" class="nav-link {{ activeParentNavBar('reports', 'active') }}">
                         <i class="nav-icon fa fa-cogs"></i>
                         <p>
                             Reports
@@ -480,17 +369,41 @@
 
                         <li class="nav-item">
                             <a href="{{ url('dashboard/general-report') }}"
-                                class="nav-link {{ activeChildNavBar('dashboard.social-info') }}">
+                                class="nav-link {{ activeChildNavBar('dashboard.reports.general-report') }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>General Report</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="{{ url('dashboard/community-report') }}"
-                                class="nav-link {{ activeChildNavBar('dashboard.social-info') }}">
+                            <a href="{{ url('dashboard/communities-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.reports.communities') }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Communities Report</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('dashboard/developers-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.reports.developer') }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Developers Report</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('dashboard/projects-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.reports.projects') }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Projects Report</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('dashboard/properties-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.reports.properties') }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Perperties Report</p>
                             </a>
                         </li>
 

@@ -16,10 +16,9 @@ use App\Models\{
     Agent
 };
 
-if (!function_exists('activeChildNavBar')) {
+if (!function_exists('activeParentNavBar')) {
     function activeParentNavBar($parentNav, $className)
     {
-
         if ($parentNav == 'realEstate') {
             $childElements = [
 
@@ -57,6 +56,14 @@ if (!function_exists('activeChildNavBar')) {
                 'dashboard.social-info',
                 'dashboard.basic-info'
             ];
+        } elseif ($parentNav == 'reports') {
+            $childElements = [
+                'dashboard.reports.general-report',
+                'dashboard.reports.developers',
+                'dashboard.reports.communities',
+                'dashboard.reports.properties',
+                'dashboard.reports.projects'
+            ];
         } elseif ($parentNav == 'SEO') {
             $childElements = [
                 'dashboard.page-tags',
@@ -65,10 +72,6 @@ if (!function_exists('activeChildNavBar')) {
             $childElements = [
                 'dashboard.users',
                 'dashboard.roles',
-            ];
-        } elseif ($parentNav == 'SEO') {
-            $childElements = [
-                'dashboard.page-tags',
             ];
         } elseif ($parentNav == 'pageContents') {
 
@@ -100,8 +103,13 @@ if (!function_exists('activeChildNavBar')) {
         }
 
         foreach ($childElements as $child) {
-
+            if ($parentNav == 'reports') {
+                Log::info(Route::currentRouteName());
+                Log::info(str_contains(Route::currentRouteName(), $child));
+                Log::info('child:' . Route::currentRouteName());
+            }
             if (str_contains(Route::currentRouteName(), $child) == 1) {
+
                 return $className;
             }
         }

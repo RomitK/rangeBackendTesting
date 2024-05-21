@@ -4,31 +4,18 @@ namespace App\Http\Controllers\Dashboard\Reports;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\{
-    Amenity,
-    Accommodation,
-    Category,
-    CompletionStatus,
-    Community,
-    CommunityProximities,
-    Subcommunity,
-    Developer,
-    OfferType,
-    TagCategory,
-    Stat,
-    Highlight,
-    Project,
     Property
 };
-use Carbon\Carbon;
 
-class CommunityReport extends Controller
+class PropertyReport extends Controller
 {
     public function index(Request $request)
     {
-        return view('dashboard.reports.communities.index');
+        return view('dashboard.reports.properties.index');
     }
-    public function ajaxCommunityReportData(Request $request)
+    public function ajaxPropertyReport(Request $request)
     {
         try {
             $colorMappingStatus = [
@@ -42,15 +29,17 @@ class CommunityReport extends Controller
                 'rejected' => '#6c757d', // Gray
             ];
 
-            $collection = Community::query();
+            $collection = Property::query();
 
             if (isset($request->startDate) && isset($request->endDate)) {
                 $startDate = Carbon::parse($request->startDate);
                 $endDate = Carbon::parse($request->endDate);
-                $collection = $collection->whereBetween('created_at', [$startDate, $endDate]);
+                $collection = $collection->whereBetween('properties.created_at', [$startDate, $endDate]);
             }
 
-            $projectPropertiseWiseCollection = clone $collection;
+            $approvalDataCollection = clone $collection;
+            $permitWiseCollection = clone $collection;
+
 
             // Status-wise data
             $statusData = $collection->selectRaw('status, COUNT(*) as count')
@@ -65,8 +54,9 @@ class CommunityReport extends Controller
                 })
                 ->toArray();
 
+
             // Approval-wise data
-            $approvalData = $collection->selectRaw('is_approved, COUNT(*) as count')
+            $approvalData = $approvalDataCollection->selectRaw('is_approved, COUNT(*) as count')
                 ->groupBy('is_approved')
                 ->get()
                 ->map(function ($item) use ($colorMappingApproval) {
@@ -78,29 +68,42 @@ class CommunityReport extends Controller
                 })
                 ->toArray();
 
-            // Fetch communities with project and property counts
-            $projectPropertiseWiseData = $projectPropertiseWiseCollection->with(['projects', 'projects.properties'])
-                ->get()
-                ->map(function ($community) {
-                    $projectCount = $community->projects->count();
-                    $propertyCount = $community->projects->sum(function ($project) {
-                        return $project->properties->count();
-                    });
-                    return [
-                        'name' => $community->name,
-                        'projects' => $projectCount,
-                        'properties' => $propertyCount,
-                    ];
-                })->toArray();
 
+
+            $permitCollection = $permitWiseCollection->join('projects', 'properties.project_id', '=', 'projects.id')->selectRaw('
+            COUNT(CASE WHEN projects.permit_number IS NOT NULL THEN 1 END) as with_permit_number,
+            COUNT(CASE WHEN projects.permit_number IS NULL THEN 1 END) as without_permit_number
+        ')->first();
+
+
+            $permitWiseCollection = $permitCollection->with_permit_number;
+
+            $notpermitWiseCollection = $permitCollection->without_permit_number;
+
+            // Permit number-wise data
+            $permitData = [
+                [
+                    'status' => 'With Permit Number',
+                    'count' => $permitWiseCollection,
+                    'color' => '#17a2b8', // Info
+                ],
+                [
+                    'status' => 'Without Permit Number',
+                    'count' => $notpermitWiseCollection,
+                    'color' => '#6c757d', // Secondary
+                ]
+            ];
+
+           
 
             $data = [
                 'statusWiseData' => $statusData,
                 'approvalWiseData' => $approvalData,
-                'projectPropertiseWiseData' => $projectPropertiseWiseData
+                'permitWiseData' => $permitData,
+                
             ];
 
-            return $this->success('Communities Report', $data, 200);
+            return $this->success('Property Report', $data, 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }
