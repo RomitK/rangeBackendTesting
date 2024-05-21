@@ -29,7 +29,6 @@ class CommunityReport extends Controller
         $startDate = Carbon::parse($request->startDate);
         $endDate = Carbon::parse($request->endDate);
         $interval = $startDate->diffInDays($endDate);
-        $communities = Community::get();
 
 
         $communityCounts = Community::whereBetween('created_at', [$startDate, $endDate])

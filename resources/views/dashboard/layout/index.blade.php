@@ -202,6 +202,7 @@
     <script src="{{ asset('dashboard/plugins/jquery-knob/jquery.knob.min.js') }}"></script>
     <!-- daterangepicker -->
     <script src="{{ asset('dashboard/plugins/moment/moment.min.js') }}"></script>
+
     <script src="{{ asset('dashboard/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <!-- Tempusdominus Bootstrap 4 -->
     <script src="{{ asset('dashboard/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
@@ -248,6 +249,56 @@
 
     <script>
         $(document).ready(function() {
+
+            let CurrentPathName = window.location.pathname;
+            if (CurrentPathName === '/dashboard/general-report') {
+
+                // Get the current date
+                let endDate = new Date();
+
+                // Subtract 7 days from the current date
+                let startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7);
+
+                // Format the dates as 'YYYY-MM-DD'
+                let formattedStartDate = startDate.toISOString().split('T')[0];
+                let formattedEndDate = endDate.toISOString().split('T')[0];
+
+                $.ajax({
+                    url: '/dashboard/ajaxData',
+                    type: 'GET',
+                    data: {
+                        startDate: formattedStartDate,
+                        endDate: formattedEndDate
+                    },
+                    success: function(response) {
+                        // Extract data from response
+                        const interval = response.interval;
+                        const communityCounts = response.communityCounts;
+                        const developerCounts = response.developerCounts;
+                        const projectCounts = response.projectCounts;
+                        const propertyCounts = response.propertyCounts;
+
+                        // Generate x-axis values for all dates within the selected range
+                        const xValues = generateDateRange(new Date(startDate), new Date(endDate));
+
+                        // Update chart labels with new x-axis values
+                        myChart.data.labels = xValues;
+
+                        // Update chart datasets with new data
+                        updateChart(myChart, communityCounts, developerCounts, projectCounts,
+                            propertyCounts);
+
+                        // Update the chart
+                        myChart.update();
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors
+                        console.error(error);
+                    }
+                });
+            }
+
             toastr.options.timeOut = 10000;
             toastr.options.closeButton = true;
             @if (Session::has('error'))
@@ -255,6 +306,9 @@
             @elseif (Session::has('success'))
                 toastr.success('{{ Session::get('success') }}');
             @endif
+
+
+
 
 
             $('#exportProject').click(function(e) {
@@ -297,7 +351,6 @@
 
 
             $('#exportDeveloper').click(function(e) {
-                console.log('ll')
                 e.preventDefault(); // Prevent default link behavior
                 var url = $(this).attr('href'); // Get the URL of the link
                 var queryParams = new URLSearchParams(window.location.search); // Get query parameters
@@ -498,6 +551,7 @@
                 $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
             })
 
+
         //Date range as a button
         $('#daterange-btn').daterangepicker({
                 ranges: {
@@ -521,8 +575,6 @@
                 // Update chart labels with new x-axis values
                 myChart.data.labels = xValues;
                 myChart.update();
-
-                console.log('pppp')
 
                 $.ajax({
                     url: '/dashboard/ajaxData',
