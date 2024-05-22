@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Dashboard\Reports;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\{
     Developer
+};
+use App\Jobs\{
+    DeveloperReportAndEmailData
 };
 
 class DeveloperReport extends Controller
@@ -86,6 +90,26 @@ class DeveloperReport extends Controller
                 'approvalWiseData' => $approvalData,
                 'projectPropertiseWiseData' => $projectPropertiseWiseData
             ];
+
+
+            if (isset($request->download) && $request->download == 1) {
+                $data = [
+                    'startDate' => $startDate->format('d m Y'),
+                    'endDate' => $endDate->format('d m Y'),
+                    'email' => Auth::user()->email,
+                    'userName' => Auth::user()->name,
+                    'statusWiseData' => $statusData,
+                    'approvalWiseData' => $approvalData,
+                    'projectPropertiseWiseData' => $projectPropertiseWiseData
+                ];
+                DeveloperReportAndEmailData::dispatch($data);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            }
+
 
             return $this->success('Developer Report', $data, 200);
         } catch (\Exception $exception) {
