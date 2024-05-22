@@ -103,11 +103,6 @@ if (!function_exists('activeParentNavBar')) {
         }
 
         foreach ($childElements as $child) {
-            if ($parentNav == 'reports') {
-                Log::info(Route::currentRouteName());
-                Log::info(str_contains(Route::currentRouteName(), $child));
-                Log::info('child:' . Route::currentRouteName());
-            }
             if (str_contains(Route::currentRouteName(), $child) == 1) {
 
                 return $className;

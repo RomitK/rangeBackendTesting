@@ -258,7 +258,7 @@
             // Format the dates as 'YYYY-MM-DD'
             let formattedStartDate = startDate.toISOString().split('T')[0];
             let formattedEndDate = endDate.toISOString().split('T')[0];
-            $('#reportrange').html(formattedStartDate + ' - ' + formattedStartDate);
+            //$('#reportrange').html(formattedStartDate + ' - ' + formattedStartDate);
 
 
             toastr.options.timeOut = 10000;
@@ -268,6 +268,29 @@
             @elseif (Session::has('success'))
                 toastr.success('{{ Session::get('success') }}');
             @endif
+
+            //Date range as a button
+            $('#date_range').daterangepicker({
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                            'month').endOf(
+                            'month')]
+                    },
+                    // startDate: moment().subtract(7, 'days'),
+                    // endDate: moment()
+                },
+                function(start, end) {
+                    $('#date_range_show').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                        'MMMM D, YYYY'))
+                    $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                        'MMMM D, YYYY'));
+                })
+
 
 
             $('#exportProject').click(function(e) {

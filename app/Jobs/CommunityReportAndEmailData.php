@@ -9,13 +9,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
-use App\Exports\CommunityDataExport;
 use App\Mail\CommunityDataExportMail;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
+use App\Exports\{
+    CommunityReportExport
+};
 
-
-class CommunityExportAndEmailData implements ShouldQueue
+class CommunityReportAndEmailData implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -24,12 +25,11 @@ class CommunityExportAndEmailData implements ShouldQueue
      *
      * @return void
      */
-    public $request, $collection;
+    protected $data;
 
-    public function __construct($request, $collection)
+    public function __construct($data)
     {
-        $this->request = $request;
-        $this->collection = $collection;
+        $this->data = $data;
     }
 
     /**
@@ -39,18 +39,17 @@ class CommunityExportAndEmailData implements ShouldQueue
      */
     public function handle()
     {
-        // Log the export data (optional)
-        Log::info('CommunityExportAndEmailData');
+        Log::info('communityReport');
 
-        $export = new CommunityDataExport($this->collection);
+        $export = new CommunityReportExport($this->data);
         $excelFile = Excel::raw($export, \Maatwebsite\Excel\Excel::XLSX);
 
         // Send email with the exported data as attachment
-        if ($this->request['email'] === 'admin@gmail.com') {
+        if ($this->data['email'] === 'admin@gmail.com') {
             $email = 'aqsa@xpertise.ae';
         } else {
-            $email = $this->request['email'];
+            $email = $this->data['email'];
         }
-        Mail::to($email)->send(new CommunityDataExportMail($excelFile, $this->request['userName']));
+        Mail::to($email)->send(new CommunityDataExportMail($excelFile, $this->data['userName']));
     }
 }
