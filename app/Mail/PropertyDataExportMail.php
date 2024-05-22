@@ -25,8 +25,8 @@ class PropertyDataExportMail extends Mailable
     public function build()
     {
         return $this->view('mails.property-data-export')
-            ->subject('Property Data')
-            ->attachData($this->excelFile, 'Property.xlsx', [
+            ->subject('Properties Data')
+            ->attachData($this->excelFile, 'Properties.xlsx', [
                 'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             ])->with('userName', $this->userName);
     }

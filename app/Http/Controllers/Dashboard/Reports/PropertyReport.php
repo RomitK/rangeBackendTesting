@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Dashboard\Reports;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\{
+    PropertyReportAndEmailData
+};
 use App\Models\{
     Property
 };
@@ -94,13 +98,29 @@ class PropertyReport extends Controller
                 ]
             ];
 
-           
+            if (isset($request->download) && $request->download == 1) {
+                $data = [
+                    'startDate' => $startDate->format('d m Y'),
+                    'endDate' => $endDate->format('d m Y'),
+                    'email' => Auth::user()->email,
+                    'userName' => Auth::user()->name,
+                    'statusWiseData' => $statusData,
+                    'approvalWiseData' => $approvalData,
+                    'permitWiseData' => $permitData,
+                ];
+                PropertyReportAndEmailData::dispatch($data);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            }
 
             $data = [
                 'statusWiseData' => $statusData,
                 'approvalWiseData' => $approvalData,
                 'permitWiseData' => $permitData,
-                
+
             ];
 
             return $this->success('Property Report', $data, 200);

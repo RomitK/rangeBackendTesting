@@ -23,15 +23,26 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <div class="form-group">
-                                <label>Select Date: (<span id="reportrange"></span>)</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Select Date: (<span id="reportrange"></span>)</label>
 
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-default float-right" id="daterange-projects">
-                                        <i class="far fa-calendar-alt"></i> Date Range
-                                        <i class="fas fa-caret-down"></i>
-                                    </button>
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-default float-right"
+                                                id="daterange-projects">
+                                                <i class="far fa-calendar-alt"></i> Date Range
+                                                <i class="fas fa-caret-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                    <input type="text" value="" name="data_range_input" id="data_range_input">
+                                    <button class="btn btn-danger btn-md" id="download-button">Download</button>
+                                </div>
+
+
                             </div>
                         </div>
                         <!-- /.card-header -->
@@ -173,7 +184,7 @@
             }
 
             function generatePermitWiseDataHTML(data) {
-        
+
                 let html =
                     '<h5>Permit Wise Data:</h5><table class="table"><thead><tr><th>Permit</th><th>Count</th></tr></thead><tbody>';
                 data.forEach(item => {
@@ -207,8 +218,9 @@
             function updateStatusWiseDataText(data) {
                 $('#statusWiseData').html(generateStatusWiseDataHTML(data));
             }
+
             function updatePermitWiseDataText(data) {
-               
+
                 $('#permitWiseData').html(generatePermitWiseDataHTML(data));
             }
 
@@ -229,15 +241,20 @@
                         endDate: endDate.format('YYYY-MM-DD')
                     },
                     success: function(response) {
-                        const transformedDataStatus = transformDataForDonutChart(response.data['statusWiseData']);
-                        createOrUpdateDonutChartStatus(donutChartStatus, transformedDataStatus, 'donutChartStatus');
+                        const transformedDataStatus = transformDataForDonutChart(response.data[
+                            'statusWiseData']);
+                        createOrUpdateDonutChartStatus(donutChartStatus, transformedDataStatus,
+                            'donutChartStatus');
                         updateStatusWiseDataText(response.data['statusWiseData']);
 
-                        const permitDataStatus = transformDataForDonutChart(response.data['permitWiseData']);
-                        createOrUpdateDonutChartStatus(barChartPermit, permitDataStatus,'permitChartStatus');
+                        const permitDataStatus = transformDataForDonutChart(response.data[
+                            'permitWiseData']);
+                        createOrUpdateDonutChartStatus(barChartPermit, permitDataStatus,
+                            'permitChartStatus');
                         updatePermitWiseDataText(response.data['permitWiseData']);
 
-                        const transformedDataApproval = transformDataForPieChart(response.data[ 'approvalWiseData']);
+                        const transformedDataApproval = transformDataForPieChart(response.data[
+                            'approvalWiseData']);
                         createOrUpdatePieChartApproval(transformedDataApproval);
                         updateApprovalWiseDataText(response.data['approvalWiseData']);
 
@@ -343,20 +360,59 @@
                 startDate: moment().subtract(7, 'days'),
                 endDate: moment()
             }, function(start, end) {
-                $('#daterange-projects').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                // $('#daterange-projects').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                //     'MMMM D, YYYY'));
+
+                $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+                $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format(
                     'MMMM D, YYYY'));
+
                 fetchAndRenderData(start, end);
             });
 
             $(document).ready(function() {
                 const currentPathName = window.location.pathname;
                 if (currentPathName === '/dashboard/projects-report') {
+
+
                     const endDate = moment();
                     const startDate = moment().subtract(7, 'days');
+                    $('#reportrange').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format(
+                        'MMMM D, YYYY'));
+
+                    $('#data_range_input').val(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format(
+                        'MMMM D, YYYY'));
 
                     fetchAndRenderData(startDate, endDate);
                 }
             });
+
+            // Add click event for download button
+            $('#download-button').click(function() {
+                const dateRangeText = $('#data_range_input').val();
+
+                const dates = dateRangeText.split(' - ');
+                const startDate = moment(dates[0], 'MMMM D, YYYY').format('YYYY-MM-DD');
+                const endDate = moment(dates[1], 'MMMM D, YYYY').format('YYYY-MM-DD');
+
+                $.ajax({
+                    url: '/dashboard/ajaxProjectReport',
+                    type: 'GET',
+                    data: {
+                        startDate: startDate,
+                        endDate: endDate,
+                        download: 1
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
+
         });
     </script>
 @endsection
