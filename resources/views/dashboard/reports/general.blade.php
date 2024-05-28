@@ -1,4 +1,5 @@
 @extends('dashboard.layout.index')
+
 @section('breadcrumb')
     <div class="content-header">
         <div class="container-fluid">
@@ -16,7 +17,22 @@
         </div><!-- /.container-fluid -->
     </div>
 @endsection
+
 @section('content')
+    <style>
+        .flex-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .row-full-height {
+            height: 60vh;
+            /* Adjust this height as needed */
+        }
+    </style>
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -24,40 +40,198 @@
                 <!-- /.col (LEFT) -->
                 <div class="col-md-12">
                     <!-- LINE CHART -->
-                    <div class="card card-info">
+                    <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">New Added</h3>
-
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Select Date: (<span id="reportrange"></span>)</label>
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-default float-right" id="daterange-btn">
+                                                <i class="far fa-calendar-alt"></i> Date Range
+                                                <i class="fas fa-caret-down"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-end justify-content-end">
+                                    <input type="hidden" value="" name="data_range_input" id="data_range_input">
+                                    <button class="btn btn-danger btn-md" id="download-button">Download</button>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
+                            <div class="card card-primary">
+                                <div class="card-header">
+                                    <h3 class="card-title">Data Date Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
 
-                            <div class="form-group">
-                                <label>Select Date: (<span id="reportrange"></span>)</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <div class="chart">
+                                            <canvas id="dateCountLineChart"
+                                                style="min-height: 500; height: 600px; max-height: 600px; max-width: 100%;"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div id="dateCountTableData"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-warning">
+                                <div class="card-header">
+                                    <h3 class="card-title">Data Status Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
 
-                                <div class="input-group">
-                                    <button type="button" class="btn btn-default float-right" id="daterange-btn">
-                                        <i class="far fa-calendar-alt"></i> Date Range
-                                        <i class="fas fa-caret-down"></i>
-                                    </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+
+                                            <div class="chart">
+                                                <canvas id="barChartStatus"
+                                                    style="min-height: 300px; height: 500px; max-height: 250px; max-width: 100%;"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div id="statusCountTableData"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-info">
+                                <div class="card-header">
+                                    <h3 class="card-title">Data Approval Status Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+
+                                            <div class="chart">
+                                                <canvas id="barChartApproval"
+                                                    style="min-height: 300px; height: 500px; max-height: 250px; max-width: 100%;"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div id="approvalCountTableData"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card card-success">
+                                <div class="card-header">
+                                    <h3 class="card-title">Project Permit Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                                <div class="card-body">
+
+
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h3>Project Permit Wise</h3>
+                                            <div class="chart">
+                                                <canvas id="projectPermitPieChart"
+                                                    style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div id="projectPermitWiseData"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-danger">
+                                <div class="card-header">
+                                    <h3 class="card-title">Properties Permit/Category Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row row-full-height">
+
+                                        <div class="col-md-4">
+                                            <div class="flex-center">
+                                                <h4>Properties Category Wise</h4>
+                                                <div class="chart">
+                                                    <canvas id="propertyPermitPieChart"
+                                                        style="min-height: 150px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 ">
+                                            <div class="flex-center">
+                                                <h4>Properties Category Wise</h4>
+                                                <div class="chart">
+                                                    <canvas id="propertyCategoryPieChart"
+                                                        style="min-height: 150px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h4>Properties Permit Wise</h4>
+                                            <div id="propertyPermitWiseData"></div>
+                                            <h4>Properties Category Wise</h4>
+                                            <div id="propertyCategoryWiseData"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="chart">
-                                <canvas id="myChart"
-                                    style="min-height: 500; height: 600px; max-height: 600px; max-width: 100%;"></canvas>
+                            <div class="card card-warning">
+                                <div class="card-header">
+                                    <h3 class="card-title">Properties Agent Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="chart">
+                                                <canvas id="barChartPropertyAgent"
+                                                    style="min-height: 500px; height: 500px; max-height: 250px; max-width: 100%;"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div id="barChartPropertyAgentCountTableData"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
+
                         </div>
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
-
-
                 </div>
                 <!-- /.col (RIGHT) -->
             </div>
@@ -66,106 +240,619 @@
     </section>
     <!-- /.content -->
 @endsection
+
 @section('js')
-<script>
-    $(document).ready(function() {
-        let currentPathName = window.location.pathname;
-        if (currentPathName === '/dashboard/general-report') {
-            // Get the current date
-            let endDate = new Date();
-            // Subtract 7 days from the current date
-            let startDate = new Date();
-            startDate.setDate(startDate.getDate() - 7);
-            // Format the dates as 'YYYY-MM-DD'
-            let formattedStartDate = startDate.toISOString().split('T')[0];
-            let formattedEndDate = endDate.toISOString().split('T')[0];
-            $('#reportrange').html(formattedStartDate + ' - ' + formattedStartDate);
-            fetchDataAndUpdateChart(formattedStartDate, formattedEndDate);
-        }
+    <script>
+        $(function() {
 
-        // Date range as a button
-        $('#daterange-btn').daterangepicker({
-            ranges: {
-                'Today': [moment(), moment()],
-                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                'This Month': [moment().startOf('month'), moment().endOf('month')],
-                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-            },
-            startDate: moment().subtract(7, 'days'),
-            endDate: moment()
-        }, function(start, end) {
-            $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-            fetchDataAndUpdateChart(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
-        });
+            let barChartApproval;
+            let barChartPropertyAgent;
+            let barChartStatus;
+            let barChartPermit;
+            let projectPermitPieChart;
+            let propertyPermitPieChart;
+            let propertyCategoryPieChart;
 
-        // Initialize chart
-        const myChart = new Chart("myChart", {
-            type: "line",
-            data: {
-                labels: [],
-                datasets: [
-                    { label: "Communities", data: [], borderColor: "red", fill: false },
-                    { label: "Developers", data: [], borderColor: "orange", fill: false },
-                    { label: "Projects", data: [], borderColor: "green", fill: false },
-                    { label: "Properties", data: [], borderColor: "blue", fill: false },
-                    { label: "Media", data: [], borderColor: "gray", fill: false }
-                ]
-            },
-            options: {
+            const donutOptions = {
+                maintainAspectRatio: false,
                 responsive: true,
-                legend: { position: 'top', display: true }
-            }
-        });
+            };
 
-        // Fetch data and update chart
-        function fetchDataAndUpdateChart(startDate, endDate) {
-            $.ajax({
-                url: '/dashboard/ajaxData',
-                type: 'GET',
-                data: { startDate, endDate },
-                success: function(response) {
-                    const { interval, communityCounts, developerCounts, projectCounts, propertyCounts, mediaCounts } = response;
-                    const xValues = generateDateRange(new Date(startDate), new Date(endDate));
-                    myChart.data.labels = xValues;
-                    updateChart(myChart, communityCounts, developerCounts, projectCounts, propertyCounts, mediaCounts);
-                    myChart.update();
+            // Date range as a button
+            $('#daterange-btn').daterangepicker({
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                        'month').endOf(
+                        'month')]
                 },
-                error: function(xhr, status, error) {
-                    console.error(error);
+                startDate: moment().subtract(7, 'days'),
+                endDate: moment()
+            }, function(start, end) {
+                $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                    'MMMM D, YYYY'));
+                fetchDataAndupdateDateCountChart(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+            });
+
+            // Initialize line chart
+            const dateCountLineChart = new Chart("dateCountLineChart", {
+                type: "line",
+                data: {
+                    labels: [],
+                    datasets: [{
+                            label: "Communities",
+                            data: [],
+                            borderColor: "red",
+                            fill: false
+                        },
+                        {
+                            label: "Developers",
+                            data: [],
+                            borderColor: "orange",
+                            fill: false
+                        },
+                        {
+                            label: "Projects",
+                            data: [],
+                            borderColor: "green",
+                            fill: false
+                        },
+                        {
+                            label: "Properties",
+                            data: [],
+                            borderColor: "blue",
+                            fill: false
+                        },
+                        {
+                            label: "Medias",
+                            data: [],
+                            borderColor: "gray",
+                            fill: false
+                        },
+                        {
+                            label: "Guides",
+                            data: [],
+                            borderColor: "pink",
+                            fill: false
+                        },
+                        {
+                            label: "Teams",
+                            data: [],
+                            borderColor: "yellow",
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'top',
+                        display: true
+                    }
                 }
             });
-        }
 
-        // Update chart datasets
-        function updateChart(chart, communityCounts, developerCounts, projectCounts, propertyCounts, mediaCounts) {
-            chart.data.datasets[0].data = mapCountsToDates(chart.data.labels, communityCounts);
-            chart.data.datasets[1].data = mapCountsToDates(chart.data.labels, developerCounts);
-            chart.data.datasets[2].data = mapCountsToDates(chart.data.labels, projectCounts);
-            chart.data.datasets[3].data = mapCountsToDates(chart.data.labels, propertyCounts);
-            chart.data.datasets[4].data = mapCountsToDates(chart.data.labels, mediaCounts);
-        }
+            // Fetch data and update charts
+            function fetchDataAndupdateDateCountChart(startDate, endDate) {
+                $.ajax({
+                    url: '/dashboard/ajaxData',
+                    type: 'GET',
+                    data: {
+                        startDate,
+                        endDate
+                    },
+                    success: function(response) {
+                        const {
+                            interval,
+                            communities,
+                            developers,
+                            projects,
+                            properties,
+                            medias,
+                            guides,
+                            agents
+                        } = response.data['getCountsByDate'];
 
-        // Map counts to dates
-        function mapCountsToDates(labels, counts) {
-            return labels.map(label => {
-                const formattedLabel = moment(label, 'MMMM D, YYYY').format('YYYY-MM-DD');
-                return counts[formattedLabel] || 0;
-            });
-        }
 
-        // Generate date range
-        function generateDateRange(startDate, endDate) {
-            const dates = [];
-            const currentDate = moment(startDate);
-            while (currentDate <= endDate) {
-                dates.push(currentDate.format('MMMM D, YYYY'));
-                currentDate.add(1, 'days');
+                        const xValues = generateDateRange(new Date(startDate), new Date(endDate));
+                        dateCountLineChart.data.labels = xValues;
+                        updateDateCountChart(dateCountLineChart, communities, developers, projects,
+                            properties,
+                            medias, guides, agents);
+                        dateCountLineChart.update();
+
+                        statusCountBarChart(response.data['getCountsByStatus']);
+                        approvalCountBarChart(response.data['getCountsByApproval']);
+
+
+                        updateTableDataForDate(communities, developers, projects, properties, medias,
+                            guides,
+                            agents);
+                        updateTableDataForStatus(response.data['getCountsByStatus']);
+                        updateTableDataForApproval(response.data['getCountsByApproval']);
+
+                        createOrUpdateProjectPermitPieChart(transformDataForPieChart(response.data[
+                            'projectPermitCounts']));
+                        updateProjectPermitWiseDataText(response.data['projectPermitCounts']);
+
+                        createOrUpdatePropertyPermitPieChart(transformDataForPieChart(response.data[
+                            'propertyPermitCounts']));
+                        updatePropertyPermitWiseDataText(response.data['propertyPermitCounts']);
+
+
+
+                        createOrUpdatePropertyCategoryPieChart(transformDataForPieChart(response.data[
+                            'propertyCateoryCounts']));
+                        updatePropertyCategoryWiseDataText(response.data['propertyCateoryCounts']);
+
+
+                        propertyAgentCountBarChart(response.data['propertyAgentWiseCounts']);
+                        updatePropeertyAgentWiseDataText(response.data['propertyAgentWiseCounts']);
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
             }
-            return dates;
-        }
-    });
-</script>
 
+            function generatePieDataWiseHTML(data) {
+                let totalCount = 0; // Initialize total count
+                let html = '<table class="table"><thead><tr><th>Data</th><th>Count</th></tr></thead><tbody>';
+
+                // Loop through data to generate rows and sum the counts
+                data.forEach(item => {
+                    html += `<tr><td>${item.status}</td><td>${item.count}</td></tr>`;
+                    totalCount += item.count; // Sum the counts
+                });
+
+                // Add the total row
+                html += `<tr><td><strong>Total</strong></td><td><strong>${totalCount}</strong></td></tr>`;
+                html += '</tbody></table>';
+
+                return html;
+            }
+
+            function updateProjectPermitWiseDataText(data) {
+                $('#projectPermitWiseData').html(generatePieDataWiseHTML(data));
+            }
+
+            function updatePropertyPermitWiseDataText(data) {
+                $('#propertyPermitWiseData').html(generatePieDataWiseHTML(data));
+            }
+
+            function updatePropertyCategoryWiseDataText(data) {
+                $('#propertyCategoryWiseData').html(generatePieDataWiseHTML(data));
+            }
+
+
+            function createOrUpdateProjectPermitPieChart(data) {
+                if (projectPermitPieChart) {
+                    projectPermitPieChart.data = data;
+                    projectPermitPieChart.update();
+                } else {
+                    const pieChartCanvas = $('#projectPermitPieChart').get(0).getContext('2d');
+                    projectPermitPieChart = new Chart(pieChartCanvas, {
+                        type: 'pie',
+                        data: data,
+                        options: donutOptions
+                    });
+                }
+            }
+
+            function createOrUpdatePropertyPermitPieChart(data) {
+                if (propertyPermitPieChart) {
+                    propertyPermitPieChart.data = data;
+                    propertyPermitPieChart.update();
+                } else {
+                    const pieChartCanvas = $('#propertyPermitPieChart').get(0).getContext('2d');
+                    propertyPermitPieChart = new Chart(pieChartCanvas, {
+                        type: 'pie',
+                        data: data,
+                        options: donutOptions
+                    });
+                }
+            }
+
+            function createOrUpdatePropertyCategoryPieChart(data) {
+                if (propertyCategoryPieChart) {
+                    propertyCategoryPieChart.data = data;
+                    propertyCategoryPieChart.update();
+                } else {
+                    const pieChartCanvas = $('#propertyCategoryPieChart').get(0).getContext('2d');
+                    propertyCategoryPieChart = new Chart(pieChartCanvas, {
+                        type: 'doughnut',
+                        data: data,
+                        options: donutOptions
+                    });
+                }
+            }
+
+
+            function transformDataForPieChart(data) {
+                const labels = data.map(item => item.status);
+                const counts = data.map(item => item.count);
+                const colors = data.map(item => item.color);
+
+                return {
+                    labels: labels,
+                    datasets: [{
+                        data: counts,
+                        backgroundColor: colors
+                    }]
+                };
+            }
+
+            function propertyAgentCountBarChart(data) {
+                const agentNames = data.map(agent => agent.agent_name);
+                const readyCounts = data.map(agent => agent.ready);
+                const offplanCounts = data.map(agent => agent.offplan);
+                const rentCounts = data.map(agent => agent.rent);
+
+                const barChartData = {
+                    labels: agentNames,
+                    datasets: [{
+                        label: 'Ready',
+                        data: readyCounts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)', // Blue color for Ready
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Offplan',
+                        data: offplanCounts,
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)', // Yellow color for Offplan
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Rent',
+                        data: rentCounts,
+                        backgroundColor: 'rgba(128, 128, 128, 0.6)', // Gray color for Rent
+                        borderColor: 'rgba(128, 128, 128, 1)',
+                        borderWidth: 1
+                    }]
+                };
+
+                const barChartOptions = {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                };
+
+                const barChartPropertyAgentCanvas = $('#barChartPropertyAgent').get(0).getContext('2d');
+                const myBarChart = new Chart(barChartPropertyAgentCanvas, {
+                    type: 'bar',
+                    data: barChartData,
+                    options: barChartOptions
+                });
+            }
+
+
+            function generateRandomColors(count) {
+                const colors = [];
+                for (let i = 0; i < count; i++) {
+                    const color =
+                        `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.2)`;
+                    colors.push(color);
+                }
+                return colors;
+            }
+
+
+            function approvalCountBarChart(data) {
+                const barChartApprovalCanvas = $('#barChartApproval').get(0).getContext('2d');
+                const barChartApprovalData = {
+                    labels: ['Communities', 'Developers', 'Projects', 'Properties', 'Medias', 'Guides',
+                        'Teams'
+                    ],
+                    datasets: [{
+                        label: 'Requested',
+                        backgroundColor: 'rgba(0, 0, 255, 1)',
+                        borderColor: 'rgba(0, 0, 255, 1)',
+                        data: [data.communities.requested, data.developers.requested, data.projects
+                            .requested, data
+                            .properties.requested, data.medias.requested, data.guides.requested,
+                            data.agents
+                            .requested
+                        ]
+                    }, {
+                        label: 'Rejected',
+                        backgroundColor: 'rgba(255, 0, 0, 1)',
+                        borderColor: 'rgba(255, 0, 0, 1)',
+                        data: [data.communities.rejected, data.communities.rejected, data.projects
+                            .rejected, data
+                            .properties.rejected, data.medias.rejected, data.guides.rejected, data
+                            .agents
+                            .rejected
+                        ]
+                    }, {
+                        label: 'Approval',
+                        backgroundColor: 'rgba(0, 128, 0, 0.5)',
+                        borderColor: 'rgba(0, 128, 0, 0.5)',
+                        data: [data.communities.approved, data.communities.approved, data.projects
+                            .approved, data
+                            .properties.approved, data.medias.approved, data.guides.approved, data
+                            .agents
+                            .approved
+                        ]
+                    }]
+                };
+
+                const barChartApprovalOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    datasetFill: false
+                };
+
+                if (barChartApproval) {
+                    barChartApproval.destroy();
+                }
+
+                barChartApproval = new Chart(barChartApprovalCanvas, {
+                    type: 'bar',
+                    data: barChartApprovalData,
+                    options: barChartApprovalOptions
+                });
+            }
+
+
+            function statusCountBarChart(data) {
+                const barChartCanvas = $('#barChartStatus').get(0).getContext('2d');
+                const barChartData = {
+                    labels: ['Communities', 'Developers', 'Projects', 'Properties', 'Medias', 'Guides',
+                        'Teams'
+                    ],
+                    datasets: [{
+                        label: 'Active',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.8)',
+                        data: [data.communities.active, data.developers.active, data.projects.active,
+                            data
+                            .properties.active, data.medias.active, data.guides.active, data.agents
+                            .active
+                        ]
+                    }, {
+                        label: 'Inactive',
+                        backgroundColor: 'rgba(210, 214, 222, 1)',
+                        borderColor: 'rgba(210, 214, 222, 1)',
+                        data: [data.communities.inactive, data.communities.inactive, data.projects
+                            .inactive, data
+                            .properties.inactive, data.medias.inactive, data.guides.inactive, data
+                            .agents
+                            .inactive
+                        ]
+                    }]
+                };
+
+                const barChartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    datasetFill: false
+                };
+
+                if (barChartStatus) {
+                    barChartStatus.destroy();
+                }
+
+                barChartStatus = new Chart(barChartCanvas, {
+                    type: 'bar',
+                    data: barChartData,
+                    options: barChartOptions
+                });
+            }
+
+            // Update line chart datasets
+            function updateDateCountChart(chart, communities, developers, projects, properties, medias, guides,
+                agents) {
+                chart.data.datasets[0].data = mapCountsToDates(chart.data.labels, communities);
+                chart.data.datasets[1].data = mapCountsToDates(chart.data.labels, developers);
+                chart.data.datasets[2].data = mapCountsToDates(chart.data.labels, projects);
+                chart.data.datasets[3].data = mapCountsToDates(chart.data.labels, properties);
+                chart.data.datasets[4].data = mapCountsToDates(chart.data.labels, medias);
+                chart.data.datasets[5].data = mapCountsToDates(chart.data.labels, guides);
+                chart.data.datasets[6].data = mapCountsToDates(chart.data.labels, agents);
+            }
+
+            // Map counts to dates
+            function mapCountsToDates(labels, counts) {
+                return labels.map(label => {
+                    const formattedLabel = moment(label, 'MMMM D, YYYY').format('YYYY-MM-DD');
+                    return counts[formattedLabel] || 0;
+                });
+            }
+
+            // Generate date range
+            function generateDateRange(startDate, endDate) {
+                const dates = [];
+                const currentDate = moment(startDate);
+                while (currentDate <= endDate) {
+                    dates.push(currentDate.format('MMMM D, YYYY'));
+                    currentDate.add(1, 'days');
+                }
+                return dates;
+            }
+
+            function updatePropeertyAgentWiseDataText(propertyAgentWiseCounts) {
+                let tableHtml =
+                    '<table class="table table-bordered"><thead><tr><th>Agent Name</th><th>Ready</th><th>Offplan</th><th>Rent</th><th>Total</th></tr></thead><tbody>';
+
+                propertyAgentWiseCounts.forEach(agent => {
+                    const total = parseInt(agent.ready) + parseInt(agent.offplan) + parseInt(agent.rent);
+                    const row = `<tr>
+                        <td>${agent.agent_name}</td>
+                        <td>${agent.ready}</td>
+                        <td>${agent.offplan}</td>
+                        <td>${agent.rent}</td>
+                        <td>${total}</td>
+                    </tr>`;
+                    tableHtml += row; // Append the row to the tableHtml
+                });
+
+                tableHtml += '</tbody></table>';
+                $('#barChartPropertyAgentCountTableData').html(tableHtml);
+            }
+
+
+            function updateTableDataForStatus(countsByStatus) {
+                let tableHtml =
+                    '<table class="table table-bordered"><thead><tr><th>Data</th><th>Active</th><th>Inactive</th><th>Total</th></tr></thead><tbody>';
+
+                for (let [key, value] of Object.entries(countsByStatus)) {
+                    const total = value.active + value.inactive;
+                    tableHtml += `<tr>
+                                <td>${key.charAt(0).toUpperCase() + key.slice(1)}</td>
+                                <td>${value.active}</td>
+                                <td>${value.inactive}</td>
+                                <td>${total}</td>
+                            </tr>`;
+                }
+
+                tableHtml += '</tbody></table>';
+                $('#statusCountTableData').html(tableHtml);
+            }
+
+            function updateTableDataForApproval(countsByStatus) {
+                let tableHtml =
+                    '<table class="table table-bordered"><thead><tr><th>Data</th><th>Requested</th><th>Rejected</th><th>Approved</th><th>Total</th></tr></thead><tbody>';
+
+                for (let [key, value] of Object.entries(countsByStatus)) {
+                    const total = value.requested + value.rejected + value.approved;
+                    tableHtml += `<tr>
+                                <td>${key.charAt(0).toUpperCase() + key.slice(1)}</td>
+                                <td>${value.requested}</td>
+                                <td>${value.rejected}</td>
+                                <td>${value.approved}</td>
+                                <td>${total}</td>
+                            </tr>`;
+                }
+
+                tableHtml += '</tbody></table>';
+                $('#approvalCountTableData').html(tableHtml);
+            }
+
+            function updateTableDataForDate(communities, developers, projects, properties, medias, guides, agents) {
+                let tableHtml =
+                    '<table class="table table-bordered"><thead><tr><th>Date</th><th>Communities</th><th>Developers</th><th>Projects</th><th>Properties</th><th>Medias</th><th>Guides</th><th>Teams</th> <th>Total</th></tr></thead><tbody>';
+
+                const allDates = Object.keys({
+                    ...communities,
+                    ...developers,
+                    ...projects,
+                    ...properties,
+                    ...medias,
+                    ...guides,
+                    ...agents
+                });
+
+                let totalCommunities = 0;
+                let totalDevelopers = 0;
+                let totalProjects = 0;
+                let totalProperties = 0;
+                let totalMedia = 0;
+                let totalGuide = 0;
+                let totalAgent = 0;
+
+                allDates.forEach(date => {
+                    const communityCount = communities[date] || 0;
+                    const developerCount = developers[date] || 0;
+                    const projectCount = projects[date] || 0;
+                    const propertyCount = properties[date] || 0;
+                    const mediaCount = medias[date] || 0;
+                    const guideCount = guides[date] || 0;
+                    const agentCount = agents[date] || 0;
+
+
+                    const totalCount = communityCount + developerCount + projectCount + propertyCount +
+                        mediaCount +
+                        guideCount + agentCount;
+
+                    tableHtml += '<tr>';
+                    tableHtml += `<td>${date}</td>`;
+                    tableHtml += `<td>${communityCount}</td>`;
+                    tableHtml += `<td>${developerCount}</td>`;
+                    tableHtml += `<td>${projectCount}</td>`;
+                    tableHtml += `<td>${propertyCount}</td>`;
+                    tableHtml += `<td>${mediaCount}</td>`;
+                    tableHtml += `<td>${guideCount}</td>`;
+                    tableHtml += `<td>${agentCount}</td>`;
+                    tableHtml += `<td>${totalCount}</td>`;
+                    tableHtml += '</tr>';
+
+                    totalCommunities += communityCount;
+                    totalDevelopers += developerCount;
+                    totalProjects += projectCount;
+                    totalProperties += propertyCount;
+                    totalMedia += mediaCount;
+                    totalGuide += guideCount;
+                    totalAgent += agentCount;
+                });
+
+                const grandTotal = totalCommunities + totalDevelopers + totalProjects + totalProperties +
+                    totalMedia +
+                    totalGuide + totalAgent;
+
+                tableHtml += '<tr class="totals-row">';
+                tableHtml += '<th>Total</th>';
+                tableHtml += `<th>${totalCommunities}</th>`;
+                tableHtml += `<th>${totalDevelopers}</th>`;
+                tableHtml += `<th>${totalProjects}</th>`;
+                tableHtml += `<th>${totalProperties}</th>`;
+                tableHtml += `<th>${totalMedia}</th>`;
+                tableHtml += `<th>${totalGuide}</th>`;
+                tableHtml += `<th>${totalAgent}</th>`;
+                tableHtml += `<th>${grandTotal}</th>`;
+                tableHtml += '</tr>';
+
+                tableHtml += '</tbody></table>';
+
+                $('#dateCountTableData').html(tableHtml);
+            }
+            $(document).ready(function() {
+                let currentPathName = window.location.pathname;
+                if (currentPathName === '/dashboard/general-report') {
+                    const endDate = moment();
+                    const startDate = moment().subtract(7, 'days');
+
+                    $('#reportrange').html(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format(
+                        'MMMM D, YYYY'));
+                    $('#data_range_input').val(startDate.format('MMMM D, YYYY') + ' - ' + endDate.format(
+                        'MMMM D, YYYY'));
+
+                    fetchDataAndupdateDateCountChart(startDate.format('YYYY-MM-DD'), endDate.format(
+                        'YYYY-MM-DD'));
+                }
+            });
+
+            // Add click event for download button
+            $('#download-button').click(function() {
+                const dateRangeText = $('#data_range_input').val();
+
+                const dates = dateRangeText.split(' - ');
+                const startDate = moment(dates[0], 'MMMM D, YYYY').format('YYYY-MM-DD');
+                const endDate = moment(dates[1], 'MMMM D, YYYY').format('YYYY-MM-DD');
+
+                $.ajax({
+                    url: '/dashboard/ajaxData',
+                    type: 'GET',
+                    data: {
+                        startDate: startDate,
+                        endDate: endDate,
+                        download: 1
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

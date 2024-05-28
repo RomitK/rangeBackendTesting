@@ -23,13 +23,10 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-
                             <div class="row">
                                 <div class="col-md-6">
-
                                     <div class="form-group">
                                         <label>Select Date: (<span id="reportrange"></span>)</label>
-
                                         <div class="input-group">
                                             <button type="button" class="btn btn-default float-right"
                                                 id="daterange-properties">
@@ -40,10 +37,9 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 d-flex align-items-end justify-content-end">
-                                    <input type="text" value="" name="data_range_input" id="data_range_input">
+                                    <input type="hidden" value="" name="data_range_input" id="data_range_input">
                                     <button class="btn btn-danger btn-md" id="download-button">Download</button>
                                 </div>
-
                             </div>
                         </div>
                         <!-- /.card-header -->

@@ -14,7 +14,7 @@ use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\DB;
 
 class Agent extends Model implements HasMedia
 {
@@ -153,10 +153,7 @@ class Agent extends Model implements HasMedia
     {
         return $this->belongsToMany(Service::class, 'agent_services', 'agent_id', 'service_id');
     }
-    public function testimonals()
-    {
-        return $this->hasMany(Testimonal::class);
-    }
+
     public function properties()
     {
         return $this->hasMany(Property::class);
@@ -168,6 +165,41 @@ class Agent extends Model implements HasMedia
     public function resaleProperties()
     {
         return $this->properties()->where('category_id', config('constants.categories')["Resale"]);
+    }
+    public static function getCountsByDate($startDate, $endDate)
+    {
+        return DB::table('agents')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+    }
+
+    public static function getCountsByStatus($startDate, $endDate)
+    {
+        return DB::table('agents')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN status = "active" THEN 1 END) as active,
+                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive
+            ')
+            ->first();
+    }
+
+    public static function getCountsByApprovalStatus($startDate, $endDate)
+    {
+        return DB::table('agents')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested,
+                COUNT(CASE WHEN is_approved = "approved" THEN 1 END) as approved,
+                COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected
+            ')
+            ->first();
     }
 
     /**

@@ -14,6 +14,7 @@ use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Guide extends Model implements HasMedia
 {
@@ -100,6 +101,42 @@ class Guide extends Model implements HasMedia
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+
+    public static function getCountsByDate($startDate, $endDate)
+    {
+        return DB::table('guides')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+    }
+
+    public static function getCountsByStatus($startDate, $endDate)
+    {
+        return DB::table('guides')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN status = "active" THEN 1 END) as active,
+                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive
+            ')
+            ->first();
+    }
+
+    public static function getCountsByApprovalStatus($startDate, $endDate)
+    {
+        return DB::table('guides')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested,
+                COUNT(CASE WHEN is_approved = "approved" THEN 1 END) as approved,
+                COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected
+            ')
+            ->first();
     }
     /**
      *

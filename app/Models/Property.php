@@ -15,6 +15,7 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Carbon\Carbon;
 use App\Observers\PropertyObserver;
+use Illuminate\Support\Facades\DB;
 
 class Property extends Model implements HasMedia
 {
@@ -430,6 +431,109 @@ class Property extends Model implements HasMedia
     {
         return $query->where('category_id', 9);
     }
+
+    public static function getCountsByDate($startDate, $endDate)
+    {
+        return DB::table('properties')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+    }
+    public static function getCountsByAgent($startDate, $endDate)
+    {
+        $propertyAgentWiseCount = DB::table('agents')
+            ->select(
+                'agents.name as agent_name',
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 THEN 1 ELSE 0 END), 0) as ready'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 THEN 1 ELSE 0 END), 0) as offplan'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 9 THEN 1 ELSE 0 END), 0) as rent')
+            )
+            ->leftJoin('properties', 'agents.id', '=', 'properties.agent_id')
+            ->whereNotNull('properties.agent_id') // Filter agents with properties
+            ->whereNull('properties.deleted_at')
+            ->whereBetween('properties.created_at', [$startDate, $endDate])
+            ->groupBy('agents.name')
+            ->get();
+
+        $result = [];
+
+        foreach ($propertyAgentWiseCount as $agent) {
+            $result[] = [
+                'agent_name' => $agent->agent_name,
+                'ready' => $agent->ready ?? 0,
+                'offplan' => $agent->offplan ?? 0,
+                'rent' => $agent->rent ?? 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    public static function getCountsByStatus($startDate, $endDate)
+    {
+        return DB::table('properties')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN status = "active" THEN 1 END) as active,
+                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive
+            ')
+            ->first();
+    }
+
+    public static function getCountsByApprovalStatus($startDate, $endDate)
+    {
+        return DB::table('properties')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested,
+                COUNT(CASE WHEN is_approved = "approved" THEN 1 END) as approved,
+                COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected
+            ')
+            ->first();
+    }
+
+    public static function getCountsByPermitNumber($startDate, $endDate)
+    {
+        return DB::table('properties')
+            ->whereNull('properties.deleted_at')
+            ->whereBetween('properties.created_at', [$startDate, $endDate])
+            ->join('projects', 'properties.project_id', '=', 'projects.id')->selectRaw('
+            COUNT(CASE WHEN projects.permit_number IS NOT NULL THEN 1 END) as with_permit,
+            COUNT(CASE WHEN projects.permit_number IS NULL THEN 1 END) as without_permit
+        ')->first();
+    }
+    public static function getCountsByCategory($startDate, $endDate)
+    {
+
+        return [
+            'ready' => DB::table('properties')
+                ->whereNull('deleted_at')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('category_id', 8)
+                ->where('completion_status_id', 286)
+                ->count(),
+
+            'offplan' => DB::table('properties')
+                ->whereNull('deleted_at')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('category_id', 8)
+                ->where('completion_status_id', 287)
+                ->count(),
+
+            'rent' => DB::table('properties')
+                ->whereNull('deleted_at')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('category_id', 9)
+                ->count(),
+        ];
+    }
+
+
     /**
      *
      * Filters

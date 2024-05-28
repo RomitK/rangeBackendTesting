@@ -37,7 +37,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 d-flex align-items-end justify-content-end">
-                                    <input type="text" value="" name="data_range_input" id="data_range_input">
+                                    <input type="hidden" value="" name="data_range_input" id="data_range_input">
                                     <button class="btn btn-danger btn-md" id="download-button">Download</button>
                                 </div>
                             </div>

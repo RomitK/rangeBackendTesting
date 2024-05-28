@@ -14,6 +14,7 @@ use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Project extends Model implements HasMedia
 {
@@ -432,6 +433,60 @@ class Project extends Model implements HasMedia
     {
         return $query->where('is_new_launch', '1');
     }
+
+    public static function getCountsByDate($startDate, $endDate)
+    {
+        return DB::table('projects')
+            ->where('is_parent_project', true)
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+    }
+
+    public static function getCountsByStatus($startDate, $endDate)
+    {
+        return DB::table('projects')
+            ->where('is_parent_project', true)
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN status = "active" THEN 1 END) as active,
+                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive
+            ')
+            ->first();
+    }
+
+
+    public static function getCountsByPermitNumber($startDate, $endDate)
+    {
+        return DB::table('projects')
+            ->where('is_parent_project', true)
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+            COUNT(CASE WHEN permit_number IS NULL THEN 1 END) as without_permit,
+            COUNT(CASE WHEN permit_number IS NOT NULL THEN 1 END) as with_permit
+        ')->first();
+    }
+
+
+    public static function getCountsByApprovalStatus($startDate, $endDate)
+    {
+        return DB::table('projects')
+            ->where('is_parent_project', true)
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested,
+                COUNT(CASE WHEN is_approved = "approved" THEN 1 END) as approved,
+                COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected
+            ')
+            ->first();
+    }
+
     /**
      *
      * Filters
