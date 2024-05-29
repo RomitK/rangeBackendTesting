@@ -66,6 +66,20 @@ class InactivePropertyJob implements ShouldQueue
                     Log::info("other lowest priece property-");
                 }
             }
+
+
+            // $withotProjects = Project::active()->mainProject()->whereNull('permit_number')->pluck('id')->toArray();
+
+            // foreach ($withotProjects as $project) {
+
+            //     Property::where('project_id', $project)
+            //         ->active()
+            //         ->approved()
+            //         ->where('id', '!=', $lowestPricePropertyId)
+            //         ->update(['status' => 'Inactive']);
+            //     Log::info("other lowest priece property-");
+            // }
+
             DB::commit();
         } catch (\Exception $error) {
             Log::info("Property-error" . $error->getMessage());

@@ -36,16 +36,16 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
 
         // Adding counts by status
         $this->statusRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Data', 'Available', 'NP', 'Rejected', 'Requested', 'Total Active', 'Total Inactive', 'Total']);
+        $collection->push(['Data', 'Available', 'NA', 'Rejected', 'Requested', 'Total Active', 'Total Inactive', 'Total']);
 
         foreach ($this->data['getCountsByStatus'] as $index => $getCountsByStatus) {
 
             $available = $getCountsByStatus->available ?? 0;
-            $NP = $getCountsByStatus->NP ?? 0;
+            $NA = $getCountsByStatus->NA ?? 0;
             $rejected = $getCountsByStatus->rejected ?? 0;
             $requested = $getCountsByStatus->requested ?? 0;
-            $total = $available + $NP + $rejected + $requested;
-            $totalActive = $available + $NP;
+            $total = $available + $NA + $rejected + $requested;
+            $totalActive = $available + $NA;
             $totalInactive = $rejected + $requested;
 
             $indexCapitalized = ucfirst($index);
@@ -53,7 +53,7 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
             $collection->push([
                 $indexCapitalized,
                 (string) $available,
-                (string) $NP,
+                (string) $NA,
                 (string) $rejected,
                 (string) $requested,
                 (string) $totalActive,

@@ -482,7 +482,7 @@ class Property extends Model implements HasMedia
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
                 COUNT(CASE WHEN status = "active" AND is_approved = "approved" THEN 1 END) as available,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NP,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NA,
                 COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected,
                 COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested
             ')
@@ -508,34 +508,68 @@ class Property extends Model implements HasMedia
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
             ->join('projects', 'properties.project_id', '=', 'projects.id')->selectRaw('
-            COUNT(CASE WHEN projects.permit_number IS NOT NULL THEN 1 END) as with_permit,
-            COUNT(CASE WHEN projects.permit_number IS NULL THEN 1 END) as without_permit
+           
+            COUNT(CASE WHEN properties.status = "active" AND properties.is_approved = "approved" AND projects.permit_number IS NULL THEN 1 END) as without_permit_available,
+            COUNT(CASE WHEN properties.status = "inactive" AND properties.is_approved = "approved" AND projects.permit_number IS NULL THEN 1 END) as without_permit_NA,
+            COUNT(CASE WHEN properties.is_approved = "rejected" AND projects.permit_number IS NULL THEN 1 END) as without_permit_rejected,
+            COUNT(CASE WHEN properties.is_approved = "requested" AND projects.permit_number IS NULL THEN 1 END) as without_permit_requested,
+
+
+            COUNT(CASE WHEN properties.status = "active" AND properties.is_approved = "approved" AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_available,
+            COUNT(CASE WHEN properties.status = "inactive" AND properties.is_approved = "approved" AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_NA,
+            COUNT(CASE WHEN properties.is_approved = "rejected" AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_rejected,
+            COUNT(CASE WHEN properties.is_approved = "requested" AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_requested
+
         ')->first();
     }
     public static function getCountsByCategory($startDate, $endDate)
     {
 
-        return [
-            'ready' => DB::table('properties')
-                ->whereNull('deleted_at')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('category_id', 8)
-                ->where('completion_status_id', 286)
-                ->count(),
+        return DB::table('properties')
+            ->whereNull('properties.deleted_at')
+            ->whereBetween('properties.created_at', [$startDate, $endDate])
+           ->selectRaw('
+           
+                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as available_ready,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as NA_ready,
+                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as rejected_ready,
+                COUNT(CASE WHEN is_approved = "requested" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as requested_ready,
 
-            'offplan' => DB::table('properties')
-                ->whereNull('deleted_at')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('category_id', 8)
-                ->where('completion_status_id', 287)
-                ->count(),
 
-            'rent' => DB::table('properties')
-                ->whereNull('deleted_at')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->where('category_id', 9)
-                ->count(),
-        ];
+                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as available_offplan,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as NA_offplan,
+                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as rejected_offplan,
+                COUNT(CASE WHEN is_approved = "requested" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as requested_offplan,
+
+
+                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as available_rent,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as NA_rent,
+                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as rejected_rent,
+                COUNT(CASE WHEN is_approved = "requested" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as requested_rent
+
+        ')->first();
+
+        // return [
+        //     'ready' => DB::table('properties')
+        //         ->whereNull('deleted_at')
+        //         ->whereBetween('created_at', [$startDate, $endDate])
+        //         ->where('category_id', 8)
+        //         ->where('completion_status_id', 286)
+        //         ->count(),
+
+        //     'offplan' => DB::table('properties')
+        //         ->whereNull('deleted_at')
+        //         ->whereBetween('created_at', [$startDate, $endDate])
+        //         ->where('category_id', 8)
+        //         ->where('completion_status_id', 287)
+        //         ->count(),
+
+        //     'rent' => DB::table('properties')
+        //         ->whereNull('deleted_at')
+        //         ->whereBetween('created_at', [$startDate, $endDate])
+        //         ->where('category_id', 9)
+        //         ->count(),
+        // ];
     }
 
 

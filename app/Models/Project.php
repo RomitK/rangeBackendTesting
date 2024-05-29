@@ -454,7 +454,7 @@ class Project extends Model implements HasMedia
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
                 COUNT(CASE WHEN status = "active" AND is_approved = "approved" THEN 1 END) as available,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NP,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NA,
                 COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected,
                 COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested
             ')
@@ -469,8 +469,19 @@ class Project extends Model implements HasMedia
             ->whereNull('deleted_at')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
-            COUNT(CASE WHEN permit_number IS NULL THEN 1 END) as without_permit,
-            COUNT(CASE WHEN permit_number IS NOT NULL THEN 1 END) as with_permit
+            
+            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NULL THEN 1 END) as without_permit_available,
+            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NULL THEN 1 END) as without_permit_NA,
+            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NULL THEN 1 END) as without_permit_rejected,
+            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NULL THEN 1 END) as without_permit_requested,
+
+
+            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NOT NULL THEN 1 END) as with_permit_available,
+            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NOT NULL THEN 1 END) as with_permit_NA,
+            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NOT NULL THEN 1 END) as with_permit_rejected,
+            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NOT NULL THEN 1 END) as with_permit_requested
+
+
         ')->first();
     }
 

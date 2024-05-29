@@ -121,7 +121,7 @@ class Guide extends Model implements HasMedia
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
                 COUNT(CASE WHEN status = "active" AND is_approved = "approved" THEN 1 END) as available,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NP,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NA,
                 COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected,
                 COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested
             ')

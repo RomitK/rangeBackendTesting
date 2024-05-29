@@ -105,26 +105,47 @@ class GeneralReport extends Controller
 
         $projectPermitCounts = [
             [
-                'status' => 'With Permit Number',
-                'count' => $projectPermitCounts->without_permit,
-                'color' => '#17a2b8', // Info
+                'status' => 'Without Permit Number',
+                'count' => [
+                    'available' => $projectPermitCounts->without_permit_available,
+                    'NA' => $projectPermitCounts->without_permit_NA,
+                    'rejected' => $projectPermitCounts->without_permit_rejected,
+                    'requested' => $projectPermitCounts->without_permit_requested
+                ],
+
             ],
             [
-                'status' => 'Without Permit Number',
-                'count' => $projectPermitCounts->with_permit,
-                'color' => '#6c757d', // Secondary
+                'status' => 'With Permit Number',
+                'count' => [
+                    'available' => $projectPermitCounts->with_permit_available,
+                    'NA' => $projectPermitCounts->with_permit_NA,
+                    'rejected' => $projectPermitCounts->with_permit_rejected,
+                    'requested' => $projectPermitCounts->with_permit_requested
+                ],
+
             ]
         ];
+
         $propertyPermitCounts = [
             [
-                'status' => 'With Permit Number',
-                'count' => $propertyPermitCounts->without_permit,
-                'color' => '#17a2b8', // Info
+                'status' => 'Without Permit Number',
+                'count' => [
+                    'available' => $propertyPermitCounts->without_permit_available,
+                    'NA' => $propertyPermitCounts->without_permit_NA,
+                    'rejected' => $propertyPermitCounts->without_permit_rejected,
+                    'requested' => $propertyPermitCounts->without_permit_requested
+                ],
+
             ],
             [
-                'status' => 'Without Permit Number',
-                'count' => $propertyPermitCounts->with_permit,
-                'color' => '#6c757d', // Secondary
+                'status' => 'With Permit Number',
+                'count' => [
+                    'available' => $propertyPermitCounts->with_permit_available,
+                    'NA' => $propertyPermitCounts->with_permit_NA,
+                    'rejected' => $propertyPermitCounts->with_permit_rejected,
+                    'requested' => $propertyPermitCounts->with_permit_requested
+                ],
+
             ]
         ];
 
@@ -154,22 +175,36 @@ class GeneralReport extends Controller
         $propertyCateoryCounts = [
             [
                 'status' => 'Ready',
-                'count' => $propertyCateoryWiseCounts['ready'],
-                'color' => '#17a2b8', // Info
+                'count' => [
+                    'available' => $propertyCateoryWiseCounts->available_ready,
+                    'NA' => $propertyCateoryWiseCounts->NA_ready,
+                    'rejected' => $propertyCateoryWiseCounts->rejected_ready,
+                    'requested' => $propertyCateoryWiseCounts->requested_ready
+                ],
+
             ],
             [
                 'status' => 'Offplan',
-                'count' => $propertyCateoryWiseCounts['offplan'],
-                'color' => '#6c757d', // Secondary
+                'count' => [
+                    'available' => $propertyCateoryWiseCounts->available_offplan,
+                    'NA' => $propertyCateoryWiseCounts->NA_offplan,
+                    'rejected' => $propertyCateoryWiseCounts->rejected_offplan,
+                    'requested' => $propertyCateoryWiseCounts->requested_offplan
+                ],
+
             ],
             [
                 'status' => 'Rent',
-                'count' => $propertyCateoryWiseCounts['rent'],
-                'color' => '#6c757d', // Secondary
-            ]
+                'count' => [
+                    'available' => $propertyCateoryWiseCounts->available_rent,
+                    'NA' => $propertyCateoryWiseCounts->NA_rent,
+                    'rejected' => $propertyCateoryWiseCounts->rejected_rent,
+                    'requested' => $propertyCateoryWiseCounts->requested_rent
+                ],
+
+            ],
         ];
-
-
+        
         if (isset($request->download) && $request->download == 1) {
             $data = [
                 'startDate' => $startDate->format('d m Y'),

@@ -111,7 +111,7 @@
 
                             <div class="card card-success">
                                 <div class="card-header">
-                                    <h3 class="card-title">Project Permit Wise</h3>
+                                    <h3 class="card-title">Projects Permit-Status Wise</h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                             <i class="fas fa-minus"></i>
@@ -124,7 +124,6 @@
 
                                     <div class="row">
                                         <div class="col-md-8">
-                                            <h3>Project Permit Wise</h3>
                                             <div class="chart">
                                                 <canvas id="projectPermitPieChart"
                                                     style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
@@ -134,8 +133,12 @@
                                             <div id="projectPermitWiseData"></div>
                                         </div>
                                     </div>
+
+
                                 </div>
                             </div>
+
+
                             <div class="card card-danger">
                                 <div class="card-header">
                                     <h3 class="card-title">Properties Permit/Category Wise</h3>
@@ -147,18 +150,10 @@
                                     </div>
                                 </div>
                                 <div class="card-body">
-                                    <div class="row row-full-height">
+                                    <div class="row">
 
-                                        <div class="col-md-4">
-                                            <div class="flex-center">
-                                                <h4>Properties Category Wise</h4>
-                                                <div class="chart">
-                                                    <canvas id="propertyPermitPieChart"
-                                                        style="min-height: 150px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 ">
+
+                                        <div class="col-md-8">
                                             <div class="flex-center">
                                                 <h4>Properties Category Wise</h4>
                                                 <div class="chart">
@@ -168,10 +163,26 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <h4>Properties Permit Wise</h4>
-                                            <div id="propertyPermitWiseData"></div>
+
                                             <h4>Properties Category Wise</h4>
                                             <div id="propertyCategoryWiseData"></div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="flex-center">
+                                                <h4>Properties Permit Wise</h4>
+                                                <div class="chart">
+                                                    <canvas id="propertyPermitPieChart"
+                                                        style="min-height: 150px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <h4>Properties Permit Wise</h4>
+                                            <div id="propertyPermitWiseData"></div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -377,8 +388,9 @@
                             careers);
                         updateTableDataForStatus(response.data['getCountsByStatus']);
 
-                        createOrUpdateProjectPermitPieChart(transformDataForPieChart(response.data[
-                            'projectPermitCounts']));
+                        createOrUpdateProjectPermitPieChart(transformDataForProjectPermitChart(response
+                            .data[
+                                'projectPermitCounts']));
                         updateProjectPermitWiseDataText(response.data['projectPermitCounts']);
 
 
@@ -391,14 +403,15 @@
 
 
 
-                        createOrUpdatePropertyPermitPieChart(transformDataForPieChart(response.data[
-                            'propertyPermitCounts']));
+                        createOrUpdatePropertyPermitPieChart(transformDataForProjectPermitChart(response
+                            .data['propertyPermitCounts']));
                         updatePropertyPermitWiseDataText(response.data['propertyPermitCounts']);
 
 
 
-                        createOrUpdatePropertyCategoryPieChart(transformDataForPieChart(response.data[
-                            'propertyCateoryCounts']));
+                        createOrUpdatePropertyCategoryPieChart(transformDataForProjectPermitChart(
+                            response.data[
+                                'propertyCateoryCounts']));
                         updatePropertyCategoryWiseDataText(response.data['propertyCateoryCounts']);
 
 
@@ -429,20 +442,76 @@
                 return html;
             }
 
+            function generateBarDataWiseHTML(data) {
+                let tableHtml =
+                    '<table class="table table-bordered"><thead><tr><th>Status</th><th>Available</th><th>NA</th><th>Rejected</th><th>Requested</th><th>Total</th></tr></thead><tbody>';
+
+                // Initialize variables to hold the total counts
+                let totalAvailable = 0;
+                let totalNA = 0;
+                let totalRejected = 0;
+                let totalRequested = 0;
+
+                data.forEach(item => {
+                    const available = item.count.available;
+                    const na = item.count.NA;
+                    const rejected = item.count.rejected;
+                    const requested = item.count.requested;
+                    const total = available + na + rejected + requested;
+
+                    // Accumulate totals
+                    totalAvailable += available;
+                    totalNA += na;
+                    totalRejected += rejected;
+                    totalRequested += requested;
+
+                    tableHtml += `<tr>
+                                    <td>${item.status}</td>
+                                    <td>${available}</td>
+                                    <td>${na}</td>
+                                    <td>${rejected}</td>
+                                    <td>${requested}</td>
+                                    <td>${total}</td>
+                                </tr>`;
+                });
+
+                // Calculate the grand total
+                const grandTotal = totalAvailable + totalNA + totalRejected + totalRequested;
+
+                // Add the totals row at the end
+                tableHtml += `<tr class="totals-row">
+                                <th>Total</th>
+                                <th>${totalAvailable}</th>
+                                <th>${totalNA}</th>
+                                <th>${totalRejected}</th>
+                                <th>${totalRequested}</th>
+                                <th>${grandTotal}</th>
+                            </tr>`;
+
+                tableHtml += '</tbody></table>';
+                return tableHtml;
+            }
+
             function updateProjectPermitWiseDataText(data) {
-                $('#projectPermitWiseData').html(generatePieDataWiseHTML(data));
+
+                $('#projectPermitWiseData').html(generateBarDataWiseHTML(data));
+
             }
 
             function updateMediaCategoryWiseDataText(data) {
+
                 $('#mediaCategoryWiseData').html(generatePieDataWiseHTML(data));
             }
 
             function updatePropertyPermitWiseDataText(data) {
-                $('#propertyPermitWiseData').html(generatePieDataWiseHTML(data));
+
+                $('#propertyPermitWiseData').html(generateBarDataWiseHTML(data));
             }
 
             function updatePropertyCategoryWiseDataText(data) {
-                $('#propertyCategoryWiseData').html(generatePieDataWiseHTML(data));
+
+
+                $('#propertyCategoryWiseData').html(generateBarDataWiseHTML(data));
             }
 
 
@@ -453,7 +522,7 @@
                 } else {
                     const pieChartCanvas = $('#projectPermitPieChart').get(0).getContext('2d');
                     projectPermitPieChart = new Chart(pieChartCanvas, {
-                        type: 'pie',
+                        type: 'bar',
                         data: data,
                         options: donutOptions
                     });
@@ -481,7 +550,7 @@
                 } else {
                     const pieChartCanvas = $('#propertyPermitPieChart').get(0).getContext('2d');
                     propertyPermitPieChart = new Chart(pieChartCanvas, {
-                        type: 'pie',
+                        type: 'bar',
                         data: data,
                         options: donutOptions
                     });
@@ -495,13 +564,94 @@
                 } else {
                     const pieChartCanvas = $('#propertyCategoryPieChart').get(0).getContext('2d');
                     propertyCategoryPieChart = new Chart(pieChartCanvas, {
-                        type: 'doughnut',
+                        type: 'bar',
                         data: data,
                         options: donutOptions
                     });
                 }
             }
 
+            function transformDataForPropertyCategporyChart(data) {
+                const labels = data.map(item => item.status);
+                const availableData = data.map(item => item.count.available);
+                const naData = data.map(item => item.count.NA);
+                const rejectedData = data.map(item => item.count.rejected);
+                const requestedData = data.map(item => item.count.requested);
+
+                return {
+                    labels: labels,
+                    datasets: [{
+                            label: 'Available',
+                            data: availableData,
+                            backgroundColor: 'green',
+                            borderColor: 'rgba(60,141,188,0.8)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'NA',
+                            data: naData,
+                            label: 'NA',
+                            backgroundColor: 'rgba(210, 214, 222, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Rejected',
+                            data: rejectedData,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'rgba(255, 0, 0, 0.5)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Requested',
+                            data: requestedData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                };
+            }
+
+            function transformDataForProjectPermitChart(data) {
+                const labels = data.map(item => item.status);
+                const availableData = data.map(item => item.count.available);
+                const naData = data.map(item => item.count.NA);
+                const rejectedData = data.map(item => item.count.rejected);
+                const requestedData = data.map(item => item.count.requested);
+
+                return {
+                    labels: labels,
+                    datasets: [{
+                            label: 'Available',
+                            data: availableData,
+                            backgroundColor: 'green',
+                            borderColor: 'rgba(60,141,188,0.8)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'NA',
+                            data: naData,
+                            label: 'NA',
+                            backgroundColor: 'rgba(210, 214, 222, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Rejected',
+                            data: rejectedData,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'rgba(255, 0, 0, 0.5)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Requested',
+                            data: requestedData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                };
+            }
 
             function transformDataForPieChart(data) {
                 const labels = data.map(item => item.status);
@@ -649,14 +799,14 @@
                                 .available
                             ]
                         }, {
-                            label: 'NP',
+                            label: 'NA',
                             backgroundColor: 'rgba(210, 214, 222, 1)',
                             borderColor: 'rgba(210, 214, 222, 1)',
-                            data: [data.communities.NP, data.developers.NP, data.projects
-                                .NP, data
-                                .properties.NP, data.medias.NP, data.guides.NP, data
+                            data: [data.communities.NA, data.developers.NA, data.projects
+                                .NA, data
+                                .properties.NA, data.medias.NA, data.guides.NA, data
                                 .careers
-                                .NP
+                                .NA
                             ]
                         }, {
                             label: 'Rejected',
@@ -671,8 +821,8 @@
                         },
                         {
                             label: 'Requested',
-                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
-                            borderColor: 'rgba(0, 0, 255, 0.5)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.8)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
                             data: [data.communities.requested, data.developers.requested, data.projects
                                 .requested, data
                                 .properties.requested, data.medias.requested, data.guides.requested,
@@ -755,17 +905,17 @@
 
             function updateTableDataForStatus(countsByStatus) {
                 let tableHtml =
-                    '<table class="table table-bordered"><thead><tr><th>Data</th><th>Available</th><th>NP</th><th>Rejected</th><th>Requested</th><th>Total Active</th><th>Total Inactive</th><th>Total</th></tr></thead><tbody>';
+                    '<table class="table table-bordered"><thead><tr><th>Data</th><th>Available</th><th>NA</th><th>Rejected</th><th>Requested</th><th>Total Active</th><th>Total Inactive</th><th>Total</th></tr></thead><tbody>';
 
                 for (let [key, value] of Object.entries(countsByStatus)) {
 
-                    const total = value.available + value.NP + value.rejected + value.requested;
-                    const active = value.available + value.NP;
+                    const total = value.available + value.NA + value.rejected + value.requested;
+                    const active = value.available + value.NA;
                     const inactive = value.rejected + value.requested;
                     tableHtml += `<tr>
                                 <td>${key.charAt(0).toUpperCase() + key.slice(1)}</td>
                                 <td>${value.available}</td>
-                                <td>${value.NP}</td>
+                                <td>${value.NA}</td>
                                 <td>${value.rejected}</td>
                                 <td>${value.requested}</td>
                                 <td>${active}</td>
@@ -800,7 +950,7 @@
             function updateTableDataForDate(communities, developers, projects, properties, medias, guides,
                 careers) {
                 let tableHtml =
-                    '<table class="table table-bordered"><thead><tr><th>Date</th><th>Communities</th><th>Developers</th><th>Projects</th><th>Properties</th><th>Medias</th><th>Guides</th><th>Careers</th> <th>Total</th></tr></thead><tbody>';
+                    '<table class="table table-bordered"><thead><tr><th>Date</th><th>Communities</th><th>Developers</th><th>Projects</th><th>Properties</th><th>Medias</th><th>Guides</th><th>Careers</th><th>Total</th></tr></thead><tbody>';
 
                 const allDates = Object.keys({
                     ...communities,
@@ -810,7 +960,7 @@
                     ...medias,
                     ...guides,
                     ...careers
-                });
+                }).sort((a, b) => new Date(b) - new Date(a)); // Sort dates in descending order
 
                 let totalCommunities = 0;
                 let totalDevelopers = 0;
@@ -820,7 +970,10 @@
                 let totalGuide = 0;
                 let totalAgent = 0;
 
-                allDates.forEach(date => {
+                let initialRows = '';
+                let allRows = '';
+
+                allDates.forEach((date, index) => {
                     const communityCount = communities[date] || 0;
                     const developerCount = developers[date] || 0;
                     const projectCount = projects[date] || 0;
@@ -829,22 +982,25 @@
                     const guideCount = guides[date] || 0;
                     const agentCount = careers[date] || 0;
 
-
                     const totalCount = communityCount + developerCount + projectCount + propertyCount +
-                        mediaCount +
-                        guideCount + agentCount;
+                        mediaCount + guideCount + agentCount;
 
-                    tableHtml += '<tr>';
-                    tableHtml += `<td>${date}</td>`;
-                    tableHtml += `<td>${communityCount}</td>`;
-                    tableHtml += `<td>${developerCount}</td>`;
-                    tableHtml += `<td>${projectCount}</td>`;
-                    tableHtml += `<td>${propertyCount}</td>`;
-                    tableHtml += `<td>${mediaCount}</td>`;
-                    tableHtml += `<td>${guideCount}</td>`;
-                    tableHtml += `<td>${agentCount}</td>`;
-                    tableHtml += `<td>${totalCount}</td>`;
-                    tableHtml += '</tr>';
+                    const row = `<tr>
+            <td>${date}</td>
+            <td>${communityCount}</td>
+            <td>${developerCount}</td>
+            <td>${projectCount}</td>
+            <td>${propertyCount}</td>
+            <td>${mediaCount}</td>
+            <td>${guideCount}</td>
+            <td>${agentCount}</td>
+            <td>${totalCount}</td>
+        </tr>`;
+
+                    if (index < 10) {
+                        initialRows += row;
+                    }
+                    allRows += row;
 
                     totalCommunities += communityCount;
                     totalDevelopers += developerCount;
@@ -856,25 +1012,46 @@
                 });
 
                 const grandTotal = totalCommunities + totalDevelopers + totalProjects + totalProperties +
-                    totalMedia +
-                    totalGuide + totalAgent;
+                    totalMedia + totalGuide + totalAgent;
 
-                tableHtml += '<tr class="totals-row">';
-                tableHtml += '<th>Total</th>';
-                tableHtml += `<th>${totalCommunities}</th>`;
-                tableHtml += `<th>${totalDevelopers}</th>`;
-                tableHtml += `<th>${totalProjects}</th>`;
-                tableHtml += `<th>${totalProperties}</th>`;
-                tableHtml += `<th>${totalMedia}</th>`;
-                tableHtml += `<th>${totalGuide}</th>`;
-                tableHtml += `<th>${totalAgent}</th>`;
-                tableHtml += `<th>${grandTotal}</th>`;
-                tableHtml += '</tr>';
+                const totalsRow = `<tr class="totals-row">
+        <th>Total</th>
+        <th>${totalCommunities}</th>
+        <th>${totalDevelopers}</th>
+        <th>${totalProjects}</th>
+        <th>${totalProperties}</th>
+        <th>${totalMedia}</th>
+        <th>${totalGuide}</th>
+        <th>${totalAgent}</th>
+        <th>${grandTotal}</th>
+    </tr>`;
 
-                tableHtml += '</tbody></table>';
+                initialRows += totalsRow;
+                allRows += totalsRow;
+
+                tableHtml += initialRows + '</tbody></table>';
+                tableHtml += '<button id="showAllBtn" class="btn btn-primary">Show All</button>';
+                tableHtml +=
+                    '<button id="hideAllBtn" class="btn btn-secondary" style="display:none;">Hide All</button>';
+                tableHtml +=
+                    '<table id="allDataTable" class="table table-bordered" style="display:none;"><thead><tr><th>Date</th><th>Communities</th><th>Developers</th><th>Projects</th><th>Properties</th><th>Medias</th><th>Guides</th><th>Careers</th><th>Total</th></tr></thead><tbody>';
+                tableHtml += allRows + '</tbody></table>';
 
                 $('#dateCountTableData').html(tableHtml);
+
+                $('#showAllBtn').on('click', function() {
+                    $(this).hide();
+                    $('#hideAllBtn').show();
+                    $('#allDataTable').show();
+                });
+
+                $('#hideAllBtn').on('click', function() {
+                    $(this).hide();
+                    $('#showAllBtn').show();
+                    $('#allDataTable').hide();
+                });
             }
+
             $(document).ready(function() {
                 let currentPathName = window.location.pathname;
                 if (currentPathName === '/dashboard/general-report') {
