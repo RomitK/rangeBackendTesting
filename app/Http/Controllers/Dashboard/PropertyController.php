@@ -65,6 +65,19 @@ class PropertyController extends Controller
         $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
 
 
+        if (isset($request->permit_number)) {
+            if ($request->permit_number == '1') {
+                $collection->whereHas('project', function ($query) {
+                    $query->whereNotNull('permit_number');
+                });
+            } elseif ($request->permit_number == '0') {
+
+                $collection->whereHas('project', function ($query) {
+                    $query->whereNull('permit_number');
+                });
+            }
+        }
+
         if (isset($request->data_range_input)) {
             $dateRange = $request->data_range_input;
             $dates = explode(' - ', $dateRange);
@@ -82,6 +95,8 @@ class PropertyController extends Controller
             $project_ids = $request->project_ids;
             $collection->whereIn('project_id', $project_ids);
         }
+
+
 
 
         if (isset($request->exclusive)) {

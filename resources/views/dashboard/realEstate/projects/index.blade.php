@@ -185,9 +185,9 @@
                                             <label for="permit_number">Permit Number </label>
                                             <select class="form-control" id="permit_number" name="permit_number">
                                                 <option value="">All</option>
-                                                <option value="1" @if (request()->permit_number === '0') selected @endif>
+                                                <option value="1" @if (request()->permit_number === '1') selected @endif>
                                                     Exist</option>
-                                                <option value="0" @if (request()->permit_number === '1') selected @endif>
+                                                <option value="0" @if (request()->permit_number === '0') selected @endif>
                                                     Not Exist</option>
 
                                             </select>
