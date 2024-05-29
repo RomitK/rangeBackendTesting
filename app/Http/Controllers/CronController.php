@@ -28,7 +28,7 @@ use Spatie\Image\Image;
 use Spatie\Image\Manipulations;
 use Illuminate\Support\Facades\Storage;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use DB;
+use Illuminate\Support\Facades\DB;
 use PDF;
 use GuzzleHttp\Client;
 
@@ -37,7 +37,7 @@ class CronController extends Controller
 
     public function inactiveProperties()
     {
-
+        Log::info('inactiveProperties');
         $projects = Project::active()->mainProject()->pluck('id')->toArray();
         foreach ($projects as $project) {
             $subprojects = Project::where('is_parent_project', 0)->where('parent_project_id', $project)->pluck('id')->toArray();
@@ -49,27 +49,34 @@ class CronController extends Controller
                     ->where('sub_project_id', $subproject)
                     ->orderBy('price')
                     ->active()
-                    ->approved()
+                    ->requested()
                     ->value('id');
 
                 Log::info("lowest priece property-" . $lowestPricePropertyId);
 
-                Property::where('project_id', $project)
+
+                DB::table('properties')
+                    ->where('project_id', $project)
                     ->where('sub_project_id', $subproject)
-                    ->active()
-                    ->approved()
+                    ->where('status', config('constants.active'))
+                    ->where('is_approved', config('constants.requested'))
                     ->where('id', '!=', $lowestPricePropertyId)
-                    ->update(['status' => 'Inactive']);
+                    ->delete();
+
 
                 Log::info("other lowest priece property-");
-                Log::info(Property::where('project_id', $project)
+                Log::info(DB::table('properties')
+                    ->where('project_id', $project)
                     ->where('sub_project_id', $subproject)
-                    ->active()
-                    ->approved()
+                    ->where('status', config('constants.active'))
+                    ->where('is_approved', config('constants.requested'))
                     ->where('id', '!=', $lowestPricePropertyId)
                     ->toSql());
+                
             }
+           
         }
+        echo "done";
     }
 
 

@@ -406,7 +406,10 @@ class Property extends Model implements HasMedia
     /**
      * FIND local scope
      */
-
+    public function scopeRequested($query)
+    {
+        return $query->where('is_approved', config('constants.requested'));
+    }
     public function scopeApproved($query)
     {
         return $query->where('is_approved', config('constants.approved'));
