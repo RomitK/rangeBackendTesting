@@ -38,7 +38,7 @@ class CronController extends Controller
     public function inactiveProperties()
     {
         Log::info('inactiveProperties');
-        $projects = Project::active()->mainProject()->pluck('id')->toArray();
+        $projects = Project::mainProject()->pluck('id')->toArray();
         foreach ($projects as $project) {
             $subprojects = Project::where('is_parent_project', 0)->where('parent_project_id', $project)->pluck('id')->toArray();
             foreach ($subprojects  as $subproject) {
@@ -65,16 +65,7 @@ class CronController extends Controller
 
 
                 Log::info("other lowest priece property-");
-                Log::info(DB::table('properties')
-                    ->where('project_id', $project)
-                    ->where('sub_project_id', $subproject)
-                    ->where('status', config('constants.active'))
-                    ->where('is_approved', config('constants.requested'))
-                    ->where('id', '!=', $lowestPricePropertyId)
-                    ->toSql());
-                
             }
-           
         }
         echo "done";
     }
