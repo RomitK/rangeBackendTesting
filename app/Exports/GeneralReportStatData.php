@@ -23,6 +23,7 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
     protected $propertyPermitNameRowIndex;
     protected $propertyCategoryNameRowIndex;
     protected $propertyAgentNameRowIndex;
+    protected $MediaRowIndex;
 
     public function __construct($data)
     {
@@ -35,44 +36,36 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
 
         // Adding counts by status
         $this->statusRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Data', 'Active', 'Inactive', 'Total']);
+        $collection->push(['Data', 'Available', 'NP', 'Rejected', 'Requested', 'Total Active', 'Total Inactive', 'Total']);
 
         foreach ($this->data['getCountsByStatus'] as $index => $getCountsByStatus) {
-            Log::info($getCountsByStatus->inactive);
-            $inactive = $getCountsByStatus->inactive ?? 0;
-            $active = $getCountsByStatus->active ?? 0;
-            $total = $active + $inactive;
+
+            $available = $getCountsByStatus->available ?? 0;
+            $NP = $getCountsByStatus->NP ?? 0;
+            $rejected = $getCountsByStatus->rejected ?? 0;
+            $requested = $getCountsByStatus->requested ?? 0;
+            $total = $available + $NP + $rejected + $requested;
+            $totalActive = $available + $NP;
+            $totalInactive = $rejected + $requested;
+
             $indexCapitalized = ucfirst($index);
+
             $collection->push([
                 $indexCapitalized,
-                (string) $active,
-                (string) $inactive,
-                (string) $total
-            ]);
-        }
-
-        // Adding counts by approval
-        $this->approvalStatusRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Data', 'Requested', 'Rejected', 'Approved', 'Total']);
-
-        foreach ($this->data['getCountsByApproval'] as $index => $getCountsByApproval) {
-            $requested = $getCountsByApproval->requested ?? 0;
-            $rejected = $getCountsByApproval->rejected ?? 0;
-            $approved = $getCountsByApproval->approved ?? 0;
-            $total = $requested + $rejected + $approved;
-            $indexCapitalized = ucfirst($index);
-            $collection->push([
-                $indexCapitalized,
-                (string) $requested,
+                (string) $available,
+                (string) $NP,
                 (string) $rejected,
-                (string) $approved,
+                (string) $requested,
+                (string) $totalActive,
+                (string) $totalInactive,
                 (string) $total
             ]);
         }
+
 
         // Adding counts by date
         $this->dateCountRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Date', 'Communities', 'Developers', 'Projects', 'Properties', 'Medias', 'Guides', 'Teams', 'Total']);
+        $collection->push(['Date', 'Communities', 'Developers', 'Projects', 'Properties', 'Media', 'Guides', 'Careers', 'Total']);
 
         $allDates = array_unique(array_merge(
             array_keys($this->data['getCountsByDate']['communities']),
@@ -81,7 +74,7 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
             array_keys($this->data['getCountsByDate']['properties']),
             array_keys($this->data['getCountsByDate']['medias']),
             array_keys($this->data['getCountsByDate']['guides']),
-            array_keys($this->data['getCountsByDate']['agents'])
+            array_keys($this->data['getCountsByDate']['careers'])
         ));
 
         $totalCommunities = 0;
@@ -99,7 +92,7 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
             $propertyCount = $this->data['getCountsByDate']['properties'][$date] ?? 0;
             $mediaCount = $this->data['getCountsByDate']['medias'][$date] ?? 0;
             $guideCount = $this->data['getCountsByDate']['guides'][$date] ?? 0;
-            $agentCount = $this->data['getCountsByDate']['agents'][$date] ?? 0;
+            $agentCount = $this->data['getCountsByDate']['careers'][$date] ?? 0;
 
             $totalCount = $communityCount + $developerCount + $projectCount + $propertyCount + $mediaCount + $guideCount + $agentCount;
 
@@ -188,6 +181,19 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
 
 
 
+
+        $totalMediaCount = 0;
+        $this->MediaRowIndex = $collection->count() + 1; // 1-based index for Excel rows
+        $collection->push(['Media Type', 'Count']);
+
+        foreach ($this->data['blogCategoryCounts'] as $data) {
+            $count = (int)$data['count']; // Ensure the count is an integer
+            $collection->push([$data['status'], (string)$count]);
+            $totalMediaCount += $count; // Sum the counts
+        }
+        $collection->push(['Total', $totalMediaCount]);
+
+
         return $collection;
     }
 
@@ -215,7 +221,7 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
             'font' => ['bold' => true],
         ]);
 
-        $sheet->getStyle('A' . ($this->statusRowIndex + 1) . ':D' . ($this->statusRowIndex + 1))->applyFromArray([
+        $sheet->getStyle('A' . ($this->statusRowIndex + 1) . ':H' . ($this->statusRowIndex + 1))->applyFromArray([
             'font' => ['bold' => true],
         ]);
 
@@ -244,6 +250,9 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
         ]);
 
 
+        $sheet->getStyle('A' . ($this->MediaRowIndex + 1) . ':E' . ($this->MediaRowIndex + 1))->applyFromArray([
+            'font' => ['bold' => true],
+        ]);
 
         $sheet->getStyle('A' . ($this->dateCountRowIndex + 1) . ':I' . ($this->dateCountRowIndex + 1))->applyFromArray([
             'font' => ['bold' => true],

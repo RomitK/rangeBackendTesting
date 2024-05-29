@@ -13,12 +13,13 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Career extends Model
 {
     use HasFactory, SoftDeletes, HasRichText, HasSlug;
 
-    CONST  JOB_TYPE = [
+    const  JOB_TYPE = [
         'full_time' => 'Full Time',
         'part_time' => 'Part Time'
     ];
@@ -55,7 +56,7 @@ class Career extends Model
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('position')
@@ -78,12 +79,13 @@ class Career extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function applicants(){
+    public function applicants()
+    {
         return $this->hasMany(CareerApplicant::class);
     }
     /**
-    * FIND local scope
-    */
+     * FIND local scope
+     */
     public function scopeActive($query)
     {
         return $query->where('status', config('constants.active'));
@@ -95,6 +97,30 @@ class Career extends Model
     public function scopeStatus($query, $status)
     {
         return $query->where('status', $status);
+    }
+    public static function getCountsByDate($startDate, $endDate)
+    {
+        return DB::table('careers')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date')
+            ->toArray();
+    }
+
+    public static function getCountsByStatus($startDate, $endDate)
+    {
+        return DB::table('careers')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+            COUNT(CASE WHEN status = "active" AND is_approved = "approved" THEN 1 END) as available,
+            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NP,
+            COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected,
+            COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested
+            ')
+            ->first();
     }
     /**
      *

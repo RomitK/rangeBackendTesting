@@ -19,6 +19,9 @@ use App\Observers\{
     ProjectObserver
 };
 
+use Illuminate\Queue\Events\JobFailed;
+use App\Listeners\SendJobFailedNotification;
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -30,6 +33,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        JobFailed::class => [
+            SendJobFailedNotification::class,
+        ],
     ];
 
     /**
@@ -39,6 +45,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        parent::boot();
         Community::observe(CommunityObserver::class);
         Developer::observe(DeveloperObserver::class);
         Testimonial::observe(TestimonialObserver::class);

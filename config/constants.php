@@ -184,6 +184,11 @@ return [
         'active' => 'Active',
         'Inactive' => 'Inactive'
     ],
+    'newStatuses' =>  [
+        '' => 'All',
+        'active' => 'Active',
+        'Inactive' => 'Inactive'
+    ],
     'statusesOption' => [
         '' => 'All',
         'active' => 'Active',

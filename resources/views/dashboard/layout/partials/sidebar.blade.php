@@ -375,7 +375,7 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="{{ url('dashboard/communities-report') }}"
                                 class="nav-link {{ activeChildNavBar('dashboard.reports.communities') }}">
                                 <i class="far fa-circle nav-icon"></i>
@@ -405,8 +405,7 @@
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Perperties Report</p>
                             </a>
-                        </li>
-
+                        </li> --}}
                     </ul>
                 </li>
 

@@ -43,7 +43,7 @@ class GeneralReportExport implements WithMultipleSheets
             new PropertyDetailData($this->data['properties']),
             new BlogDetailData($this->data['blogs']),
             new GuideDetailData($this->data['guides']),
-            new AgentDetailData($this->data['agents'])
+            new CareerDetailData($this->data['careers'])
         ];
 
         return $sheets;

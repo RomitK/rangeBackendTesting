@@ -447,9 +447,9 @@ class Property extends Model implements HasMedia
         $propertyAgentWiseCount = DB::table('agents')
             ->select(
                 'agents.name as agent_name',
-                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 THEN 1 ELSE 0 END), 0) as ready'),
-                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 THEN 1 ELSE 0 END), 0) as offplan'),
-                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 9 THEN 1 ELSE 0 END), 0) as rent')
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND properties.status = "active" AND properties.is_approved = "approved" THEN 1 ELSE 0 END), 0) as ready'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND properties.status = "active" AND properties.is_approved = "approved"THEN 1 ELSE 0 END), 0) as offplan'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 9 AND properties.status = "active" AND properties.is_approved = "approved" THEN 1 ELSE 0 END), 0) as rent')
             )
             ->leftJoin('properties', 'agents.id', '=', 'properties.agent_id')
             ->whereNotNull('properties.agent_id') // Filter agents with properties
@@ -478,8 +478,10 @@ class Property extends Model implements HasMedia
             ->whereNull('deleted_at')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
-                COUNT(CASE WHEN status = "active" THEN 1 END) as active,
-                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive
+                COUNT(CASE WHEN status = "active" AND is_approved = "approved" THEN 1 END) as available,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NP,
+                COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected,
+                COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested
             ')
             ->first();
     }

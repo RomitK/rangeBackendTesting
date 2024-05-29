@@ -183,8 +183,10 @@ class Agent extends Model implements HasMedia
             ->whereNull('deleted_at')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
-                COUNT(CASE WHEN status = "active" THEN 1 END) as active,
-                COUNT(CASE WHEN status = "inactive" THEN 1 END) as inactive
+            COUNT(CASE WHEN status = "active" AND is_approved = "approved" THEN 1 END) as available,
+            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" THEN 1 END) as NP,
+            COUNT(CASE WHEN is_approved = "rejected" THEN 1 END) as rejected,
+            COUNT(CASE WHEN is_approved = "requested" THEN 1 END) as requested
             ')
             ->first();
     }

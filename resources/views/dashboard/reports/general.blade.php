@@ -95,45 +95,20 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
 
                                             <div class="chart">
                                                 <canvas id="barChartStatus"
                                                     style="min-height: 300px; height: 500px; max-height: 250px; max-width: 100%;"></canvas>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-12">
                                             <div id="statusCountTableData"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card card-info">
-                                <div class="card-header">
-                                    <h3 class="card-title">Data Approval Status Wise</h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-minus"></i>
-                                        </button>
 
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-8">
-
-                                            <div class="chart">
-                                                <canvas id="barChartApproval"
-                                                    style="min-height: 300px; height: 500px; max-height: 250px; max-width: 100%;"></canvas>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div id="approvalCountTableData"></div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
                             <div class="card card-success">
                                 <div class="card-header">
                                     <h3 class="card-title">Project Permit Wise</h3>
@@ -204,7 +179,7 @@
 
                             <div class="card card-warning">
                                 <div class="card-header">
-                                    <h3 class="card-title">Properties Agent Wise</h3>
+                                    <h3 class="card-title">Properties(Available) Agent Wise</h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                             <i class="fas fa-minus"></i>
@@ -226,7 +201,30 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card card-success">
+                                <div class="card-header">
+                                    <h3 class="card-title">Media Category Wise</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
 
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="chart">
+                                                <canvas id="mediaCategoryPieChart"
+                                                    style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div id="mediaCategoryWiseData"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                         </div>
                         <!-- /.card-body -->
@@ -250,6 +248,7 @@
             let barChartStatus;
             let barChartPermit;
             let projectPermitPieChart;
+            let mediaCategoryPieChart;
             let propertyPermitPieChart;
             let propertyCategoryPieChart;
 
@@ -261,6 +260,7 @@
             // Date range as a button
             $('#daterange-btn').daterangepicker({
                 ranges: {
+                    'Full': [moment('2023-09-15'), moment()],
                     'Today': [moment(), moment()],
                     'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
                     'Last 7 Days': [moment().subtract(6, 'days'), moment()],
@@ -272,11 +272,13 @@
                 },
                 startDate: moment().subtract(7, 'days'),
                 endDate: moment()
-            }, function(start, end) {
-                $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+            }, function(start, end, label) {
+                $('#reportrange').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
+                    'MMMM D, YYYY'));
                 $('#data_range_input').val(start.format('MMMM D, YYYY') + ' - ' + end.format(
                     'MMMM D, YYYY'));
                 fetchDataAndupdateDateCountChart(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'));
+
             });
 
             // Initialize line chart
@@ -309,7 +311,7 @@
                             fill: false
                         },
                         {
-                            label: "Medias",
+                            label: "Media",
                             data: [],
                             borderColor: "gray",
                             fill: false
@@ -321,7 +323,7 @@
                             fill: false
                         },
                         {
-                            label: "Teams",
+                            label: "Careers",
                             data: [],
                             borderColor: "yellow",
                             fill: false
@@ -355,7 +357,7 @@
                             properties,
                             medias,
                             guides,
-                            agents
+                            careers
                         } = response.data['getCountsByDate'];
 
 
@@ -363,22 +365,31 @@
                         dateCountLineChart.data.labels = xValues;
                         updateDateCountChart(dateCountLineChart, communities, developers, projects,
                             properties,
-                            medias, guides, agents);
+                            medias, guides, careers);
                         dateCountLineChart.update();
 
                         statusCountBarChart(response.data['getCountsByStatus']);
-                        approvalCountBarChart(response.data['getCountsByApproval']);
+
 
 
                         updateTableDataForDate(communities, developers, projects, properties, medias,
                             guides,
-                            agents);
+                            careers);
                         updateTableDataForStatus(response.data['getCountsByStatus']);
-                        updateTableDataForApproval(response.data['getCountsByApproval']);
 
                         createOrUpdateProjectPermitPieChart(transformDataForPieChart(response.data[
                             'projectPermitCounts']));
                         updateProjectPermitWiseDataText(response.data['projectPermitCounts']);
+
+
+                        createOrUpdateMediaCategoryPieChart(transformDataForPieChart(response.data[
+                            'blogCategoryCounts']));
+                        updateMediaCategoryWiseDataText(response.data['blogCategoryCounts']);
+
+
+
+
+
 
                         createOrUpdatePropertyPermitPieChart(transformDataForPieChart(response.data[
                             'propertyPermitCounts']));
@@ -422,6 +433,10 @@
                 $('#projectPermitWiseData').html(generatePieDataWiseHTML(data));
             }
 
+            function updateMediaCategoryWiseDataText(data) {
+                $('#mediaCategoryWiseData').html(generatePieDataWiseHTML(data));
+            }
+
             function updatePropertyPermitWiseDataText(data) {
                 $('#propertyPermitWiseData').html(generatePieDataWiseHTML(data));
             }
@@ -438,6 +453,20 @@
                 } else {
                     const pieChartCanvas = $('#projectPermitPieChart').get(0).getContext('2d');
                     projectPermitPieChart = new Chart(pieChartCanvas, {
+                        type: 'pie',
+                        data: data,
+                        options: donutOptions
+                    });
+                }
+            }
+
+            function createOrUpdateMediaCategoryPieChart(data) {
+                if (mediaCategoryPieChart) {
+                    mediaCategoryPieChart.data = data;
+                    mediaCategoryPieChart.update();
+                } else {
+                    const pieChartCanvas = $('#mediaCategoryPieChart').get(0).getContext('2d');
+                    mediaCategoryPieChart = new Chart(pieChartCanvas, {
                         type: 'pie',
                         data: data,
                         options: donutOptions
@@ -548,8 +577,8 @@
             function approvalCountBarChart(data) {
                 const barChartApprovalCanvas = $('#barChartApproval').get(0).getContext('2d');
                 const barChartApprovalData = {
-                    labels: ['Communities', 'Developers', 'Projects', 'Properties', 'Medias', 'Guides',
-                        'Teams'
+                    labels: ['Communities', 'Developers', 'Projects', 'Properties', 'Media', 'Guides',
+                        'Careers'
                     ],
                     datasets: [{
                         label: 'Requested',
@@ -558,7 +587,7 @@
                         data: [data.communities.requested, data.developers.requested, data.projects
                             .requested, data
                             .properties.requested, data.medias.requested, data.guides.requested,
-                            data.agents
+                            data.careers
                             .requested
                         ]
                     }, {
@@ -568,7 +597,7 @@
                         data: [data.communities.rejected, data.communities.rejected, data.projects
                             .rejected, data
                             .properties.rejected, data.medias.rejected, data.guides.rejected, data
-                            .agents
+                            .careers
                             .rejected
                         ]
                     }, {
@@ -578,7 +607,7 @@
                         data: [data.communities.approved, data.communities.approved, data.projects
                             .approved, data
                             .properties.approved, data.medias.approved, data.guides.approved, data
-                            .agents
+                            .careers
                             .approved
                         ]
                     }]
@@ -605,29 +634,54 @@
             function statusCountBarChart(data) {
                 const barChartCanvas = $('#barChartStatus').get(0).getContext('2d');
                 const barChartData = {
-                    labels: ['Communities', 'Developers', 'Projects', 'Properties', 'Medias', 'Guides',
-                        'Teams'
+                    labels: ['Communities', 'Developers', 'Projects', 'Properties', 'Media', 'Guides',
+                        'Careers'
                     ],
                     datasets: [{
-                        label: 'Active',
-                        backgroundColor: 'rgba(60,141,188,0.9)',
-                        borderColor: 'rgba(60,141,188,0.8)',
-                        data: [data.communities.active, data.developers.active, data.projects.active,
-                            data
-                            .properties.active, data.medias.active, data.guides.active, data.agents
-                            .active
-                        ]
-                    }, {
-                        label: 'Inactive',
-                        backgroundColor: 'rgba(210, 214, 222, 1)',
-                        borderColor: 'rgba(210, 214, 222, 1)',
-                        data: [data.communities.inactive, data.communities.inactive, data.projects
-                            .inactive, data
-                            .properties.inactive, data.medias.inactive, data.guides.inactive, data
-                            .agents
-                            .inactive
-                        ]
-                    }]
+                            label: 'Available',
+                            backgroundColor: 'green',
+                            borderColor: 'rgba(60,141,188,0.8)',
+                            data: [data.communities.available, data.developers.available, data.projects
+                                .available,
+                                data
+                                .properties.available, data.medias.available, data.guides.available,
+                                data.careers
+                                .available
+                            ]
+                        }, {
+                            label: 'NP',
+                            backgroundColor: 'rgba(210, 214, 222, 1)',
+                            borderColor: 'rgba(210, 214, 222, 1)',
+                            data: [data.communities.NP, data.developers.NP, data.projects
+                                .NP, data
+                                .properties.NP, data.medias.NP, data.guides.NP, data
+                                .careers
+                                .NP
+                            ]
+                        }, {
+                            label: 'Rejected',
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'rgba(255, 0, 0, 0.5)',
+                            data: [data.communities.rejected, data.developers.rejected, data.projects
+                                .rejected, data
+                                .properties.rejected, data.medias.rejected, data.guides.rejected, data
+                                .careers
+                                .rejected
+                            ]
+                        },
+                        {
+                            label: 'Requested',
+                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                            borderColor: 'rgba(0, 0, 255, 0.5)',
+                            data: [data.communities.requested, data.developers.requested, data.projects
+                                .requested, data
+                                .properties.requested, data.medias.requested, data.guides.requested,
+                                data
+                                .careers
+                                .requested
+                            ]
+                        }
+                    ]
                 };
 
                 const barChartOptions = {
@@ -649,14 +703,14 @@
 
             // Update line chart datasets
             function updateDateCountChart(chart, communities, developers, projects, properties, medias, guides,
-                agents) {
+                careers) {
                 chart.data.datasets[0].data = mapCountsToDates(chart.data.labels, communities);
                 chart.data.datasets[1].data = mapCountsToDates(chart.data.labels, developers);
                 chart.data.datasets[2].data = mapCountsToDates(chart.data.labels, projects);
                 chart.data.datasets[3].data = mapCountsToDates(chart.data.labels, properties);
                 chart.data.datasets[4].data = mapCountsToDates(chart.data.labels, medias);
                 chart.data.datasets[5].data = mapCountsToDates(chart.data.labels, guides);
-                chart.data.datasets[6].data = mapCountsToDates(chart.data.labels, agents);
+                chart.data.datasets[6].data = mapCountsToDates(chart.data.labels, careers);
             }
 
             // Map counts to dates
@@ -701,14 +755,21 @@
 
             function updateTableDataForStatus(countsByStatus) {
                 let tableHtml =
-                    '<table class="table table-bordered"><thead><tr><th>Data</th><th>Active</th><th>Inactive</th><th>Total</th></tr></thead><tbody>';
+                    '<table class="table table-bordered"><thead><tr><th>Data</th><th>Available</th><th>NP</th><th>Rejected</th><th>Requested</th><th>Total Active</th><th>Total Inactive</th><th>Total</th></tr></thead><tbody>';
 
                 for (let [key, value] of Object.entries(countsByStatus)) {
-                    const total = value.active + value.inactive;
+
+                    const total = value.available + value.NP + value.rejected + value.requested;
+                    const active = value.available + value.NP;
+                    const inactive = value.rejected + value.requested;
                     tableHtml += `<tr>
                                 <td>${key.charAt(0).toUpperCase() + key.slice(1)}</td>
-                                <td>${value.active}</td>
-                                <td>${value.inactive}</td>
+                                <td>${value.available}</td>
+                                <td>${value.NP}</td>
+                                <td>${value.rejected}</td>
+                                <td>${value.requested}</td>
+                                <td>${active}</td>
+                                <td>${inactive}</td>
                                 <td>${total}</td>
                             </tr>`;
                 }
@@ -736,9 +797,10 @@
                 $('#approvalCountTableData').html(tableHtml);
             }
 
-            function updateTableDataForDate(communities, developers, projects, properties, medias, guides, agents) {
+            function updateTableDataForDate(communities, developers, projects, properties, medias, guides,
+                careers) {
                 let tableHtml =
-                    '<table class="table table-bordered"><thead><tr><th>Date</th><th>Communities</th><th>Developers</th><th>Projects</th><th>Properties</th><th>Medias</th><th>Guides</th><th>Teams</th> <th>Total</th></tr></thead><tbody>';
+                    '<table class="table table-bordered"><thead><tr><th>Date</th><th>Communities</th><th>Developers</th><th>Projects</th><th>Properties</th><th>Medias</th><th>Guides</th><th>Careers</th> <th>Total</th></tr></thead><tbody>';
 
                 const allDates = Object.keys({
                     ...communities,
@@ -747,7 +809,7 @@
                     ...properties,
                     ...medias,
                     ...guides,
-                    ...agents
+                    ...careers
                 });
 
                 let totalCommunities = 0;
@@ -765,7 +827,7 @@
                     const propertyCount = properties[date] || 0;
                     const mediaCount = medias[date] || 0;
                     const guideCount = guides[date] || 0;
-                    const agentCount = agents[date] || 0;
+                    const agentCount = careers[date] || 0;
 
 
                     const totalCount = communityCount + developerCount + projectCount + propertyCount +

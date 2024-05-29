@@ -21,7 +21,8 @@ use App\Models\{
     Property,
     Article,
     Guide,
-    Agent
+    Agent,
+    Career
 };
 use App\Jobs\{
     GeneralReportAndEmailData
@@ -34,45 +35,39 @@ class GeneralReport extends Controller
 {
     public function ajaxData(Request $request)
     {
+
         $startDate = Carbon::parse($request->startDate);
         $endDate = Carbon::parse($request->endDate);
         $interval = $startDate->diffInDays($endDate);
 
 
-        $agentCounts = Agent::getCountsByDate($startDate, $endDate);
-        $agentStatusCounts = Agent::getCountsByStatus($startDate, $endDate);
-        $agentApprovalStatusCounts = Agent::getCountsByApprovalStatus($startDate, $endDate);
-
+        $careerCounts = Career::getCountsByDate($startDate, $endDate);
+        $careerStatusCounts = Career::getCountsByStatus($startDate, $endDate);
 
         $guideCounts = Guide::getCountsByDate($startDate, $endDate);
         $guideStatusCounts = Guide::getCountsByStatus($startDate, $endDate);
-        $guideApprovalStatusCounts = Guide::getCountsByApprovalStatus($startDate, $endDate);
-
 
         $communityCounts = Community::getCountsByDate($startDate, $endDate);
         $communityStatusCounts = Community::getCountsByStatus($startDate, $endDate);
-        $communityApprovalStatusCounts = Community::getCountsByApprovalStatus($startDate, $endDate);
+
 
         $developerCounts = Developer::getCountsByDate($startDate, $endDate);
         $developerStatusCounts = Developer::getCountsByStatus($startDate, $endDate);
-        $developerApprovalStatusCounts = Developer::getCountsByApprovalStatus($startDate, $endDate);
+
 
         $projectCounts = Project::getCountsByDate($startDate, $endDate);
         $projectStatusCounts = Project::getCountsByStatus($startDate, $endDate);
-        $projectApprovalStatusCounts = Project::getCountsByApprovalStatus($startDate, $endDate);
         $projectPermitCounts = Project::getCountsByPermitNumber($startDate, $endDate);
 
         $propertyCounts = Property::getCountsByDate($startDate, $endDate);
         $propertyStatusCounts = Property::getCountsByStatus($startDate, $endDate);
-        $propertyApprovalStatusCounts = Property::getCountsByApprovalStatus($startDate, $endDate);
         $propertyPermitCounts = Property::getCountsByPermitNumber($startDate, $endDate);
         $propertyCateoryWiseCounts = Property::getCountsByCategory($startDate, $endDate);
         $propertyAgentWiseCount = Property::getCountsByAgent($startDate, $endDate);
 
         $blogCounts = Article::getCountsByDate($startDate, $endDate);
         $blogStatusCounts = Article::getCountsByStatus($startDate, $endDate);
-        $blogApprovalStatusCounts = Article::getCountsByApprovalStatus($startDate, $endDate);
-
+        $blogCategoryCounts = Article::getCountsByType($startDate, $endDate);
 
         // Calculate interval in days
         $interval = $startDate->diffInDays($endDate) + 1;
@@ -103,8 +98,8 @@ class GeneralReport extends Controller
             if (!isset($guideCounts[$dateStr])) {
                 $guideCounts[$dateStr] = 0;
             }
-            if (!isset($agentCounts[$dateStr])) {
-                $agentCounts[$dateStr] = 0;
+            if (!isset($careerCounts[$dateStr])) {
+                $careerCounts[$dateStr] = 0;
             }
         }
 
@@ -132,6 +127,30 @@ class GeneralReport extends Controller
                 'color' => '#6c757d', // Secondary
             ]
         ];
+
+        $blogCategoryCounts = [
+            [
+                'status' => 'Awards',
+                'count' => $blogCategoryCounts->firstWhere('article_type', 'Awards')->total ?? 0,
+                'color' => '#17a2b8', // Info
+            ],
+            [
+                'status' => 'News',
+                'count' => $blogCategoryCounts->firstWhere('article_type', 'News')->total ?? 0,
+                'color' => '#008000', // Secondary
+            ],
+            [
+                'status' => 'Blogs',
+                'count' => $blogCategoryCounts->firstWhere('article_type', 'Blogs')->total ?? 0,
+                'color' => '#FFFF00', // Secondary
+            ],
+            [
+                'status' => 'Celebrations',
+                'count' => $blogCategoryCounts->firstWhere('article_type', 'Celebrations')->total ?? 0,
+                'color' => '#6c757d', // Secondary
+            ]
+        ];
+
         $propertyCateoryCounts = [
             [
                 'status' => 'Ready',
@@ -163,7 +182,7 @@ class GeneralReport extends Controller
                 'properties' => Property::with(['user', 'project', 'subProject', 'approval'])->whereBetween('created_at', [$startDate, $endDate])->get(),
                 'blogs' => Article::with(['user'])->whereBetween('created_at', [$startDate, $endDate])->get(),
                 'guides' => Guide::with(['user'])->whereBetween('created_at', [$startDate, $endDate])->get(),
-                'agents' => Agent::with(['user'])->whereBetween('created_at', [$startDate, $endDate])->get(),
+                'careers' => Career::with(['user'])->whereBetween('created_at', [$startDate, $endDate])->get(),
 
                 'getCountsByDate' =>  [
                     'interval' => $interval,
@@ -173,7 +192,7 @@ class GeneralReport extends Controller
                     'properties' => $propertyCounts,
                     'medias' => $blogCounts,
                     'guides' => $guideCounts,
-                    'agents' => $agentCounts
+                    'careers' => $careerCounts
                 ],
                 'getCountsByStatus' => [
                     'communities' => $communityStatusCounts,
@@ -182,21 +201,14 @@ class GeneralReport extends Controller
                     'properties' => $propertyStatusCounts,
                     'medias' => $blogStatusCounts,
                     'guides' => $guideStatusCounts,
-                    'agents' => $agentStatusCounts
+                    'careers' => $careerStatusCounts
                 ],
-                'getCountsByApproval' => [
-                    'communities' => $communityApprovalStatusCounts,
-                    'developers' => $developerApprovalStatusCounts,
-                    'projects' => $projectApprovalStatusCounts,
-                    'properties' => $propertyApprovalStatusCounts,
-                    'medias' => $blogApprovalStatusCounts,
-                    'guides' => $guideApprovalStatusCounts,
-                    'agents' => $agentApprovalStatusCounts
-                ],
+
                 'projectPermitCounts' => $projectPermitCounts,
                 'propertyPermitCounts' => $propertyPermitCounts,
                 'propertyCateoryCounts' => $propertyCateoryCounts,
-                'propertyAgentWiseCounts' => $propertyAgentWiseCount
+                'propertyAgentWiseCounts' => $propertyAgentWiseCount,
+                'blogCategoryCounts' => $blogCategoryCounts
             ];
             GeneralReportAndEmailData::dispatch($data);
 
@@ -215,7 +227,7 @@ class GeneralReport extends Controller
                 'properties' => $propertyCounts,
                 'medias' => $blogCounts,
                 'guides' => $guideCounts,
-                'agents' => $agentCounts
+                'careers' => $careerCounts
             ],
             'getCountsByStatus' => [
                 'communities' => $communityStatusCounts,
@@ -224,21 +236,14 @@ class GeneralReport extends Controller
                 'properties' => $propertyStatusCounts,
                 'medias' => $blogStatusCounts,
                 'guides' => $guideStatusCounts,
-                'agents' => $agentStatusCounts
+                'careers' => $careerStatusCounts
             ],
-            'getCountsByApproval' => [
-                'communities' => $communityApprovalStatusCounts,
-                'developers' => $developerApprovalStatusCounts,
-                'projects' => $projectApprovalStatusCounts,
-                'properties' => $propertyApprovalStatusCounts,
-                'medias' => $blogApprovalStatusCounts,
-                'guides' => $guideApprovalStatusCounts,
-                'agents' => $agentApprovalStatusCounts
-            ],
+
             'projectPermitCounts' => $projectPermitCounts,
             'propertyPermitCounts' => $propertyPermitCounts,
             'propertyCateoryCounts' => $propertyCateoryCounts,
-            'propertyAgentWiseCounts' => $propertyAgentWiseCount
+            'propertyAgentWiseCounts' => $propertyAgentWiseCount,
+            'blogCategoryCounts' => $blogCategoryCounts
 
         ];
 

@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class BlogDetailData implements FromCollection, WithHeadings, WithStyles, ShouldAutoSize, WithTitle
+class CareerDetailData implements FromCollection, WithHeadings, WithStyles, ShouldAutoSize, WithTitle
 {
     protected $data;
 
@@ -34,14 +34,11 @@ class BlogDetailData implements FromCollection, WithHeadings, WithStyles, Should
             return [
 
                 $item['id'],
-                $item['title'],
-                $item['article_type'],
-
+                $item['position'],
                 $item['status'],
                 $item['is_approved'],
                 $approvalName,
                 $userName,
-                $item['formattedPublishAt'],
                 $item['formattedCreatedAt'],
                 $item['formattedUpdatedAt'],
             ];
@@ -53,13 +50,11 @@ class BlogDetailData implements FromCollection, WithHeadings, WithStyles, Should
     {
         return [
             'ID',
-            'Title',
-            'Type',
+            'Position',
             'Status Name',
             'Approval Status',
             'Approval By',
             'Added By',
-            'Published At',
             'Created At',
             'Updated At',
         ];
@@ -74,6 +69,6 @@ class BlogDetailData implements FromCollection, WithHeadings, WithStyles, Should
     }
     public function title(): string
     {
-        return 'Media Data'; // Set the name for this subsheet
+        return 'Career Data'; // Set the name for this subsheet
     }
 }
