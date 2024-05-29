@@ -200,7 +200,7 @@ class Article extends Model  implements HasMedia
         return DB::table('articles')
             ->select('article_type', DB::raw('count(*) as total'))
             ->whereNull('deleted_at')
-            //->whereBetween('created_at', [$startDate, $endDate])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('article_type')
             ->get();
     }
