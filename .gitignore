@@ -4,6 +4,7 @@
 /public/frontend/media
 /public/storage
 /storage/media-library/
+/resources/pdf_fonts/
 /storage/*.key
 /storage/fonts
 /vendor
