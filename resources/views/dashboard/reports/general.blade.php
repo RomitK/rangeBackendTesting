@@ -180,7 +180,7 @@
                                         </div>
 
                                         <div class="col-md-4">
-                                            <h4>Properties Permit-Category Wise</h4>
+                                            <h4>Properties Permit Wise</h4>
                                             <div id="propertyPermitWiseData"></div>
 
                                         </div>
@@ -432,8 +432,8 @@
 
 
 
-                        createOrUpdatePropertyPermitCategoryPieChart(transformDataForProjectPermitChart(
-                            response.data[
+                        createOrUpdatePropertyPermitCategoryPieChart(
+                            transformDataForPropertyPermitCategoryChart(response.data[
                                 'propertyPermitCategoryCount']));
                         updatePropertyCategoryPermitWiseDataText(response.data[
                             'propertyPermitCategoryCount']);
@@ -646,6 +646,9 @@
             }
 
             function createOrUpdatePropertyPermitCategoryPieChart(data) {
+
+
+
                 if (propertyPermitCategoryPieChart) {
                     propertyPermitCategoryPieChart.data = data;
                     propertyPermitCategoryPieChart.update();
@@ -737,6 +740,41 @@
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         }
+                    ]
+                };
+            }
+
+            function transformDataForPropertyPermitCategoryChart(data) {
+                const labels = data.map(item => item.status);
+                const offplanData = data.map(item => item.count.offplan);
+                const readyData = data.map(item => item.count.ready);
+                const rentData = data.map(item => item.count.rent);
+
+                return {
+                    labels: labels,
+                    datasets: [{
+                            label: 'offplan',
+                            data: offplanData,
+                            backgroundColor: 'green',
+                            borderColor: 'rgba(60,141,188,0.8)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Ready',
+                            data: readyData,
+                            backgroundColor: 'rgba(210, 214, 222, 1)',
+                            borderColor: 'rgba(210, 214, 222, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Rent',
+                            data: rentData,
+                            backgroundColor: 'rgba(255, 0, 0, 0.5)',
+                            borderColor: 'rgba(255, 0, 0, 0.5)',
+                            borderWidth: 1
+                        },
+
+
                     ]
                 };
             }
