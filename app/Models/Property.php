@@ -522,13 +522,32 @@ class Property extends Model implements HasMedia
 
         ')->first();
     }
+
+    public static function getCountsByPermitCategory($startDate, $endDate)
+    {
+        return DB::table('properties')
+    ->whereNull('properties.deleted_at')
+    ->whereBetween('properties.created_at', [$startDate, $endDate])
+    ->join('projects', 'properties.project_id', '=', 'projects.id')
+    ->selectRaw('
+        COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.permit_number IS NULL THEN 1 END) as without_permit_ready,
+        COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.permit_number IS NULL THEN 1 END) as without_permit_offplan,
+        COUNT(CASE WHEN properties.category_id = 9 AND projects.permit_number IS NULL THEN 1 END) as without_permit_rent,
+
+        COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_ready,
+        COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_offplan,
+        COUNT(CASE WHEN properties.category_id = 9 AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_rent
+    ')
+    ->first();
+
+    }
     public static function getCountsByCategory($startDate, $endDate)
     {
 
         return DB::table('properties')
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
-           ->selectRaw('
+            ->selectRaw('
            
                 COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as available_ready,
                 COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as NA_ready,
@@ -537,15 +556,15 @@ class Property extends Model implements HasMedia
 
 
                 COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as available_offplan,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as NA_offplan,
-                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as rejected_offplan,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8  AND completion_status_id = 287 THEN 1 END) as NA_offplan,
+                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 8  AND completion_status_id = 287 THEN 1 END) as rejected_offplan,
                 COUNT(CASE WHEN is_approved = "requested" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as requested_offplan,
 
 
-                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as available_rent,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as NA_rent,
-                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as rejected_rent,
-                COUNT(CASE WHEN is_approved = "requested" AND category_id = 9 AND completion_status_id = 287  THEN 1 END) as requested_rent
+                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 9   THEN 1 END) as available_rent,
+                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 9   THEN 1 END) as NA_rent,
+                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 9  THEN 1 END) as rejected_rent,
+                COUNT(CASE WHEN is_approved = "requested" AND category_id = 9  THEN 1 END) as requested_rent
 
         ')->first();
 

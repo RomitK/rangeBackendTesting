@@ -179,7 +179,6 @@
                                             </select>
                                         </div>
                                     </div>
-
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="permit_number">Permit Number </label>
@@ -193,8 +192,6 @@
                                             </select>
                                         </div>
                                     </div>
-
-
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="community_ids">Added By</label>

@@ -180,11 +180,30 @@
                                         </div>
 
                                         <div class="col-md-4">
-                                            <h4>Properties Permit Wise</h4>
+                                            <h4>Properties Permit-Category Wise</h4>
                                             <div id="propertyPermitWiseData"></div>
 
                                         </div>
                                     </div>
+
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="flex-center">
+                                                <h4>Properties Permit-Category Wise</h4>
+                                                <div class="chart">
+                                                    <canvas id="propertyPermitCategoryPieChart"
+                                                        style="min-height: 150px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <h4>Properties Permit-Category Wise</h4>
+                                            <div id="propertyPermitCategoryWiseData"></div>
+
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -262,6 +281,7 @@
             let mediaCategoryPieChart;
             let propertyPermitPieChart;
             let propertyCategoryPieChart;
+            let propertyPermitCategoryPieChart;
 
             const donutOptions = {
                 maintainAspectRatio: false,
@@ -399,10 +419,6 @@
                         updateMediaCategoryWiseDataText(response.data['blogCategoryCounts']);
 
 
-
-
-
-
                         createOrUpdatePropertyPermitPieChart(transformDataForProjectPermitChart(response
                             .data['propertyPermitCounts']));
                         updatePropertyPermitWiseDataText(response.data['propertyPermitCounts']);
@@ -413,6 +429,15 @@
                             response.data[
                                 'propertyCateoryCounts']));
                         updatePropertyCategoryWiseDataText(response.data['propertyCateoryCounts']);
+
+
+
+                        createOrUpdatePropertyPermitCategoryPieChart(transformDataForProjectPermitChart(
+                            response.data[
+                                'propertyPermitCategoryCount']));
+                        updatePropertyCategoryPermitWiseDataText(response.data[
+                            'propertyPermitCategoryCount']);
+
 
 
                         propertyAgentCountBarChart(response.data['propertyAgentWiseCounts']);
@@ -510,8 +535,57 @@
 
             function updatePropertyCategoryWiseDataText(data) {
 
-
                 $('#propertyCategoryWiseData').html(generateBarDataWiseHTML(data));
+            }
+
+            function updatePropertyCategoryPermitWiseDataText(data) {
+
+                let tableHtml =
+                    '<table class="table table-bordered"><thead><tr><th>Status</th><th>Ready</th><th>Offplan</th><th>Rent</th><th>Total</th></tr></thead><tbody>';
+
+                // Initialize variables to hold the total counts
+                let totalready = 0;
+                let totaloffplan = 0;
+                let totalrent = 0;
+
+
+                data.forEach(item => {
+                    const ready = item.count.ready;
+                    const offplan = item.count.offplan;
+                    const rent = item.count.rent;
+
+                    const total = ready + offplan + rent;
+
+                    // Accumulate totals
+                    totalready += ready;
+                    totaloffplan += offplan;
+                    totalrent += rent;
+
+                    tableHtml += `<tr>
+                                    <td>${item.status}</td>
+                                    <td>${ready}</td>
+                                    <td>${offplan}</td>
+                                    <td>${rent}</td>
+                                    <td>${total}</td>
+                                </tr>`;
+                });
+
+                // Calculate the grand total
+                const grandTotal = totalready + totaloffplan + totalrent;
+
+                // Add the totals row at the end
+                tableHtml += `<tr class="totals-row">
+                                <th>Total</th>
+                                <th>${totalready}</th>
+                                <th>${totaloffplan}</th>
+                                <th>${totalrent}</th>
+                                <th>${grandTotal}</th>
+                            </tr>`;
+
+                tableHtml += '</tbody></table>';
+
+
+                $('#propertyPermitCategoryWiseData').html(tableHtml);
             }
 
 
@@ -564,6 +638,20 @@
                 } else {
                     const pieChartCanvas = $('#propertyCategoryPieChart').get(0).getContext('2d');
                     propertyCategoryPieChart = new Chart(pieChartCanvas, {
+                        type: 'bar',
+                        data: data,
+                        options: donutOptions
+                    });
+                }
+            }
+
+            function createOrUpdatePropertyPermitCategoryPieChart(data) {
+                if (propertyPermitCategoryPieChart) {
+                    propertyPermitCategoryPieChart.data = data;
+                    propertyPermitCategoryPieChart.update();
+                } else {
+                    const pieChartCanvas = $('#propertyPermitCategoryPieChart').get(0).getContext('2d');
+                    propertyPermitCategoryPieChart = new Chart(pieChartCanvas, {
                         type: 'bar',
                         data: data,
                         options: donutOptions
@@ -986,16 +1074,16 @@
                         mediaCount + guideCount + agentCount;
 
                     const row = `<tr>
-            <td>${date}</td>
-            <td>${communityCount}</td>
-            <td>${developerCount}</td>
-            <td>${projectCount}</td>
-            <td>${propertyCount}</td>
-            <td>${mediaCount}</td>
-            <td>${guideCount}</td>
-            <td>${agentCount}</td>
-            <td>${totalCount}</td>
-        </tr>`;
+                    <td>${date}</td>
+                    <td>${communityCount}</td>
+                    <td>${developerCount}</td>
+                    <td>${projectCount}</td>
+                    <td>${propertyCount}</td>
+                    <td>${mediaCount}</td>
+                    <td>${guideCount}</td>
+                    <td>${agentCount}</td>
+                    <td>${totalCount}</td>
+                </tr>`;
 
                     if (index < 10) {
                         initialRows += row;
@@ -1015,16 +1103,16 @@
                     totalMedia + totalGuide + totalAgent;
 
                 const totalsRow = `<tr class="totals-row">
-        <th>Total</th>
-        <th>${totalCommunities}</th>
-        <th>${totalDevelopers}</th>
-        <th>${totalProjects}</th>
-        <th>${totalProperties}</th>
-        <th>${totalMedia}</th>
-        <th>${totalGuide}</th>
-        <th>${totalAgent}</th>
-        <th>${grandTotal}</th>
-    </tr>`;
+                <th>Total</th>
+                <th>${totalCommunities}</th>
+                <th>${totalDevelopers}</th>
+                <th>${totalProjects}</th>
+                <th>${totalProperties}</th>
+                <th>${totalMedia}</th>
+                <th>${totalGuide}</th>
+                <th>${totalAgent}</th>
+                <th>${grandTotal}</th>
+            </tr>`;
 
                 initialRows += totalsRow;
                 allRows += totalsRow;

@@ -64,6 +64,8 @@ class GeneralReport extends Controller
         $propertyPermitCounts = Property::getCountsByPermitNumber($startDate, $endDate);
         $propertyCateoryWiseCounts = Property::getCountsByCategory($startDate, $endDate);
         $propertyAgentWiseCount = Property::getCountsByAgent($startDate, $endDate);
+        $propertyPermitCategoryWiseCount = Property::getCountsByPermitCategory($startDate, $endDate);
+
 
         $blogCounts = Article::getCountsByDate($startDate, $endDate);
         $blogStatusCounts = Article::getCountsByStatus($startDate, $endDate);
@@ -126,6 +128,28 @@ class GeneralReport extends Controller
             ]
         ];
 
+        $propertyPermitCategoryCount = [
+            [
+                'status' => 'Without Permit Number',
+                'count' => [
+                    'ready' => $propertyPermitCategoryWiseCount->without_permit_ready,
+                    'offplan' => $propertyPermitCategoryWiseCount->without_permit_offplan,
+                    'rent' => $propertyPermitCategoryWiseCount->without_permit_rent,
+
+                ],
+
+            ],
+            [
+                'status' => 'With Permit Number',
+                'count' => [
+                    'ready' => $propertyPermitCategoryWiseCount->with_permit_ready,
+                    'offplan' => $propertyPermitCategoryWiseCount->with_permit_offplan,
+                    'rent' => $propertyPermitCategoryWiseCount->with_permit_rent,
+                ],
+
+            ]
+        ];
+
         $propertyPermitCounts = [
             [
                 'status' => 'Without Permit Number',
@@ -171,7 +195,7 @@ class GeneralReport extends Controller
                 'color' => '#6c757d', // Secondary
             ]
         ];
-
+       // dd($propertyCateoryWiseCounts);
         $propertyCateoryCounts = [
             [
                 'status' => 'Ready',
@@ -204,7 +228,7 @@ class GeneralReport extends Controller
 
             ],
         ];
-        
+
         if (isset($request->download) && $request->download == 1) {
             $data = [
                 'startDate' => $startDate->format('d m Y'),
@@ -278,7 +302,8 @@ class GeneralReport extends Controller
             'propertyPermitCounts' => $propertyPermitCounts,
             'propertyCateoryCounts' => $propertyCateoryCounts,
             'propertyAgentWiseCounts' => $propertyAgentWiseCount,
-            'blogCategoryCounts' => $blogCategoryCounts
+            'blogCategoryCounts' => $blogCategoryCounts,
+            'propertyPermitCategoryCount' => $propertyPermitCategoryCount
 
         ];
 
