@@ -68,6 +68,9 @@ class DeveloperController extends Controller
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }
+        if (isset($request->website_status)) {
+            $collection->WebsiteStatus($request->website_status);
+        }
         if (isset($request->keyword)) {
             $keyword = $request->keyword;
             $collection->where(function ($q) use ($keyword) {

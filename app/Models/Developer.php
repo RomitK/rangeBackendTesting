@@ -49,6 +49,7 @@ class Developer extends Model implements HasMedia
         'video',
         'image',
         'gallery',
+        'websiteStatus',
         'formattedCreatedAt',
         'formattedUpdatedAt'
     ];
@@ -99,6 +100,18 @@ class Developer extends Model implements HasMedia
             }
         }
         return $gallery;
+    }
+    public function getWebsiteStatusAttribute()
+    {
+        if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
+            return config('constants.Available');
+        } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
+            return config('constants.NA');
+        } elseif ($this->is_approved == config('constants.rejected')) {
+            return config('constants.Rejected');
+        } elseif ($this->is_approved == config('constants.requested')) {
+            return config('constants.Requested');
+        }
     }
     public function getLogoAttribute()
     {
@@ -208,6 +221,14 @@ class Developer extends Model implements HasMedia
     {
         return $query->where('is_approved', config('constants.approved'));
     }
+    public function scopeRejected($query)
+    {
+        return $query->where('is_approved', config('constants.rejected'));
+    }
+    public function scopeRequested($query)
+    {
+        return $query->where('is_approved', config('constants.requested'));
+    }
     public function scopeActive($query)
     {
         return $query->where('status', config('constants.active'));
@@ -267,6 +288,19 @@ class Developer extends Model implements HasMedia
      *
      * Filters
      */
+    public function scopeWebsiteStatus($query, $status)
+    {
+        if ($status == config('constants.Available')) {
+            $query->active()->approved();
+        } elseif ($status == config('constants.NA')) {
+            $query->deactive()->approved();
+        } elseif ($status == config('constants.Requested')) {
+            $query->active()->requested();
+        } elseif ($status == config('constants.Rejected')) {
+            $query->active()->rejected();
+        }
+        return $query->where('status', config('constants.active'));
+    }
     public function scopeApplyFilters($query, array $filters)
     {
         $filters = collect($filters);

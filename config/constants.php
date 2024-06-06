@@ -184,10 +184,16 @@ return [
         'active' => 'Active',
         'Inactive' => 'Inactive'
     ],
+    'Available' => 'Available',
+    'NA' => 'NA',
+    'Requested' => 'Requested',
+    'Rejected' => 'Rejected',
     'newStatuses' =>  [
         '' => 'All',
-        'active' => 'Active',
-        'Inactive' => 'Inactive'
+        'Available' => 'Available',
+        'NA' => 'NA',
+        'Requested' => 'Requested',
+        'Rejected' => 'Rejected',
     ],
     'statusesOption' => [
         '' => 'All',

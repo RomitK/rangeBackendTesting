@@ -71,11 +71,11 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="form-group">
-                                            <label for="type">Approval Status</label>
-                                            <select class="form-control" id="is_approved" name="is_approved">
-                                                @foreach (config('constants.approvedWithAll') as $key => $value)
+                                            <label for="type">Status</label>
+                                            <select class="form-control" id="website_status" name="website_status">
+                                                @foreach (config('constants.newStatuses') as $key => $value)
                                                     <option value="{{ $key }}"
-                                                        @if (request()->is_approved == $key) selected @endif>
+                                                        @if (request()->website_status == $key) selected @endif>
                                                         {{ $value }}</option>
                                                 @endforeach
                                             </select>
@@ -129,12 +129,15 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Logo</th>
-                                        <th>Status</th>
+
                                         <th>Order Number <span class="arrow up"
                                                 onclick="orderBy('developerOrder', 'asc')">&#x25B2;</span><span
                                                 class="arrow down"
                                                 onclick="orderBy('developerOrder', 'desc')">&#x25BC;</span></th>
+                                        <th>Website Status</th>
+                                        <th>Status</th>
                                         <th>Approval Status</th>
+
                                         <th>Approval By</th>
                                         <th>Added By</th>
                                         <th>Last Updated By</th>
@@ -157,14 +160,26 @@
                                                     </li>
                                                 </ul>
                                             </td>
+
+                                            <td>
+                                                {{ $developer->developerOrder }}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="badge 
+                                                    @if ($developer->websiteStatus === config('constants.NA')) bg-info 
+                                                    @elseif($developer->websiteStatus === config('constants.Available')) bg-success 
+                                                    @elseif($developer->websiteStatus === config('constants.Rejected'))  bg-danger 
+                                                    @elseif($developer->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+
+                                                    {{ $developer->websiteStatus }}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <span
                                                     class="badge @if ($developer->status === 'active') bg-success @else bg-danger @endif">
                                                     {{ $developer->status }}
                                                 </span>
-                                            </td>
-                                            <td>
-                                                {{ $developer->developerOrder }}
                                             </td>
                                             <td>
                                                 <span
@@ -180,8 +195,6 @@
                                                     @elseif($developer->is_approved === config('constants.rejected'))
                                                         Rejected
                                                     @endif
-
-
                                                 </span>
                                             </td>
                                             <td>{{ $developer->approval ? $developer->approval->name : '' }}</td>
@@ -201,10 +214,10 @@
                                                     </a>
 
                                                     <!-- <a class="btn btn-secondary btn-sm"
-                                                                   href="{{ route('dashboard.developer.details', $developer->id) }}">
-                                                                   <i class="fas fa-database"></i>
-                                                                   Details
-                                                                </a> -->
+                                                                                                                   href="{{ route('dashboard.developer.details', $developer->id) }}">
+                                                                                                                   <i class="fas fa-database"></i>
+                                                                                                                   Details
+                                                                                                                </a> -->
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
                                                             href="{{ route('dashboard.developer.meta', $developer->id) }}">
