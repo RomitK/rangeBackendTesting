@@ -49,21 +49,31 @@ class CronController extends Controller
                     ->where('sub_project_id', $subproject)
                     ->orderBy('price')
                     ->active()
-                    ->requested()
+                    ->approved()
                     ->value('id');
 
                 Log::info("lowest priece property-" . $lowestPricePropertyId);
 
 
-                DB::table('properties')
-                    ->where('project_id', $project)
+                // DB::table('properties')
+                //     ->where('project_id', $project)
+                //     ->where('sub_project_id', $subproject)
+                //     ->where('status', config('constants.inactive'))
+                //     ->where('is_approved', config('constants.approved'))
+                //     ->where('id', '!=', $lowestPricePropertyId)
+                //     ->delete();
+
+                Property::getModel()->timestamps = false;
+
+                Property::where('project_id', $project)
                     ->where('sub_project_id', $subproject)
                     ->where('status', config('constants.active'))
-                    ->where('is_approved', config('constants.requested'))
+                    ->where('is_approved', config('constants.approved'))
                     ->where('id', '!=', $lowestPricePropertyId)
-                    ->delete();
+                  
+                    ->update(['status' => config('constants.Inactive')]);
 
-
+                    Property::getModel()->timestamps = true;
                 Log::info("other lowest priece property-");
             }
         }
@@ -768,6 +778,36 @@ class CronController extends Controller
             DB::commit();
             Log::info('projectQR End-' . Carbon::now());
             echo  "project done";
+        } catch (\Exception $error) {
+            echo  $error->getMessage();
+        }
+    }
+    public function cronJobmakeInctiveProperties()
+    {
+        Log::info('cronJobmakeInctiveProperties Start-' . Carbon::now());
+        DB::beginTransaction();
+        try {
+
+            $properties = Property::with('project')->latest()->get();
+
+            foreach ($properties as $property) {
+                Log::info('propertyId-' . $property->id);
+                if ($property->status == config('constants.active') && $property->is_approved == config('constants.approved')) {
+                    if (is_null($property->project->permit_number) && $property->project->qr_link == '') {
+                        $property->status = config('constants.Inactive');
+                    }
+                } elseif ($property->status == config('constants.Inactive') && $property->is_approved == config('constants.approved')) {
+                    if (!is_null($property->project->permit_number) && $property->project->qr_link != '') {
+                        $property->status = config('constants.active');
+                    }
+                }
+                $property->timestamps = false; // Disable timestamps
+                $property->save();
+            }
+
+            DB::commit();
+            Log::info('cronJobmakeInctiveProperties End-' . Carbon::now());
+            echo  "properties done";
         } catch (\Exception $error) {
             echo  $error->getMessage();
         }

@@ -64,7 +64,21 @@ class PropertyController extends Controller
 
         $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
 
+        if (isset($request->website_status)) {
+            $collection->WebsiteStatus($request->website_status);
+        }
+        if (isset($request->qr_link)) {
 
+            if ($request->qr_link == '1') {
+                $collection->whereHas('project', function ($query) {
+                    $query->where('qr_link', '!=', '');
+                });
+            } elseif ($request->qr_link == '0') {
+                $collection->whereHas('project', function ($query) {
+                    $query->where('qr_link',  '');
+                });
+            }
+        }
         if (isset($request->permit_number)) {
             if ($request->permit_number == '1') {
                 $collection->whereHas('project', function ($query) {

@@ -110,6 +110,18 @@
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
+                                            <label for="type"> Website Status</label>
+                                            <select class="form-control" id="website_status" name="website_status">
+                                                @foreach (config('constants.newStatuses') as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                        @if (request()->website_status == $key) selected @endif>
+                                                        {{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="form-control" id="status" name="status">
                                                 @foreach (config('constants.statusesOption') as $key => $value)
@@ -340,16 +352,20 @@
                                         <th>Permit Number</th>
                                         <th>Project</th>
                                         <th>Price</th>
+
+                                        <th>Website Status</th>
+                                        <th>Status</th>
+                                        <th>Approval Status</th>
+
                                         <th>Exclusive</th>
                                         <th>Agent</th>
                                         <th>Category</th>
                                         <th>Property Type</th>
-                                        <th>Status</th>
+
                                         <th>Order Number <span class="arrow up"
                                                 onclick="orderBy('propertyOrder', 'asc')">&#x25B2;</span><span
                                                 class="arrow down"
                                                 onclick="orderBy('propertyOrder', 'desc')">&#x25BC;</span></th>
-                                        <th>Approval Status</th>
                                         <th>Approval By</th>
                                         <th>Added By</th>
                                         <th>Last Updated By</th>
@@ -366,29 +382,24 @@
                                             <td>{{ $property->project->permit_number }}</td>
                                             <td>{{ $property->project->title }} ({{ $property->subProject->title }})</td>
                                             <td>{{ $property->price }}</td>
-                                            <td> <span
-                                                    class="badge @if ($property->exclusive === 1) bg-success @else bg-danger @endif">
-                                                    @if ($property->exclusive === 1)
-                                                        {{ 'Exclusive' }}
-                                                    @else
-                                                        {{ 'Non-exclusive' }}
-                                                    @endif
-                                                </span></td>
+
                                             <td>
-                                                @if ($property->agent)
-                                                    {{ $property->agent ? $property->agent->name : '' }}
-                                                @endif
+                                                <span
+                                                    class="badge 
+                                                    @if ($property->websiteStatus === config('constants.NA')) bg-info 
+                                                    @elseif($property->websiteStatus === config('constants.Available')) bg-success 
+                                                    @elseif($property->websiteStatus === config('constants.Rejected'))  bg-danger 
+                                                    @elseif($property->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+
+                                                    {{ $property->websiteStatus }}
+                                                </span>
                                             </td>
-                                            <td>{{ $property->category ? $property->category->name : '' }}</td>
-                                            <td>{{ $property->accommodations ? $property->accommodations->name : '' }}</td>
+
                                             <td>
                                                 <span
                                                     class="badge @if ($property->status === 'active') bg-success @else bg-danger @endif">
                                                     {{ $property->status }}
                                                 </span>
-                                            </td>
-                                            <td>
-                                                {{ $property->propertyOrder }}
                                             </td>
                                             <td>
                                                 <span
@@ -405,6 +416,27 @@
                                                         Rejected
                                                     @endif
                                                 </span>
+                                            </td>
+
+                                            <td> <span
+                                                    class="badge @if ($property->exclusive === 1) bg-success @else bg-danger @endif">
+                                                    @if ($property->exclusive === 1)
+                                                        {{ 'Exclusive' }}
+                                                    @else
+                                                        {{ 'Non-exclusive' }}
+                                                    @endif
+                                                </span></td>
+                                            <td>
+                                                @if ($property->agent)
+                                                    {{ $property->agent ? $property->agent->name : '' }}
+                                                @endif
+                                            </td>
+                                            <td>{{ $property->category ? $property->category->name : '' }}</td>
+                                            <td>{{ $property->accommodations ? $property->accommodations->name : '' }}</td>
+
+
+                                            <td>
+                                                {{ $property->propertyOrder }}
                                             </td>
                                             <td>{{ $property->approval ? $property->approval->name : '' }}</td>
                                             <td>{{ $property->user ? $property->user->name : '' }}</td>

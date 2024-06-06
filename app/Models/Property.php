@@ -26,6 +26,7 @@ class Property extends Model implements HasMedia
      *
      * @var array
      */
+    // public $timestamps = false; // Set to false to disable automatic timestamping
     protected $primaryKey = "id";
     protected $fillable = [
         'name',
@@ -80,6 +81,7 @@ class Property extends Model implements HasMedia
      */
     protected $appends = [
         'qr',
+        'websiteStatus',
         'video',
         'mainImage',
         'floorplans',
@@ -89,6 +91,20 @@ class Property extends Model implements HasMedia
         'formattedCreatedAt',
         'formattedUpdatedAt'
     ];
+
+    public function getWebsiteStatusAttribute()
+    {
+        if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
+            return config('constants.Available');
+        } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
+            return config('constants.NA');
+        } elseif ($this->is_approved == config('constants.rejected')) {
+            return config('constants.Rejected');
+        } elseif ($this->is_approved == config('constants.requested')) {
+            return config('constants.Requested');
+        }
+    }
+
     /**
      * Get the options for generating the slug.
      */
@@ -406,6 +422,10 @@ class Property extends Model implements HasMedia
     /**
      * FIND local scope
      */
+    public function scopeRejected($query)
+    {
+        return $query->where('is_approved', config('constants.rejected'));
+    }
     public function scopeRequested($query)
     {
         return $query->where('is_approved', config('constants.requested'));
@@ -526,10 +546,10 @@ class Property extends Model implements HasMedia
     public static function getCountsByPermitCategory($startDate, $endDate)
     {
         return DB::table('properties')
-    ->whereNull('properties.deleted_at')
-    ->whereBetween('properties.created_at', [$startDate, $endDate])
-    ->join('projects', 'properties.project_id', '=', 'projects.id')
-    ->selectRaw('
+            ->whereNull('properties.deleted_at')
+            ->whereBetween('properties.created_at', [$startDate, $endDate])
+            ->join('projects', 'properties.project_id', '=', 'projects.id')
+            ->selectRaw('
         COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.permit_number IS NULL THEN 1 END) as without_permit_ready,
         COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.permit_number IS NULL THEN 1 END) as without_permit_offplan,
         COUNT(CASE WHEN properties.category_id = 9 AND projects.permit_number IS NULL THEN 1 END) as without_permit_rent,
@@ -538,8 +558,7 @@ class Property extends Model implements HasMedia
         COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_offplan,
         COUNT(CASE WHEN properties.category_id = 9 AND projects.permit_number IS NOT NULL THEN 1 END) as with_permit_rent
     ')
-    ->first();
-
+            ->first();
     }
     public static function getCountsByCategory($startDate, $endDate)
     {
@@ -603,6 +622,19 @@ class Property extends Model implements HasMedia
             $query->whereStatus($filters->get('status'));
         }
     }
+    public function scopeWebsiteStatus($query, $status)
+    {
+        if ($status == config('constants.Available')) {
+            $query->active()->approved();
+        } elseif ($status == config('constants.NA')) {
+            $query->deactive()->approved();
+        } elseif ($status == config('constants.Requested')) {
+            $query->requested();
+        } elseif ($status == config('constants.Rejected')) {
+            $query->rejected();
+        }
+    }
+
     public static function boot()
     {
         parent::boot();
