@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 class Project extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia, HasRichText, HasSlug;
+    protected $fillable = ['qr_link'];
 
     // public $timestamps = false; // Set to false to disable automatic timestamping
     /**
@@ -53,6 +54,7 @@ class Project extends Model implements HasMedia
         'clusterPlan',
         'mainImage',
         'video',
+        'websiteStatus',
         'saleOffer',
         'interiorGallery',
         'exteriorGallery',
@@ -68,6 +70,19 @@ class Project extends Model implements HasMedia
     /**
      * GET Attributes
      */
+    public function getWebsiteStatusAttribute()
+    {
+        if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
+            return config('constants.Available');
+        } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
+            return config('constants.NA');
+        } elseif ($this->is_approved == config('constants.rejected')) {
+            return config('constants.Rejected');
+        } elseif ($this->is_approved == config('constants.requested')) {
+            return config('constants.Requested');
+        }
+    }
+
     public static function getNextReferenceNumber($value)
     {
         // Get the last created order
@@ -405,6 +420,14 @@ class Project extends Model implements HasMedia
     /**
      * FIND local scope
      */
+    public function scopeRejected($query)
+    {
+        return $query->where('is_approved', config('constants.rejected'));
+    }
+    public function scopeRequested($query)
+    {
+        return $query->where('is_approved', config('constants.requested'));
+    }
     public function scopeApproved($query)
     {
         return $query->where('is_approved', config('constants.approved'));
@@ -509,6 +532,20 @@ class Project extends Model implements HasMedia
         $filters = collect($filters);
         if ($filters->get('status')) {
             $query->whereStatus($filters->get('status'));
+        }
+    }
+
+
+    public function scopeWebsiteStatus($query, $status)
+    {
+        if ($status == config('constants.Available')) {
+            $query->active()->approved();
+        } elseif ($status == config('constants.NA')) {
+            $query->deactive()->approved();
+        } elseif ($status == config('constants.Requested')) {
+            $query->requested();
+        } elseif ($status == config('constants.Rejected')) {
+            $query->rejected();
         }
     }
 }

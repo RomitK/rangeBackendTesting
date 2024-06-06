@@ -77,7 +77,9 @@ class ProjectController extends Controller
         }
 
         $collection = Project::mainProject()->with('user');
-
+        if (isset($request->website_status)) {
+            $collection->WebsiteStatus($request->website_status);
+        }
         if (isset($request->data_range_input)) {
             $dateRange = $request->data_range_input;
             // Use explode to split the date range by " - "
@@ -90,7 +92,14 @@ class ProjectController extends Controller
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }
+        if (isset($request->qr_link)) {
 
+            if ($request->qr_link == '1') {
+                $collection->where('qr_link', '!=', '');
+            } elseif ($request->qr_link == '0') {
+                $collection->where('qr_link', '');
+            }
+        }
         if (isset($request->permit_number)) {
             if ($request->permit_number == '1') {
                 $collection->whereNotNull('permit_number');
@@ -544,6 +553,7 @@ class ProjectController extends Controller
             $project->reference_number = $reference_prefix . "_" . $nextInvoiceNumber;
             $project->save();
             $project->banner_image = $project->mainImage;
+            $project->qr_link = $project->qr;
             $project->save();
 
             if (isset($request->detailsKey)) {
@@ -872,7 +882,7 @@ class ProjectController extends Controller
 
             $project->save();
             $project->banner_image = $project->mainImage;
-
+            $project->qr_link = $project->qr;
             $project->save();
             $project->subProjects()->update(['is_approved' => $request->is_approved]);
 

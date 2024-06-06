@@ -749,4 +749,26 @@ class CronController extends Controller
         }
         echo "Property Sub Images added successfully.";
     }
+    public function projectQR()
+    {
+        Log::info('projectQR Start-' . Carbon::now());
+        DB::beginTransaction();
+        try {
+            // 1- 70
+            $projects = Project::mainProject()->get();
+
+            foreach ($projects as $project) {
+                Log::info('projectId-' . $project->id);
+                $project->update(['qr_link' => $project->qr]);
+                $project->save();
+
+                Log::info('projectQR-' . $project->qr_link);
+            }
+            DB::commit();
+            Log::info('projectQR End-' . Carbon::now());
+            echo  "project done";
+        } catch (\Exception $error) {
+            echo  $error->getMessage();
+        }
+    }
 }

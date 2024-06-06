@@ -341,12 +341,11 @@ class Community extends Model implements HasMedia
         if ($status == config('constants.Available')) {
             $query->active()->approved();
         } elseif ($status == config('constants.NA')) {
-
             $query->deactive()->approved();
         } elseif ($status == config('constants.Requested')) {
-            $query->active()->requested();
+            $query->requested();
         } elseif ($status == config('constants.Rejected')) {
-            $query->active()->rejected();
+            $query->rejected();
         }
     }
     public function scopeApplyFilters($query, array $filters)

@@ -109,7 +109,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    {{-- <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="form-control" id="status" name="status">
@@ -133,8 +133,19 @@
                                                 @endforeach
                                             </select>
                                         </div>
+                                    </div> --}}
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="type"> Website Status</label>
+                                            <select class="form-control" id="website_status" name="website_status">
+                                                @foreach (config('constants.newStatuses') as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                        @if (request()->website_status == $key) selected @endif>
+                                                        {{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="completion_status_id">Completion Status</label>
@@ -187,6 +198,19 @@
                                                 <option value="1" @if (request()->permit_number === '1') selected @endif>
                                                     Exist</option>
                                                 <option value="0" @if (request()->permit_number === '0') selected @endif>
+                                                    Not Exist</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="qr_link">QR Code </label>
+                                            <select class="form-control" id="qr_link" name="qr_link">
+                                                <option value="">All</option>
+                                                <option value="1" @if (request()->qr_link === '1') selected @endif>
+                                                    Exist</option>
+                                                <option value="0" @if (request()->qr_link === '0') selected @endif>
                                                     Not Exist</option>
 
                                             </select>
@@ -273,12 +297,14 @@
                                         <th>Permit Number</th>
                                         <th>Completion Status</th>
                                         <th>Display On Home</th>
+                                        <th>Website Status</th>
                                         <th>Status</th>
+
+                                        <th>Approval Status</th>
                                         <th>Order Number <span class="arrow up"
                                                 onclick="orderBy('projectOrder', 'asc')">&#x25B2;</span><span
                                                 class="arrow down"
                                                 onclick="orderBy('projectOrder', 'desc')">&#x25BC;</span></th>
-                                        <th>Approval Status</th>
                                         <th>Approval By</th>
                                         <th>Added By</th>
                                         <th>Last Updated By</th>
@@ -307,13 +333,23 @@
                                             </td>
                                             <td>
                                                 <span
+                                                    class="badge 
+                                                    @if ($project->websiteStatus === config('constants.NA')) bg-info 
+                                                    @elseif($project->websiteStatus === config('constants.Available')) bg-success 
+                                                    @elseif($project->websiteStatus === config('constants.Rejected'))  bg-danger 
+                                                    @elseif($project->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+
+                                                    {{ $project->websiteStatus }}
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span
                                                     class="badge @if ($project->status === 'active') bg-success @else bg-danger @endif">
                                                     {{ $project->status }}
                                                 </span>
                                             </td>
-                                            <td>
-                                                {{ $project->projectOrder }}
-                                            </td>
+
                                             <td>
                                                 <span
                                                     class="badge 
@@ -329,6 +365,9 @@
                                                         Rejected
                                                     @endif
                                                 </span>
+                                            </td>
+                                            <td>
+                                                {{ $project->projectOrder }}
                                             </td>
                                             <td>{{ $project->approval ? $project->approval->name : '' }}</td>
                                             <td>{{ $project->user->name }}</td>
