@@ -759,6 +759,7 @@ class CronController extends Controller
 
             foreach ($projects as $project) {
                 Log::info('projectId-' . $project->id);
+                $project->timestamps = false; // Disable timestamps
                 $project->update(['qr_link' => $project->qr]);
                 $project->save();
 
