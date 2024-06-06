@@ -63,6 +63,73 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
         }
 
 
+
+
+        $totalProjectPermitCount = 0;
+        $this->projectPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
+        $collection->push(['Project Permit Status', 'Count']);
+
+        foreach ($this->data['projectPermitCounts'] as $data) {
+            $count = (int)$data['count']; // Ensure the count is an integer
+            $collection->push([$data['status'], (string)$count]);
+            $totalProjectPermitCount += $count; // Sum the counts
+        }
+
+        $collection->push(['Total', $totalProjectPermitCount]);
+
+
+        $totalPropertyPermitCount = 0;
+        $this->propertyPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
+        $collection->push(['Property Permit Status', 'Count']);
+
+        foreach ($this->data['propertyPermitCounts'] as $data) {
+            $count = (int)$data['count']; // Ensure the count is an integer
+            $collection->push([$data['status'], (string)$count]);
+            $totalPropertyPermitCount += $count; // Sum the counts
+        }
+        $collection->push(['Total', $totalPropertyPermitCount]);
+
+        $totalPropertyCategoryCount = 0;
+        $this->propertyCategoryNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
+        $collection->push(['Property Categories', 'Count']);
+
+        foreach ($this->data['propertyCateoryCounts'] as $data) {
+            $count = (int)$data['count']; // Ensure the count is an integer
+            $collection->push([$data['status'], (string)$count]);
+            $totalPropertyCategoryCount += $count; // Sum the counts
+        }
+        $collection->push(['Total', $totalPropertyCategoryCount]);
+
+
+        $this->propertyAgentNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
+        $collection->push(['Agent Name', 'Ready', 'Offplan', 'Rent', 'Total']);
+
+        foreach ($this->data['propertyAgentWiseCounts'] as $data) {
+
+            $ready = $data['ready'];
+            $offplan = $data['offplan'];
+            $rent = $data['rent'];
+            $total = (int)$ready + (int)$offplan + (int)$rent; // Ensure the count is an integer
+
+            $collection->push([$data['agent_name'], (string)$ready, (string)$offplan, (string)$rent, $total]);
+        }
+
+
+
+
+        $totalMediaCount = 0;
+        $this->MediaRowIndex = $collection->count() + 1; // 1-based index for Excel rows
+        $collection->push(['Media Type', 'Count']);
+
+        foreach ($this->data['blogCategoryCounts'] as $data) {
+            $count = (int)$data['count']; // Ensure the count is an integer
+            $collection->push([$data['status'], (string)$count]);
+            $totalMediaCount += $count; // Sum the counts
+        }
+        $collection->push(['Total', $totalMediaCount]);
+
+
+
         // Adding counts by date
         $this->dateCountRowIndex = $collection->count() + 1; // 1-based index for Excel rows
         $collection->push(['Date', 'Communities', 'Developers', 'Projects', 'Properties', 'Media', 'Guides', 'Careers', 'Total']);
@@ -129,70 +196,6 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
             (string) $totalAgent,
             (string) ($totalCommunities + $totalDevelopers + $totalProjects + $totalProperties + $totalMedia + $totalGuide + $totalAgent)
         ]);
-
-        $totalProjectPermitCount = 0;
-        $this->projectPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Project Permit Status', 'Count']);
-
-        foreach ($this->data['projectPermitCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
-            $totalProjectPermitCount += $count; // Sum the counts
-        }
-
-        $collection->push(['Total', $totalProjectPermitCount]);
-
-
-        $totalPropertyPermitCount = 0;
-        $this->propertyPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Property Permit Status', 'Count']);
-
-        foreach ($this->data['propertyPermitCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
-            $totalPropertyPermitCount += $count; // Sum the counts
-        }
-        $collection->push(['Total', $totalPropertyPermitCount]);
-
-        $totalPropertyCategoryCount = 0;
-        $this->propertyCategoryNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Property Categories', 'Count']);
-
-        foreach ($this->data['propertyCateoryCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
-            $totalPropertyCategoryCount += $count; // Sum the counts
-        }
-        $collection->push(['Total', $totalPropertyCategoryCount]);
-
-
-        $this->propertyAgentNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Agent Name', 'Ready', 'Offplan', 'Rent', 'Total']);
-
-        foreach ($this->data['propertyAgentWiseCounts'] as $data) {
-
-            $ready = $data['ready'];
-            $offplan = $data['offplan'];
-            $rent = $data['rent'];
-            $total = (int)$ready + (int)$offplan + (int)$rent; // Ensure the count is an integer
-
-            $collection->push([$data['agent_name'], (string)$ready, (string)$offplan, (string)$rent, $total]);
-        }
-
-
-
-
-        $totalMediaCount = 0;
-        $this->MediaRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Media Type', 'Count']);
-
-        foreach ($this->data['blogCategoryCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
-            $totalMediaCount += $count; // Sum the counts
-        }
-        $collection->push(['Total', $totalMediaCount]);
-
 
         return $collection;
     }

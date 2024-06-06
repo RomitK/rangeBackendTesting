@@ -37,7 +37,7 @@ class PropertyReport extends Controller
 
             if (isset($request->startDate) && isset($request->endDate)) {
                 $startDate = Carbon::parse($request->startDate);
-                $endDate = Carbon::parse($request->endDate);
+                $endDate = Carbon::parse($request->endDate)->endOfDay();
                 $collection = $collection->whereBetween('properties.created_at', [$startDate, $endDate]);
             }
 

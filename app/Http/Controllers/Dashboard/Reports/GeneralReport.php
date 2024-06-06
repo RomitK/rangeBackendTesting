@@ -37,7 +37,8 @@ class GeneralReport extends Controller
     {
 
         $startDate = Carbon::parse($request->startDate);
-        $endDate = Carbon::parse($request->endDate);
+        $endDate = Carbon::parse($request->endDate)->endOfDay();
+
         $interval = $startDate->diffInDays($endDate);
 
 
@@ -61,6 +62,7 @@ class GeneralReport extends Controller
 
         $propertyCounts = Property::getCountsByDate($startDate, $endDate);
         $propertyStatusCounts = Property::getCountsByStatus($startDate, $endDate);
+      
         $propertyPermitCounts = Property::getCountsByPermitNumber($startDate, $endDate);
         $propertyCateoryWiseCounts = Property::getCountsByCategory($startDate, $endDate);
         $propertyAgentWiseCount = Property::getCountsByAgent($startDate, $endDate);
@@ -195,7 +197,7 @@ class GeneralReport extends Controller
                 'color' => '#6c757d', // Secondary
             ]
         ];
-       // dd($propertyCateoryWiseCounts);
+        // dd($propertyCateoryWiseCounts);
         $propertyCateoryCounts = [
             [
                 'status' => 'Ready',
