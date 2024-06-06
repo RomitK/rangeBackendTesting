@@ -287,7 +287,8 @@
                             </table>
                             <div class="row">
                                 <div class="col-12 text-center pagination">
-                                    {!! $communities->links() !!}
+                                
+                                    {!! $communities->appends(request()->query())->links() !!}
                                 </div>
 
                             </div>

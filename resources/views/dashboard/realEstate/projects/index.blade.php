@@ -444,7 +444,7 @@
                             </table>
                             <div class="row">
                                 <div class="col-12 text-center pagination">
-                                    {!! $projects->links() !!}
+                                    {!! $projects->appends(request()->query())->links() !!}
                                 </div>
 
                             </div>

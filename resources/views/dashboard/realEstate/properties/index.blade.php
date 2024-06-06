@@ -482,7 +482,7 @@
                             </table>
                             <div class="row">
                                 <div class="col-12 pagination">
-                                    {!! $properties->links() !!}
+                                    {!! $properties->appends(request()->query())->links() !!}
                                 </div>
 
                             </div>

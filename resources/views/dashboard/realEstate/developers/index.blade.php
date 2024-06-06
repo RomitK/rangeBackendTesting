@@ -246,7 +246,8 @@
                             </table>
                             <div class="row">
                                 <div class="col-12 text-center pagination">
-                                    {!! $developers->links() !!}
+                            
+                                    {!! $developers->appends(request()->query())->links() !!}
                                 </div>
 
                             </div>
