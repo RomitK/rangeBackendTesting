@@ -57,7 +57,7 @@
                                 @endphp
                                 <div class="row mb-2">
 
-                                    <div class="col-sm-1">
+                                    {{-- <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="form-control" id="status" name="status">
@@ -68,7 +68,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> 
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="type">Approval Status</label>
@@ -76,6 +76,18 @@
                                                 @foreach (config('constants.approvedWithAll') as $key => $value)
                                                     <option value="{{ $key }}"
                                                         @if (request()->is_approved == $key) selected @endif>
+                                                        {{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>  --}}
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label for="type"> Website Status</label>
+                                            <select class="form-control" id="website_status" name="website_status">
+                                                @foreach (config('constants.newStatuses') as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                        @if (request()->website_status == $key) selected @endif>
                                                         {{ $value }}</option>
                                                 @endforeach
                                             </select>
@@ -160,6 +172,7 @@
                                     <tr>
                                         <th>SR.NO</th>
                                         <th>Name</th>
+                                        <th>Website Status</th>
                                         <th>Status</th>
                                         <th>Approval Status</th>
                                         <th>Display on Home</th>
@@ -179,6 +192,17 @@
                                         <tr>
                                             <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $community->name }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge 
+                                                    @if ($community->websiteStatus === config('constants.NA')) bg-info 
+                                                    @elseif($community->websiteStatus === config('constants.Available')) bg-success 
+                                                    @elseif($community->websiteStatus === config('constants.Rejected'))  bg-danger 
+                                                    @elseif($community->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+
+                                                    {{ $community->websiteStatus }}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <span
                                                     class="badge @if ($community->status === 'active') bg-success @else bg-danger @endif">

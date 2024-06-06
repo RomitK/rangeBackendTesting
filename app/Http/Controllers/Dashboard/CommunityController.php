@@ -91,6 +91,9 @@ class CommunityController extends Controller
 
             $collection->whereBetween('created_at', [$startDate, $endDate]);
         }
+        if (isset($request->website_status)) {
+            $collection->WebsiteStatus($request->website_status);
+        }
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }

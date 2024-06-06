@@ -57,7 +57,7 @@
                                 @endphp
                                 <div class="row mb-2">
 
-                                    <div class="col-sm-3">
+                                    {{-- <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="form-control" id="status" name="status">
@@ -68,10 +68,10 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-sm-3">
                                         <div class="form-group">
-                                            <label for="type">Status</label>
+                                            <label for="type">Website Status</label>
                                             <select class="form-control" id="website_status" name="website_status">
                                                 @foreach (config('constants.newStatuses') as $key => $value)
                                                     <option value="{{ $key }}"
@@ -214,10 +214,10 @@
                                                     </a>
 
                                                     <!-- <a class="btn btn-secondary btn-sm"
-                                                                                                                   href="{{ route('dashboard.developer.details', $developer->id) }}">
-                                                                                                                   <i class="fas fa-database"></i>
-                                                                                                                   Details
-                                                                                                                </a> -->
+                                                                                                                       href="{{ route('dashboard.developer.details', $developer->id) }}">
+                                                                                                                       <i class="fas fa-database"></i>
+                                                                                                                       Details
+                                                                                                                    </a> -->
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
                                                             href="{{ route('dashboard.developer.meta', $developer->id) }}">

@@ -299,7 +299,6 @@ class Developer extends Model implements HasMedia
         } elseif ($status == config('constants.Rejected')) {
             $query->active()->rejected();
         }
-        return $query->where('status', config('constants.active'));
     }
     public function scopeApplyFilters($query, array $filters)
     {
