@@ -394,9 +394,15 @@
                                             <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $property->name }}</td>
                                             <td>{{ $property->reference_number }}</td>
-                                            <td>{{ $property->project && $property->project->permit_number }}</td>
-                                            <td>{{ $property->project && $property->project->title }}
-                                                ({{ $property->project && $property->subProject->title }})
+                                            <td>
+                                                @if ($property->project)
+                                                    {{ $property->project->permit_number }}
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($property->project)
+                                                    {{ $property->project->title }} ({{ $property->subProject->title }})
+                                                @endif
                                             </td>
                                             {{-- <td>{{ $property->is_duplicate }}</td> --}}
                                             <td>{{ $property->price }}</td>
