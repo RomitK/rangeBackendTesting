@@ -21,7 +21,7 @@ use App\Models\{
 use App\Jobs\{
     DeveloperExportAndEmailData
 };
-
+use Carbon\Carbon;
 class DeveloperController extends Controller
 {
     function __construct()
@@ -80,6 +80,20 @@ class DeveloperController extends Controller
         if (isset($request->is_approved)) {
             $collection->where('is_approved', $request->is_approved);
         }
+
+        if (isset($request->data_range_input)) {
+            $dateRange = $request->data_range_input;
+            // Use explode to split the date range by " - "
+            $dates = explode(' - ', $dateRange);
+            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
+            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
+
+            $startDate = Carbon::parse($dates[0]);
+            $endDate = Carbon::parse($dates[1])->endOfDay();
+
+            $collection->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
 
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by

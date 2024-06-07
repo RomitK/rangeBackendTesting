@@ -82,7 +82,6 @@
 
                                     <div class="col-sm-1">
                                         <div class="form-group">
-
                                             <label for="exclusive">Exclusive?</label>
                                             <select class="form-control" id="exclusive" name="exclusive">
                                                 @foreach ($exclusiveOptions as $key => $value)
@@ -95,6 +94,21 @@
 
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-1">
+                                        <div class="form-group">
+                                            <label for="is_duplicate">Duplicate?</label>
+                                            <select class="form-control" id="is_duplicate" name="is_duplicate">
+                                                <option value="">All</option>
+                                                <option @if (request()->is_duplicate == 'duplicate') selected @endif value="duplicate">
+                                                    Duplicate</option>
+                                                <option @if (request()->is_duplicate == 'not_duplicate') selected @endif
+                                                    value="not_duplicate">Not Duplicate</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+
                                     <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="category_id">Category</label>
@@ -351,6 +365,7 @@
                                         <th>Refernce No.</th>
                                         <th>Permit Number</th>
                                         <th>Project</th>
+                                        <th>Is Duplicate</th>
                                         <th>Price</th>
 
                                         <th>Website Status</th>
@@ -381,6 +396,7 @@
                                             <td>{{ $property->reference_number }}</td>
                                             <td>{{ $property->project->permit_number }}</td>
                                             <td>{{ $property->project->title }} ({{ $property->subProject->title }})</td>
+                                            <td>{{ $property->is_duplicate }}</td>
                                             <td>{{ $property->price }}</td>
 
                                             <td>

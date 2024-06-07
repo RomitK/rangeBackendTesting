@@ -86,6 +86,9 @@ Route::get('/clear-cache', function () {
  *******************/
 Route::get('cronJobmakeInctiveProperties',  'App\Http\Controllers\CronController@cronJobmakeInctiveProperties');
 
+Route::get('cronjob/deleteNAProperties', 'App\Http\Controllers\CronController@deleteNAProperties');
+
+
 Route::get('projectQR', 'App\Http\Controllers\CronController@projectQR');
 
 Route::get('inactiveProperties', 'App\Http\Controllers\CronController@inactiveProperties');

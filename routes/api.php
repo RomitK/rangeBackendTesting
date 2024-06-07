@@ -93,7 +93,6 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/projectOfferTypes', 'ProjectController@projectOfferTypes');
 
 
-
     Route::get('/accommodations', 'AccommodationController@index');
     Route::get('/projectAccommodations', 'AccommodationController@projectAccommodations');
     Route::get('/propertyAccommodations', 'AccommodationController@propertyAccommodationLists');
@@ -101,8 +100,6 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/accommodationOptions', 'AccommodationController@accommodationOptions');
     Route::get('/communityAccommodationOptions', 'AccommodationController@communityAccommodationOptions');
     Route::get('/developerAccommodationOptions', 'AccommodationController@developerAccommodationOptions');
-
-
 
 
     Route::get('/amenities', 'AmenityController@index');

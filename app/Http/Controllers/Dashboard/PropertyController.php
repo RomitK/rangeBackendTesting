@@ -95,8 +95,12 @@ class PropertyController extends Controller
         if (isset($request->data_range_input)) {
             $dateRange = $request->data_range_input;
             $dates = explode(' - ', $dateRange);
-            $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
-            $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
+            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
+            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
+
+            $startDate = Carbon::parse($dates[0]);
+            $endDate = Carbon::parse($dates[1])->endOfDay();
+
             $collection->whereBetween('created_at', [$startDate, $endDate]);
         }
 
@@ -110,14 +114,18 @@ class PropertyController extends Controller
             $collection->whereIn('project_id', $project_ids);
         }
 
-
-
-
         if (isset($request->exclusive)) {
             if ($request->exclusive == 'exclusive') {
                 $collection->where('exclusive', 1);
             } elseif ($request->exclusive == 'non-exclusive') {
                 $collection->where('exclusive', 0);
+            }
+        }
+        if (isset($request->is_duplicate)) {
+            if ($request->is_duplicate == 'duplicate') {
+                $collection->where('is_duplicate', 1);
+            } elseif ($request->is_duplicate == 'not_duplicate') {
+                $collection->where('is_duplicate', 0);
             }
         }
 

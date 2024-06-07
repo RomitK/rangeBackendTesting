@@ -34,7 +34,39 @@ use GuzzleHttp\Client;
 
 class CronController extends Controller
 {
+    public function deleteNAProperties()
+    {
+        Log::info('deleteNAProperties');
+        $projects = Project::mainProject()->pluck('id')->toArray();
+        foreach ($projects as $project) {
+            $subprojects = Project::where('is_parent_project', 0)->where('parent_project_id', $project)->pluck('id')->toArray();
+            foreach ($subprojects  as $subproject) {
+                Log::info('project_id' . $project);
+                Log::info('sub_project_id' . $subproject);
 
+                $lowestPricePropertyId = Property::where('project_id', $project)
+                    ->where('sub_project_id', $subproject)
+                    ->orderBy('price')
+                    // ->active()
+                    // ->approved()
+                    ->value('id');
+
+                Log::info("lowest priece property-" . $lowestPricePropertyId);
+
+                Property::getModel()->timestamps = false;
+
+                Property::where('project_id', $project)
+                    ->where('sub_project_id', $subproject)
+                    ->where('id', '!=', $lowestPricePropertyId)
+                    ->update(['is_duplicate' => 1]);
+
+                Property::getModel()->timestamps = true;
+
+                Log::info("other lowest priece property-");
+            }
+        }
+        echo "deleteNAProperties Done";
+    }
     public function inactiveProperties()
     {
         Log::info('inactiveProperties');
@@ -70,10 +102,10 @@ class CronController extends Controller
                     ->where('status', config('constants.active'))
                     ->where('is_approved', config('constants.approved'))
                     ->where('id', '!=', $lowestPricePropertyId)
-                  
+
                     ->update(['status' => config('constants.Inactive')]);
 
-                    Property::getModel()->timestamps = true;
+                Property::getModel()->timestamps = true;
                 Log::info("other lowest priece property-");
             }
         }

@@ -87,7 +87,7 @@
                                         <input type="text" value="{{ request()->keyword }}" class="form-control"
                                             id="keyword" placeholder="Enter Name" name="keyword">
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="date_range">Added At <span
                                                     id="date_range_show">{{ request()->data_range_input }}</span></label>
@@ -214,10 +214,10 @@
                                                     </a>
 
                                                     <!-- <a class="btn btn-secondary btn-sm"
-                                                                                                                       href="{{ route('dashboard.developer.details', $developer->id) }}">
-                                                                                                                       <i class="fas fa-database"></i>
-                                                                                                                       Details
-                                                                                                                    </a> -->
+                                                                                                                                           href="{{ route('dashboard.developer.details', $developer->id) }}">
+                                                                                                                                           <i class="fas fa-database"></i>
+                                                                                                                                           Details
+                                                                                                                                        </a> -->
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
                                                             href="{{ route('dashboard.developer.meta', $developer->id) }}">
@@ -246,7 +246,7 @@
                             </table>
                             <div class="row">
                                 <div class="col-12 text-center pagination">
-                            
+
                                     {!! $developers->appends(request()->query())->links() !!}
                                 </div>
 

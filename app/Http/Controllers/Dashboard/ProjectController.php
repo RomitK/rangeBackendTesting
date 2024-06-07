@@ -84,8 +84,13 @@ class ProjectController extends Controller
             $dateRange = $request->data_range_input;
             // Use explode to split the date range by " - "
             $dates = explode(' - ', $dateRange);
-            $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
-            $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
+            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
+            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1])->endOfDay();
+
+
+            $startDate = Carbon::parse($dates[0]);
+            $endDate = Carbon::parse($dates[1])->endOfDay();
+
 
             $collection->whereBetween('created_at', [$startDate, $endDate]);
         }
