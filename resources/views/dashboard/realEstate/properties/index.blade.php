@@ -95,7 +95,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-1">
+                                    {{-- <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="is_duplicate">Duplicate?</label>
                                             <select class="form-control" id="is_duplicate" name="is_duplicate">
@@ -107,7 +107,7 @@
                                             </select>
 
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="col-sm-1">
                                         <div class="form-group">
@@ -365,7 +365,7 @@
                                         <th>Refernce No.</th>
                                         <th>Permit Number</th>
                                         <th>Project</th>
-                                        <th>Is Duplicate</th>
+                                        {{-- <th>Is Duplicate</th> --}}
                                         <th>Price</th>
 
                                         <th>Website Status</th>
@@ -394,9 +394,11 @@
                                             <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $property->name }}</td>
                                             <td>{{ $property->reference_number }}</td>
-                                            <td>{{ $property->project->permit_number }}</td>
-                                            <td>{{ $property->project->title }} ({{ $property->subProject->title }})</td>
-                                            <td>{{ $property->is_duplicate }}</td>
+                                            <td>{{ $property->project && $property->project->permit_number }}</td>
+                                            <td>{{ $property->project && $property->project->title }}
+                                                ({{ $property->project && $property->subProject->title }})
+                                            </td>
+                                            {{-- <td>{{ $property->is_duplicate }}</td> --}}
                                             <td>{{ $property->price }}</td>
 
                                             <td>
