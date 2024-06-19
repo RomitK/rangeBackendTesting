@@ -600,6 +600,10 @@ class ProjectRepository implements ProjectRepositoryInterface
 
             logActivity('Project has been updated', $project->id, Project::class, $properties);
 
+            if (!empty($project->qr_link) && $project->permit_number !== null) {
+                $this->makePropertiesAvailable($project);
+            }
+
             DB::commit();
 
             // Return success response
@@ -608,6 +612,57 @@ class ProjectRepository implements ProjectRepositoryInterface
                 'message' => 'Project has been updated successfully.',
                 'project_id' => $project->id,
             ];
+        } catch (\Exception $error) {
+            // Return error response
+            return [
+                'success' => false,
+                'message' => $error->getMessage(),
+            ];
+        }
+    }
+    public function makePropertiesAvailable($project)
+    {
+        try {
+            $properties = Property::where('project_id', $project->id)
+                ->where('status', config('constants.inactive'))
+                ->where('is_approved', config('constants.approved'))
+                ->where('website_status', config('constants.NA'))->latest()->get();
+
+            foreach ($properties as $property) {
+
+
+                $originalAttributes = $property->getOriginal();
+                $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+
+                if ($property->amenities) {
+                    $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $originalAttributes['amenityIds'] = [];
+                }
+
+
+                $property->status = config('constants.active');
+                $property->website_status = config('constants.available');
+                $property->save();
+
+                if ($property->amenities) {
+                    $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $newPropertyOriginalAttributes['amenityIds'] = [];
+                }
+
+                if (isset($property->description)) {
+                    $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                }
+                if (isset($property->short_description)) {
+                    $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                }
+
+                $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+
+                logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
+            }
         } catch (\Exception $error) {
             // Return error response
             return [

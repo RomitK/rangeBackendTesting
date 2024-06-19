@@ -596,6 +596,54 @@ class PropertyRepository implements PropertyRepositoryInterface
             logActivity('Property has been updated', $property->id, Property::class, $properties);
 
 
+            if ($property->website_status == config('constants.available')) {
+
+
+                $originalAttributes = $property->getOriginal();
+                $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+
+                if ($property->amenities) {
+                    $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $originalAttributes['amenityIds'] = [];
+                }
+
+
+                $notValidProject = $property->project()
+                    ->where('qr_link', '=', '')
+                    ->whereNull('permit_number')
+                    ->exists();
+
+                if ($notValidProject) {
+
+                    $property->status = config('constants.inactive');
+                    $property->website_status = config('constants.NA');
+                    $property->save();
+                }
+
+                $newPropertyOriginalAttributes = $property->getOriginal();
+
+                if ($request->has('amenityIds')) {
+                    $newPropertyOriginalAttributes['amenityIds'] = $amenityIds;
+                } else {
+                    $newPropertyOriginalAttributes['amenityIds'] = [];
+                }
+
+
+                if (isset($property->description)) {
+                    $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                }
+                if (isset($property->short_description)) {
+                    $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                }
+
+                $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+
+                logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
+            }
+
+
             DB::commit();
 
             // Return success response
