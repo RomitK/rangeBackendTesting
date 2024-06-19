@@ -167,7 +167,7 @@ class SingleDeveloperResource extends JsonResource
             'id' => 'developer-' . $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'imageGallery' => $this->exteriorGallery,
+            'imageGallery' => $exteriorGallery,
             'longDescription' => $this->long_description->render(),
             'shortDescription' => $this->short_description->render(),
             'newProjects' => ProjectOptionResource::collection($projectOptions->OrderBy('title', 'asc')->get()),
