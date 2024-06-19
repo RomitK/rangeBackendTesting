@@ -305,7 +305,10 @@ class ProjectRepository implements ProjectRepositoryInterface
             $project->reference_number = $reference_prefix . "_" . $nextInvoiceNumber;
             $project->save();
             $project->banner_image = $project->mainImage;
-            $project->qr_link = $project->qr;
+            if ($request->hasFile('qr')) {
+                $project->qr_link = $project->qr;
+            }
+
             $project->save();
 
             $originalAttributes = $project->getOriginal();
@@ -553,7 +556,9 @@ class ProjectRepository implements ProjectRepositoryInterface
 
             $project->save();
             $project->banner_image = $project->mainImage;
-            $project->qr_link = $project->qr;
+            if ($request->hasFile('qr')) {
+                $project->qr_link = $project->qr;
+            }
             $project->save();
 
             // Retrieve the updated attributes

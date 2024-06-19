@@ -428,6 +428,10 @@ class Property extends Model implements HasMedia
     {
         return $query->where('status', config('constants.active'));
     }
+    public function scopeAvailable($query)
+    {
+        return $query->where('website_status', config('constants.available'));
+    }
     public function scopeDeactive($query)
     {
         return $query->where('status',  config('constants.Inactive'));

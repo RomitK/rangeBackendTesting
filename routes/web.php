@@ -94,7 +94,7 @@ Route::get('projectQR', 'App\Http\Controllers\CronController@projectQR');
 Route::get('inactiveProperties', 'App\Http\Controllers\CronController@inactiveProperties');
 
 Route::get('activeProperties', 'App\Http\Controllers\CronController@activeProperties');
-
+Route::get('NAProperties', 'App\Http\Controllers\CronController@NAProperties');
 
 Route::get('cronjob/subProjects', 'App\Http\Controllers\CronController@subProjects');
 

@@ -99,6 +99,25 @@ class CronController extends Controller
             echo  $error->getMessage();
         }
     }
+    public function NAProperties()
+    {
+        $properties = Property::where('status', config('constants.active'))
+            ->where('website_status', config('constants.available'))
+            ->whereHas('project', function ($query) {
+                $query->where('qr_link',  '')->whereNull('qr_link')
+                    ->whereNull('permit_number');
+            })->get();
+        // dd($properties);
+        foreach ($properties as $property) {
+            Property::getModel()->timestamps = false;
+            Log::info('property-' . $property->id);
+            Property::where('id', $property->id)
+                ->update(['status' => config('constants.Inactive'), 'website_status' => config('constants.NA')]);
+
+            Property::getModel()->timestamps = TRUE; // Disable timestamps
+
+        }
+    }
     public function inactiveProperties()
     {
         Log::info('inactiveProperties');

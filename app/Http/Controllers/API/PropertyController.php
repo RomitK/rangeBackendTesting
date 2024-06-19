@@ -836,7 +836,7 @@ class PropertyController extends Controller
                 }
             }
 
-            $collection = Property::with('completionStatus', 'accommodations', 'category', 'project')->active()->approved()->whereHas('project', function ($query) {
+            $collection = Property::with('completionStatus', 'accommodations', 'category', 'project')->active()->approved()->available()->whereHas('project', function ($query) {
                 $query->whereNotNull('permit_number');
             });
 
@@ -993,6 +993,7 @@ class PropertyController extends Controller
 
 
             return $this->success('Properties', [
+                'count' => $properties->count(),
                 'properties' => PropertyListResource::collection($properties)->response()->getData(true),
                 'amenities' =>  AmenitiesNameResource::collection($amenities),
 
