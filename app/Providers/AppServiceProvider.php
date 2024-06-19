@@ -12,6 +12,19 @@ use App\Models\WebsiteSetting;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Repositories\Contracts\{
+    DeveloperRepositoryInterface,
+    CommunityRepositoryInterface,
+    ProjectRepositoryInterface,
+    PropertyRepositoryInterface
+};
+use App\Repositories\Eloquent\{
+    DeveloperRepository,
+    CommunityRepository,
+    ProjectRepository,
+    PropertyRepository
+};
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,7 +35,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(DeveloperRepositoryInterface::class, DeveloperRepository::class);
+        $this->app->bind(CommunityRepositoryInterface::class, CommunityRepository::class);
+        $this->app->bind(ProjectRepositoryInterface::class, ProjectRepository::class);
+        $this->app->bind(PropertyRepositoryInterface::class, PropertyRepository::class);
     }
 
     /**

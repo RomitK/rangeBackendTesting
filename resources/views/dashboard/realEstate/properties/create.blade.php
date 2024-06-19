@@ -28,37 +28,23 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form class="form-boder" id="storeForm" method="POST" action="{{ route('dashboard.properties.store') }}"
-                            enctype="multipart/form-data">
+                        <form class="form-boder" id="storeForm" method="POST"
+                            action="{{ route('dashboard.properties.store') }}" enctype="multipart/form-data">
                             @csrf
 
                             <div class="card-body">
                                 <div class="row">
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="main_community_id">Community</label>-->
-                                    <!--        <select data-placeholder="Select community" style="width: 100%;"-->
-                                    <!--            class=" form-control select1 @error('community_id') is-invalid @enderror"-->
-                                    <!--            id="main_community_id" name="community_id" required>-->
-                                    <!--            <option value="">Select Community</option>-->
-                                    <!--            @foreach ($communities as $value)-->
-                                    <!--                <option value="{{ $value->id }}">{{ $value->name }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('community_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
+
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="project_id">Project</label>
-                                            <select data-placeholder="Select Project" style="width: 100%;" class="select2 form-control @error('project_id') is-invalid @enderror" id="project_id" name="project_id" required>
+                                            <select data-placeholder="Select Project" style="width: 100%;"
+                                                class="select2 form-control @error('project_id') is-invalid @enderror"
+                                                id="project_id" name="project_id" required>
                                                 <option value="">Select Project</option>
                                                 @foreach ($projects as $value)
-                                                    <option value="{{ $value->id }}">{{ $value->title }} ( {{$value->developer->name}})</option>
+                                                    <option value="{{ $value->id }}">{{ $value->title }} (
+                                                        {{ $value->developer->name }})</option>
                                                 @endforeach
                                             </select>
                                             @error('project_id')
@@ -68,12 +54,14 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
-                                     <div class="col-sm-4">
+
+                                    <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="sub_project_id">Available Unit</label>
-                                            <select data-placeholder="Select Available Unit" style="width: 100%;" class="select2 form-control @error('sub_project_id') is-invalid @enderror" id="sub_project_id" name="sub_project_id" required>
-                                                
+                                            <select data-placeholder="Select Available Unit" style="width: 100%;"
+                                                class="select2 form-control @error('sub_project_id') is-invalid @enderror"
+                                                id="sub_project_id" name="sub_project_id" required>
+
                                             </select>
                                             @error('sub_project_id')
                                                 <span class="invalid-feedback" role="alert">
@@ -82,13 +70,13 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="primary_view">Primary View</label>
                                             <input type="text" value="{{ old('primary_view') }}"
                                                 class="form-control @error('primary_view') is-invalid @enderror"
-                                                id="primary_view" name="primary_view" >
+                                                id="primary_view" name="primary_view">
                                             @error('primary_view')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -109,85 +97,14 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="sub_title">Sub Title</label>-->
-                                    <!--        <input type="text" value="{{ old('sub_title') }}"-->
-                                    <!--            class="form-control @error('sub_title') is-invalid @enderror" id="sub_title"-->
-                                    <!--            placeholder="Enter Sub Title" name="sub_title">-->
-                                    <!--        @error('sub_title')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    
-                                    <!--<div class="col-sm-2">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="emirate">Select Emirate</label>-->
-                                    <!--        <select class="select1 form-control @error('emirate') is-invalid @enderror"-->
-                                    <!--            id="emirate" name="emirate" required>-->
-                                    <!--            @foreach (config('constants.emirates') as $key => $value)-->
-                                    <!--                <option value="{{ $value }}">{{ $value }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('emirate')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="permit_number">Permit Number</label>-->
-                                    <!--        <input type="text" value="{{ old('permit_number') }}"-->
-                                    <!--            class="form-control @error('permit_number') is-invalid @enderror"-->
-                                    <!--            id="permit_number" placeholder="Enter Permit Number" name="permit_number">-->
-                                    <!--        @error('permit_number')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-3">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="reference_number">Reference Number</label>-->
-                                    <!--        <p value="{{ $nextReferenceNumber }}"-->
-                                    <!--            class="form-control"-->
-                                    <!--            id="reference_number" placeholder="Enter Reference Number"-->
-                                    <!--            name="reference_number">{{ $nextReferenceNumber }}</p>-->
-                                    <!--        @error('reference_number')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-2">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="is_display_home">Is Display on Home Page?</label>-->
-                                    <!--        <select class="form-control select1 @error('is_display_home') is-invalid @enderror" id="is_display_home" name="is_display_home">-->
-                                    <!--            @foreach (config('constants.booleanOptions') as $key=>$value)-->
-                                    <!--            <option value="{{ $key }}">{{ $value }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('is_display_home')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    
+
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="propertyOrder">Property Order</label>
                                             <input type="number" value="{{ old('propertyOrder') }}"
-                                                class="form-control @error('propertyOrder') is-invalid @enderror" id="propertyOrder"
-                                                 name="propertyOrder" min="1">
+                                                class="form-control @error('propertyOrder') is-invalid @enderror"
+                                                id="propertyOrder" name="propertyOrder" min="1">
                                             @error('propertyOrder')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -195,14 +112,15 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="property_source">Property Source</label>
-                                            <select class="form-control select1 @error('property_source') is-invalid @enderror"
+                                            <select
+                                                class="form-control select1 @error('property_source') is-invalid @enderror"
                                                 id="property_source" name="property_source">
                                                 @foreach (config('constants.propertySources') as $value)
-                                                <option value="{{ $value }}">{{ $value }}</option>
+                                                    <option value="{{ $value }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('property_source')
@@ -214,14 +132,23 @@
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label for="status">Status</label>
-                                            <select class="form-control select1 @error('status') is-invalid @enderror"
-                                                id="status" name="status">
-                                                @foreach (config('constants.statuses') as $key => $value)
-                                                    <option value="{{ $key }}">{{ $value }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('status')
+                                            <label for="website_status">Wesbite Status</label>
+                                            @if (in_array(Auth::user()->role, config('constants.isAdmin')))
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.newStatusesWithoutAll') as $key => $value)
+                                                        <option value="{{ $key }}">{{ $value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @elseif(!in_array(Auth::user()->role, config('constants.isAdmin')))
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.approvedRequested') as $key => $value)
+                                                        <option value="{{ $key }}">{{ $value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
+                                            @error('website_status')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
@@ -231,7 +158,8 @@
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="accommodation_id">Property Type</label>
-                                            <select class="form-control select1 @error('accommodation_id') is-invalid @enderror"
+                                            <select
+                                                class="form-control select1 @error('accommodation_id') is-invalid @enderror"
                                                 id="accommodation_id" name="accommodation_id">
                                                 @foreach ($accommodations as $key => $value)
                                                     <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -244,14 +172,14 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="used_for">Used For</label>
                                             <select class="form-control select1 @error('used_for') is-invalid @enderror"
                                                 id="used_for" name="used_for">
-                                                 @foreach (config('constants.accommodationType') as $key=>$value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
+                                                @foreach (config('constants.accommodationType') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('used_for')
@@ -261,7 +189,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="bedrooms">Bedrooms</label>
@@ -305,12 +233,13 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label for="builtup_area">Build-up Area <small>(For villa property type must enter the buil-up area)</small> </label>
+                                            <label for="builtup_area">Build-up Area <small>(For villa property type must
+                                                    enter the buil-up area)</small> </label>
                                             <div class="input-group">
-                                                
+
                                                 <input type="text" value="{{ old('builtup_area') }}"
                                                     class="form-control @error('builtup_area') is-invalid @enderror"
                                                     id="builtup_area" name="builtup_area">
@@ -322,7 +251,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="price">Price</label>
@@ -336,27 +265,13 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="currency">Currency</label>-->
-                                    <!--        <select class="form-control @error('currency') is-invalid @enderror"-->
-                                    <!--            id="currency" name="currency">-->
-                                    <!--            @foreach ($currencies as $key => $value)-->
-                                    <!--                <option value="{{ $value }}">{{ $value }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('currency')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
+                                    
 
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="category_id">Category</label>
-                                            <select class="form-control select1 @error('category_id') is-invalid @enderror"
+                                            <select
+                                                class="form-control select1 @error('category_id') is-invalid @enderror"
                                                 id="category_id" name="category_id">
                                                 @foreach ($categories as $key => $value)
                                                     <option value="{{ $value->id }}">{{ $value->name }}</option>
@@ -372,7 +287,8 @@
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="rental_period">Rental Period</label>
-                                            <select class="form-control select1 @error('rental_period') is-invalid @enderror"
+                                            <select
+                                                class="form-control select1 @error('rental_period') is-invalid @enderror"
                                                 id="rental_period" name="rental_period">
                                                 <option>Rental Period</option>
                                                 <option value="Monthly">Monthly</option>
@@ -415,14 +331,14 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="exclusive">Is Exclusive?</label>
                                             <select class="form-control select1 @error('exclusive') is-invalid @enderror"
                                                 id="exclusive" name="exclusive">
-                                                @foreach (config('constants.booleanOptions') as $key=>$value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
+                                                @foreach (config('constants.booleanOptions') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('exclusive')
@@ -432,13 +348,15 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="is_luxury_property">Luxury Property?</label>
-                                            <select class="form-control select1 @error('is_luxury_property') is-invalid @enderror" id="is_luxury_property" name="is_luxury_property">
-                                                @foreach (config('constants.booleanOptions') as $key=>$value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
+                                            <select
+                                                class="form-control select1 @error('is_luxury_property') is-invalid @enderror"
+                                                id="is_luxury_property" name="is_luxury_property">
+                                                @foreach (config('constants.booleanOptions') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('is_luxury_property')
@@ -448,7 +366,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="agent_id">Agent</label>
@@ -466,63 +384,15 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-2">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="is_feature">Is Feature?</label>-->
-                                    <!--        <select class="form-control select1 @error('is_feature') is-invalid @enderror"-->
-                                    <!--            id="is_feature" name="is_feature">-->
-                                    <!--            @foreach (config('constants.booleanOptions') as $key=>$value)-->
-                                    <!--            <option value="{{ $key }}">{{ $value }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('is_feature')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     
-                                    <!--<div class="col-sm-2">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="community_id">Community</label>-->
-                                    <!--        <select data-placeholder="Select community" style="width: 100%;"-->
-                                    <!--            class=" form-control select1 @error('community_id') is-invalid @enderror"-->
-                                    <!--            id="community_id" name="community_id" required>-->
-                                    <!--            <option value="">Select Community</option>-->
-                                    <!--            @foreach ($communities as $value)-->
-                                    <!--                <option value="{{ $value->id }}">{{ $value->name }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('community_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!--<div class="col-sm-2">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="sub_community_id">Sub Community</label>-->
-                                    <!--        <select data-placeholder="Select Sub Community" style="width: 100%;"-->
-                                    <!--            class=" form-control select1 @error('sub_community_id') is-invalid @enderror"-->
-                                    <!--            id="sub_community_id" name="sub_community_id">-->
-
-                                    <!--        </select>-->
-                                    <!--        @error('sub_community_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="is_furniture">Is Furnitue?</label>
-                                            <select class="form-control select1 @error('is_furniture') is-invalid @enderror"
+                                            <select
+                                                class="form-control select1 @error('is_furniture') is-invalid @enderror"
                                                 id="is_furniture" name="is_furniture">
-                                                @foreach (config('constants.furnitueOption') as $key=>$value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
+                                                @foreach (config('constants.furnitueOption') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('is_furniture')
@@ -532,22 +402,8 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-3">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="rating">Rating</label>-->
-                                    <!--        <input type="number" min="0" max="5"-->
-                                    <!--            value="{{ old('rating') }}"-->
-                                    <!--            class="form-control @error('rating') is-invalid @enderror" id="rating"-->
-                                    <!--            name="rating">-->
-
-                                    <!--        @error('rating')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                   <div class="col-sm-12">
+                                    
+                                    <div class="col-sm-12">
                                         <div class="form-group">
                                             <label for="description">Short Description</label>
                                             <textarea id="short_description" class="form-control @error('short_description') is-invalid @enderror"
@@ -589,7 +445,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label for="address">Address</label>
@@ -629,7 +485,8 @@
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="meta_keywords">Meta Keywords<small class="text-danger">(Multiple keywords separated with comas)</small></label>
+                                            <label for="meta_keywords">Meta Keywords<small class="text-danger">(Multiple
+                                                    keywords separated with comas)</small></label>
                                             <input type="text" value="{{ old('meta_keywords') }}"
                                                 class="form-control @error('meta_keywords') is-invalid @enderror"
                                                 id="meta_keywords" placeholder="Enter Meta Keywords"
@@ -653,46 +510,19 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="saleOffer">Sale Offer <small class="text-danger">(PreferSize  less than or equal 2 MB)</small>  </label>-->
-                                    <!--        <div class="custom-file  @error('saleOffer') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input" id="saleOffer" name="saleOffer" accept=".pdf" >-->
-                                    <!--            <label class="custom-file-label" for="saleOffer">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('saleOffer')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                            
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     
-                                    <!--<div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="floorplans">Floor Plan  <small class="text-danger">(Prefer Dimension800x600)</small></label>-->
-                                    <!--        <div class="custom-file  @error('floorplans') is-invalid @enderror">-->
-                                    <!--            <input  multiple type="file" class="custom-file-input" id="floorplans" name="floorplans[]" accept="image/*" multiple >-->
-                                    <!--            <label class="custom-file-label" for="floorplans">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('floorplans')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                            
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label for="mainImage">Main Image <small class="text-danger">(Prefer Dimension 600X300)</small> </label>
+                                            <label for="mainImage">Main Image <small class="text-danger">(Prefer Dimension
+                                                    600X300)</small> </label>
                                             <div class="custom-file  @error('mainImage') is-invalid @enderror">
-                                                <input type="file" class="custom-file-input  @error('mainImage') is-invalid @enderror" id="mainImage"
-                                                    name="mainImage" accept="image/*">
+                                                <input type="file"
+                                                    class="custom-file-input  @error('mainImage') is-invalid @enderror"
+                                                    id="mainImage" name="mainImage" accept="image/*">
                                                 <label class="custom-file-label" for="mainImage">Choose file</label>
                                             </div>
-                                            <img id="mainImagePreview" style="max-width: 100%; height: 100px; display: none;" />
+                                            <img id="mainImagePreview"
+                                                style="max-width: 100%; height: 100px; display: none;" />
                                             @error('mainImage')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -700,97 +530,98 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="youtube_video">Youtube Video Link</label>
                                             <input type="text" value="{{ old('youtube_video') }}"
-                                                class="form-control @error('youtube_video') is-invalid @enderror" id="youtube_video"
-                                                placeholder="Enter Youtube Video Link" name="youtube_video">
+                                                class="form-control @error('youtube_video') is-invalid @enderror"
+                                                id="youtube_video" placeholder="Enter Youtube Video Link"
+                                                name="youtube_video">
                                             @error('youtube_video')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
-                                            
+
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="subImages">Sub Images  <small class="text-danger">(Prefer Dimension800x400)</small> </label>-->
-                                    <!--        <div class="custom-file  @error('subImages') is-invalid @enderror">-->
-                                    <!--            <input multiple type="file" class="custom-file-input @error('subImages') is-invalid @enderror" id="subImages"-->
-                                    <!--                name="subImages[]" accept="image/*" multiple>-->
-                                    <!--            <label class="custom-file-label" for="subImages">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('subImages')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
                                     
-                                    
+
                                     <div class="col-sm-12">
                                         <div class="table-responsive">
                                             <table id="items" class="table table-no-more table-bordered mb-none ">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="4">
-                                                        <label for="subImages">Sub Images  <small class="text-danger">(Prefer Dimension800x400)</small> </label>
-                                                    </th>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="4">
+                                                            <label for="subImages">Sub Images <small
+                                                                    class="text-danger">(Prefer Dimension800x400)</small>
+                                                            </label>
+                                                        </th>
+                                                    </tr>
+                                                    <tr style="">
+                                                        <th>Image</th>
+                                                        <th>Title</th>
+                                                        <th>Order</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                    @error('subImages')
+                                                        <tr>
+                                                            <th colspan="4">
+                                                                @error('gallery')
+                                                                    <span class="invalid-feedback" role="alert">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+                                                                @error('subImages.*')
+                                                                    <span class="invalid-feedback" role="alert"
+                                                                        style="display: block">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+
+                                                            </th>
+                                                        </tr>
+                                                    @enderror
+                                                </thead>
+
+                                                <tr class="item-row" style="border-bottom: solid 1px black">
+                                                    <td>
+                                                        <div
+                                                            class="custom-file   @error('subImages') is-invalid @enderror">
+                                                            <input type="file"
+                                                                class="custom-file-input @error('subImages') is-invalid @enderror"
+                                                                id="subImages" name="subImages[0][file]" accept="image/*"
+                                                                onchange="previewImage(event)">
+                                                            <label class="custom-file-label" for="subImages">Choose
+                                                                file</label>
+
+                                                        </div>
+                                                        <img id="image-preview" src="#" alt="Image Preview"
+                                                            style="display: none;" height="100" />
+
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                            class="form-control @error('key') is-invalid @enderror"
+                                                            placeholder="Enter Title" name="subImages[0][title]">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0"
+                                                            class="form-control @error('value') is-invalid @enderror"
+                                                            placeholder="Enter Order" name="subImages[0][order]">
+                                                    </td>
+
+                                                    <td><a class="btn btn-block btn-primary btn-sm addrow updateRow0"
+                                                            href="javascript:;"><i class="fa fa-plus"
+                                                                aria-hidden="true"></i> Add</a>
+                                                    </td>
                                                 </tr>
-                                                <tr style="">
-                                                    <th>Image</th>
-                                                    <th>Title</th>
-                                                    <th>Order</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                                @error('subImages')
-                                                <tr>
-                                                    <th colspan="4">
-                                                        @error('gallery')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                        @error('subImages.*')
-                                                            <span class="invalid-feedback" role="alert" style="display: block">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                            
-                                                    </th>
-                                                </tr>
-                                                @enderror
-                                            </thead>
-        
-                                            <tr class="item-row" style="border-bottom: solid 1px black">
-                                                <td>
-                                                    <div class="custom-file   @error('subImages') is-invalid @enderror">
-                                                        <input type="file" class="custom-file-input @error('subImages') is-invalid @enderror" id="subImages" name="subImages[0][file]" accept="image/*" onchange="previewImage(event)">
-                                                        <label class="custom-file-label" for="subImages">Choose file</label>
-                                                       
-                                                    </div>
-                                                    <img id="image-preview" src="#" alt="Image Preview" style="display: none;" height="100"/>
-                                            
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control @error('key') is-invalid @enderror" placeholder="Enter Title" name="subImages[0][title]" >
-                                                </td>
-                                                <td>
-                                                    <input type="number" min="0" class="form-control @error('value') is-invalid @enderror" placeholder="Enter Order" name="subImages[0][order]" >
-                                                </td>
-                                               
-                                                <td><a class="btn btn-block btn-primary btn-sm addrow updateRow0" href="javascript:;"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
-                                                </td>
-                                            </tr>
-        
-                                        </table>
+
+                                            </table>
                                         </div>
                                     </div>
-                                    
+
                                     <!--<div class="col-sm-4">-->
                                     <!--    <div class="form-group">-->
                                     <!--        <label for="video">Video<small class="text-danger">(PreferSize  less than or equal 2 MB)</small> </label>-->
@@ -798,16 +629,18 @@
                                     <!--            <input type="file" class="custom-file-input" id="video" name="video" accept=".mp4, .mov, .ogg">-->
                                     <!--            <label class="custom-file-label" for="video">Choose file</label>-->
                                     <!--        </div>-->
-                                    <!--        @error('video')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                            
+                                    <!--        @error('video')
+        -->
+                                        <!--            <span class="invalid-feedback" role="alert">-->
+                                        <!--                <strong>{{ $message }}</strong>-->
+                                        <!--            </span>-->
+                                        <!--
+    @enderror-->
+
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
-                                    
+
+
                                     <!--<div class="col-sm-4">-->
                                     <!--    <div class="form-group">-->
                                     <!--        <label for="qr">QR</label>-->
@@ -816,61 +649,75 @@
                                     <!--                name="qr" accept="image/*" >-->
                                     <!--            <label class="custom-file-label" for="qr">Choose file</label>-->
                                     <!--        </div>-->
-                                    <!--        @error('qr')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
+                                    <!--        @error('qr')
+        -->
+                                        <!--            <span class="invalid-feedback" role="alert">-->
+                                        <!--                <strong>{{ $message }}</strong>-->
+                                        <!--            </span>-->
+                                        <!--
+    @enderror-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
+
 
 
                                     <!--<div class="col-sm-4">-->
                                     <!--    <div class="form-group">-->
                                     <!--        <label for="developer_id">Developer</label>-->
                                     <!--        <select data-placeholder="Select Developer" style="width: 100%;"-->
-                                    <!--            class=" form-control select1 @error('developer_id') is-invalid @enderror"-->
+                                    <!--            class=" form-control select1 @error('developer_id')
+is-invalid
+@enderror"-->
                                     <!--            id="developer_id" name="developer_id">-->
-                                    <!--            @foreach ($developers as $value)-->
+                                    <!--            @foreach ($developers as $value)
+    -->
                                     <!--                <option value="{{ $value->id }}">{{ $value->name }}</option>-->
-                                    <!--            @endforeach-->
+                                    <!--
+    @endforeach-->
                                     <!--        </select>-->
-                                    <!--        @error('developer_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
+                                    <!--        @error('developer_id')
+        -->
+                                        <!--            <span class="invalid-feedback" role="alert">-->
+                                        <!--                <strong>{{ $message }}</strong>-->
+                                        <!--            </span>-->
+                                        <!--
+    @enderror-->
                                     <!--    </div>-->
                                     <!--</div>-->
-                                    
 
-                                    
+
+
 
                                     <!--<div class="col-sm-3">-->
                                     <!--    <div class="form-group">-->
                                     <!--        <label for="year_build_text">Year Build Text</label>-->
                                     <!--        <input type="text" value="{{ old('year_build_text') }}" class="form-control @error('year_build_text') is-invalid @enderror" id="year_build_text" placeholder="Enter Year Build Next" name="year_build_text">-->
-                                    <!--        @error('year_build_text')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
+                                    <!--        @error('year_build_text')
+        -->
+                                        <!--            <span class="invalid-feedback" role="alert">-->
+                                        <!--                <strong>{{ $message }}</strong>-->
+                                        <!--            </span>-->
+                                        <!--
+    @enderror-->
                                     <!--    </div>-->
                                     <!--</div> -->
-                                    
+
 
                                     <!--<div class="col-sm-4">-->
                                     <!--    <div class="form-group">-->
                                     <!--        <label for="cheque_frequency">Price Unit</label>-->
                                     <!--        <input type="text" value="{{ old('cheque_frequency') }}"-->
-                                    <!--            class="form-control @error('cheque_frequency') is-invalid @enderror"-->
+                                    <!--            class="form-control @error('cheque_frequency')
+is-invalid
+@enderror"-->
                                     <!--            id="cheque_frequency" name="cheque_frequency">-->
-                                    <!--        @error('cheque_frequency')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
+                                    <!--        @error('cheque_frequency')
+        -->
+                                        <!--            <span class="invalid-feedback" role="alert">-->
+                                        <!--                <strong>{{ $message }}</strong>-->
+                                        <!--            </span>-->
+                                        <!--
+    @enderror-->
                                     <!--    </div>-->
                                     <!--</div>-->
                                     <!--<div class="col-sm-4">-->
@@ -878,21 +725,25 @@
                                     <!--        <label for="offer_type_id">Offer Type</label>-->
                                     <!--        <select class="form-control select1 @error('offer_type_id') is-invalid @enderror"-->
                                     <!--            id="offer_type_id" name="offer_type_id">-->
-                                    <!--            @foreach ($offerTypes as $offerType)-->
+                                    <!--            @foreach ($offerTypes as $offerType)
+    -->
                                     <!--                <option value="{{ $offerType->id }}">{{ $offerType->name }}</option>-->
-                                    <!--            @endforeach-->
+                                    <!--
+    @endforeach-->
                                     <!--        </select>-->
-                                    <!--        @error('offer_type_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
+                                    <!--        @error('offer_type_id')
+        -->
+                                        <!--            <span class="invalid-feedback" role="alert">-->
+                                        <!--                <strong>{{ $message }}</strong>-->
+                                        <!--            </span>-->
+                                        <!--
+    @enderror-->
                                     <!--    </div>-->
                                     <!--</div>-->
 
 
 
-                                    
+
                                 </div>
                             </div>
                             <!-- /.card-body -->
@@ -992,209 +843,223 @@
     </script>
 @endsection
 @section('js')
-<script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    $(document).ready(function() {
-        $('#community_id').on('change', function(e) {
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(document).ready(function() {
+            $('#community_id').on('change', function(e) {
+                var category_id = e.target.value;
+                $.ajax({
+                    url: "{{ route('dashboard.community.subcommunities') }}",
+                    type: "POST",
+                    data: {
+                        category_id: category_id
+                    },
+                    success: function(data) {
+                        $('#sub_community_id').empty();
+                        $.each(data.subcategories, function(index, subcategory) {
+                            $('#sub_community_id').append('<option value="' +
+                                subcategory.id + '">' + subcategory.name +
+                                '</option>');
+                        })
+                    }
+                })
+            });
+        });
+
+        $('#main_community_id').on('change', function(e) {
             var category_id = e.target.value;
             $.ajax({
-                url: "{{ route('dashboard.community.subcommunities') }}",
+                url: "{{ route('dashboard.community.projects') }}",
                 type: "POST",
                 data: {
                     category_id: category_id
                 },
                 success: function(data) {
-                    $('#sub_community_id').empty();
-                    $.each(data.subcategories, function(index, subcategory) {
-                        $('#sub_community_id').append('<option value="' + subcategory.id + '">' + subcategory.name + '</option>');
+                    $('#project_id').empty();
+                    $('#project_id').append('<option value=""></option>');
+                    $.each(data.projects, function(index, project) {
+                        $('#project_id').append('<option value="' + project.id + '">' + project
+                            .title + '</option>');
                     })
                 }
             })
         });
-    });
-    
-    $('#main_community_id').on('change', function(e) {
-        var category_id = e.target.value;
-        $.ajax({
-            url: "{{ route('dashboard.community.projects') }}",
-            type: "POST",
-            data: {
-                category_id: category_id
-            },
-            success: function(data) {
-                $('#project_id').empty();
-                $('#project_id').append('<option value=""></option>');
-                $.each(data.projects, function(index, project) {
-                    $('#project_id').append('<option value="' + project.id + '">' + project.title + '</option>');
-                })
+
+
+        function updateMapWithNewCoords(lat, lng) {
+            // Convert lat and lng to numbers and check if they are finite
+            const latitude = parseFloat(lat);
+            const longitude = parseFloat(lng);
+
+            if (!isFinite(latitude) || !isFinite(longitude)) {
+                console.error('Invalid coordinates:', latitude, longitude);
+                return; // Or set default coordinates
             }
-        })
-    });
-    
-    
-    function updateMapWithNewCoords(lat, lng) {
-        // Convert lat and lng to numbers and check if they are finite
-        const latitude = parseFloat(lat);
-        const longitude = parseFloat(lng);
-    
-        if (!isFinite(latitude) || !isFinite(longitude)) {
-            console.error('Invalid coordinates:', latitude, longitude);
-            return; // Or set default coordinates
+
+            const locationInputs = document.getElementsByClassName("map-input");
+
+            for (let i = 0; i < locationInputs.length; i++) {
+                const fieldKey = locationInputs[i].id.replace("-input", "");
+                const map = new google.maps.Map(document.getElementById(fieldKey + '-map'), {
+                    center: {
+                        lat: latitude,
+                        lng: longitude
+                    },
+                    zoom: 13
+                });
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: {
+                        lat: latitude,
+                        lng: longitude
+                    },
+                });
+
+                setLocationCoordinates(fieldKey, latitude, longitude);
+                marker.setVisible(true);
+            }
         }
-    
-        const locationInputs = document.getElementsByClassName("map-input");
-    
-        for (let i = 0; i < locationInputs.length; i++) {
-            const fieldKey = locationInputs[i].id.replace("-input", "");
-            const map = new google.maps.Map(document.getElementById(fieldKey + '-map'), {
-                center: { lat: latitude, lng: longitude },
-                zoom: 13
-            });
-            const marker = new google.maps.Marker({
-                map: map,
-                position: { lat: latitude, lng: longitude },
-            });
-    
-            setLocationCoordinates(fieldKey, latitude, longitude);
-            marker.setVisible(true);
+
+
+
+        $('#project_id').on('change', function(e) {
+            var project_id = e.target.value;
+
+            $.ajax({
+                url: "{{ route('dashboard.project.ajax') }}",
+                type: "POST",
+                data: {
+                    project_id: project_id
+                },
+                success: function(data) {
+                    $("#address-input").val(data.project.address)
+                    $("#address-latitude").val(data.project.address_latitude)
+                    $("#address-longitude").val(data.project.address_longitude)
+                    $("#permit_number").val(data.project.permmit_number);
+                    $('#amenities').val(data.amenities).trigger('change');
+                    updateMapWithNewCoords(data.project.address_latitude, data.project
+                        .address_longitude);
+                }
+            })
+
+            $.ajax({
+                url: "{{ route('dashboard.project.subprojects') }}",
+                type: "POST",
+                data: {
+                    project_id: project_id
+                },
+                success: function(data) {
+                    $('#sub_project_id').empty();
+                    $('#sub_project_id').append('<option value=""></option>');
+                    $.each(data.subProjects, function(index, project) {
+                        $('#sub_project_id').append('<option value="' + project.id + '">' +
+                            project.title + '</option>');
+                    })
+                }
+            })
+        });
+
+        $('#sub_project_id').on('change', function(e) {
+            var sub_project_id = e.target.value;
+            $.ajax({
+                url: "{{ route('dashboard.project.ajax') }}",
+                type: "POST",
+                data: {
+                    project_id: sub_project_id
+                },
+                success: function(data) {
+                    console.log(data.project.starting_price)
+                    $("#bedrooms").val(data.project.bedrooms).trigger('change');
+                    $("#price").val(data.project.starting_price);
+                    $("#area").val(data.project.area).trigger('change');
+                    $("#builtup_area").val(data.project.builtup_area).trigger('change');
+                    $("#accommodation_id").val(data.project.accommodation_id).trigger('change');
+
+                }
+            })
+        });
+    </script>
+
+    <script type="text/javascript">
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('image-preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
         }
-    }
 
-
-
-    $('#project_id').on('change', function(e) {
-        var project_id = e.target.value;
-        
-        $.ajax({
-            url: "{{ route('dashboard.project.ajax') }}",
-            type: "POST",
-            data: {
-                project_id: project_id
-            },
-            success: function(data) {
-                $("#address-input").val(data.project.address)
-                $("#address-latitude").val(data.project.address_latitude)
-                $("#address-longitude").val(data.project.address_longitude)
-                $("#permit_number").val(data.project.permmit_number);
-                $('#amenities').val(data.amenities).trigger('change');
-                updateMapWithNewCoords(data.project.address_latitude,data.project.address_longitude);
-            }
-        })
-        
-        $.ajax({
-            url: "{{ route('dashboard.project.subprojects') }}",
-            type: "POST",
-            data: {
-                project_id: project_id
-            },
-            success: function(data) {
-                $('#sub_project_id').empty();
-                $('#sub_project_id').append('<option value=""></option>');
-                $.each(data.subProjects, function(index, project) {
-                    $('#sub_project_id').append('<option value="' + project.id + '">' + project.title + '</option>');
-                })
-            }
-        })
-    });
-    
-    $('#sub_project_id').on('change', function(e) {
-        var sub_project_id = e.target.value;
-        $.ajax({
-            url: "{{ route('dashboard.project.ajax') }}",
-            type: "POST",
-            data: {
-                project_id: sub_project_id
-            },
-            success: function(data) {
-                console.log(data.project.starting_price)
-                $("#bedrooms").val(data.project.bedrooms).trigger('change');
-                $("#price").val(data.project.starting_price);
-                $("#area").val(data.project.area).trigger('change');
-                $("#builtup_area").val(data.project.builtup_area).trigger('change');
-                $("#accommodation_id").val(data.project.accommodation_id).trigger('change');
-                
-            }
-        })
-    });
-    
-</script>
-
-<script type="text/javascript">
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('image-preview');
-            output.src = reader.result;
-            output.style.display = 'block';
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    $(document).on('change', '.file-upload', function() {
-        var previewId = $(this).data('target');
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#' + previewId).attr('src', e.target.result);
-            $('#' + previewId).show();
-        };
-        reader.readAsDataURL(this.files[0]);
-    });
-
-
-    $(document).ready(function() {
-        var i = 1;
-        var count = 0;
-        $(document).on('click', '.addrow', function() {
-            $(this).text('x Remove');
-            $(this).attr('class', 'btn btn-danger btn-sm del');
-            $(".item-row:last").find('.mybtn').hide();
-            i++;
-            count++;
-            var id = count;
-        
-            var newRow = '<tr class="item-row" style="border-bottom: solid 1px black">' +
-                         '<td class="main_td">' +
-                         '  <input type="file" accept="image/*" class="form-control file-upload" data-target="previewImage' + id + '" name="subImages[' + id +'][file]" required>' +
-                         '  <img id="previewImage' + id + '" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />' +
-                         '</td>' +
-                         '<td class="main_td"><input type="text" class="form-control" placeholder="Enter Title" name="subImages[' + id +'][title]"></td>' +
-                         '<td class="main_td"><input type="number" min="0" class="form-control" placeholder="Enter Order" name="subImages[' + id +'][order]"></td>' +
-                         '<td data-title="Action" class="main_td"> <button type="button" class="btn btn-primary btn-sm addrow" id="updateRow' +  id +  '">+ Add</button> ' +
-                         '  <a class="Remove mybtn btn btn-danger btn-sm" href="javascript:;" title="Remove row"> x Remove</a>' +
-                         '</td>' +
-                         '</tr>';
-        
-            $(".item-row:last").after(newRow);
+        $(document).on('change', '.file-upload', function() {
+            var previewId = $(this).data('target');
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#' + previewId).attr('src', e.target.result);
+                $('#' + previewId).show();
+            };
+            reader.readAsDataURL(this.files[0]);
         });
 
-        $(document).on('click', '.del', function() {
-            $(this).parent().parent().remove();
-        });
-        $(document).on('click', '.Remove', function() {
-            $(this).parent().parent().remove();
-            $(".del").eq(-1).text('+ Add');
-            $('.del').eq(-1).attr('class', 'btn btn-primary btn-sm addrow');
-        });
-    })
-    
-    
-    document.getElementById('mainImage').addEventListener('change', function(event) {
-        showPreview(event, 'mainImagePreview');
-    });
-        
-    function showPreview(event, previewId) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById(previewId);
-            output.src = reader.result;
-            output.style.display = 'block'; // Show the image element
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
 
-</script>
+        $(document).ready(function() {
+            var i = 1;
+            var count = 0;
+            $(document).on('click', '.addrow', function() {
+                $(this).text('x Remove');
+                $(this).attr('class', 'btn btn-danger btn-sm del');
+                $(".item-row:last").find('.mybtn').hide();
+                i++;
+                count++;
+                var id = count;
+
+                var newRow = '<tr class="item-row" style="border-bottom: solid 1px black">' +
+                    '<td class="main_td">' +
+                    '  <input type="file" accept="image/*" class="form-control file-upload" data-target="previewImage' +
+                    id + '" name="subImages[' + id + '][file]" required>' +
+                    '  <img id="previewImage' + id +
+                    '" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />' +
+                    '</td>' +
+                    '<td class="main_td"><input type="text" class="form-control" placeholder="Enter Title" name="subImages[' +
+                    id + '][title]"></td>' +
+                    '<td class="main_td"><input type="number" min="0" class="form-control" placeholder="Enter Order" name="subImages[' +
+                    id + '][order]"></td>' +
+                    '<td data-title="Action" class="main_td"> <button type="button" class="btn btn-primary btn-sm addrow" id="updateRow' +
+                    id + '">+ Add</button> ' +
+                    '  <a class="Remove mybtn btn btn-danger btn-sm" href="javascript:;" title="Remove row"> x Remove</a>' +
+                    '</td>' +
+                    '</tr>';
+
+                $(".item-row:last").after(newRow);
+            });
+
+            $(document).on('click', '.del', function() {
+                $(this).parent().parent().remove();
+            });
+            $(document).on('click', '.Remove', function() {
+                $(this).parent().parent().remove();
+                $(".del").eq(-1).text('+ Add');
+                $('.del').eq(-1).attr('class', 'btn btn-primary btn-sm addrow');
+            });
+        })
+
+
+        document.getElementById('mainImage').addEventListener('change', function(event) {
+            showPreview(event, 'mainImagePreview');
+        });
+
+        function showPreview(event, previewId) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById(previewId);
+                output.src = reader.result;
+                output.style.display = 'block'; // Show the image element
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
 @endsection

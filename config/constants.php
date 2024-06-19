@@ -184,6 +184,13 @@ return [
         'active' => 'Active',
         'Inactive' => 'Inactive'
     ],
+
+    'available' => 'available',
+    'NA' => 'NA',
+    'requested' => 'requested',
+    'rejected' => 'rejected',
+
+
     'Available' => 'Available',
     'NA' => 'NA',
     'Requested' => 'Requested',
@@ -194,6 +201,12 @@ return [
         'NA' => 'NA',
         'Requested' => 'Requested',
         'Rejected' => 'Rejected',
+    ],
+    'newStatusesWithoutAll' =>  [
+        'available' => 'Available',
+        'NA' => 'NA',
+        'requested' => 'Requested',
+        'rejected' => 'Rejected',
     ],
     'statusesOption' => [
         '' => 'All',

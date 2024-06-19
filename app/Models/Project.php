@@ -54,7 +54,6 @@ class Project extends Model implements HasMedia
         'clusterPlan',
         'mainImage',
         'video',
-        'websiteStatus',
         'saleOffer',
         'interiorGallery',
         'exteriorGallery',
@@ -70,18 +69,18 @@ class Project extends Model implements HasMedia
     /**
      * GET Attributes
      */
-    public function getWebsiteStatusAttribute()
-    {
-        if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
-            return config('constants.Available');
-        } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
-            return config('constants.NA');
-        } elseif ($this->is_approved == config('constants.rejected')) {
-            return config('constants.Rejected');
-        } elseif ($this->is_approved == config('constants.requested')) {
-            return config('constants.Requested');
-        }
-    }
+    // public function getWebsiteStatusAttribute()
+    // {
+    //     if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
+    //         return config('constants.Available');
+    //     } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
+    //         return config('constants.NA');
+    //     } elseif ($this->is_approved == config('constants.rejected')) {
+    //         return config('constants.Rejected');
+    //     } elseif ($this->is_approved == config('constants.requested')) {
+    //         return config('constants.Requested');
+    //     }
+    // }
 
     public static function getNextReferenceNumber($value)
     {
@@ -456,6 +455,10 @@ class Project extends Model implements HasMedia
     {
         return $query->where('is_new_launch', '1');
     }
+    public function logActivity()
+    {
+        return $this->hasMany(LogActivity::class, 'subject_id', 'id')->orderBy('id', 'desc');
+    }
 
     public static function getCountsByDate($startDate, $endDate)
     {
@@ -483,6 +486,20 @@ class Project extends Model implements HasMedia
             ')
             ->first();
     }
+    public static function getCountsByWebsiteStatus($startDate, $endDate)
+    {
+        return DB::table('projects')
+            ->where('is_parent_project', true)
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN website_status = "available" THEN 1 END) as available,
+                COUNT(CASE WHEN website_status = "NA" THEN 1 END) as NA,
+                COUNT(CASE WHEN website_status = "rejected" THEN 1 END) as rejected,
+                COUNT(CASE WHEN website_status = "requested" THEN 1 END) as requested
+            ')
+            ->first();
+    }
 
 
     public static function getCountsByPermitNumber($startDate, $endDate)
@@ -493,16 +510,16 @@ class Project extends Model implements HasMedia
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
             
-            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NULL THEN 1 END) as without_permit_available,
-            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NULL THEN 1 END) as without_permit_NA,
-            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NULL THEN 1 END) as without_permit_rejected,
-            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NULL THEN 1 END) as without_permit_requested,
+            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NULL AND (qr_link IS NULL OR qr_link ="")  THEN 1 END) as without_permit_available,
+            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NULL AND (qr_link IS NULL OR qr_link = "") THEN 1 END) as without_permit_NA,
+            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NULL  AND (qr_link IS NULL OR qr_link ="")  THEN 1 END) as without_permit_rejected,
+            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NULL AND (qr_link IS NULL OR qr_link ="") THEN 1 END) as without_permit_requested,
 
 
-            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NOT NULL THEN 1 END) as with_permit_available,
-            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NOT NULL THEN 1 END) as with_permit_NA,
-            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NOT NULL THEN 1 END) as with_permit_rejected,
-            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NOT NULL THEN 1 END) as with_permit_requested
+            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_available,
+            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_NA,
+            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_rejected,
+            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_requested
 
 
         ')->first();
@@ -538,14 +555,6 @@ class Project extends Model implements HasMedia
 
     public function scopeWebsiteStatus($query, $status)
     {
-        if ($status == config('constants.Available')) {
-            $query->active()->approved();
-        } elseif ($status == config('constants.NA')) {
-            $query->deactive()->approved();
-        } elseif ($status == config('constants.Requested')) {
-            $query->requested();
-        } elseif ($status == config('constants.Rejected')) {
-            $query->rejected();
-        }
+        return $query->where('website_status', $status);
     }
 }

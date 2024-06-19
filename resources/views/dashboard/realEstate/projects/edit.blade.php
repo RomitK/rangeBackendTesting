@@ -76,7 +76,7 @@
 
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label for="projectOrder">Project Order {{ $project->projectOrder }}</label>
+                                            <label for="projectOrder">Project Order</label>
                                             <input type="number"
                                                 class="form-control @error('projectOrder') is-invalid @enderror"
                                                 id="projectOrder" name="projectOrder" min="1"
@@ -91,27 +91,27 @@
 
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label for="is_approved">Approval Status</label>
+                                            <label for="website_status">Wesbite Status</label>
                                             @if (in_array(Auth::user()->role, config('constants.isAdmin')))
-                                                <select class="form-control @error('is_approved') is-invalid @enderror"
-                                                    id="is_approved" name="is_approved">
-                                                    @foreach (config('constants.approvedRejected') as $key => $value)
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.newStatusesWithoutAll') as $key => $value)
                                                         <option value="{{ $key }}"
-                                                            @if ($key === $project->is_approved) selected @endif>
+                                                            @if ($community->website_status == $key) selected @endif>
                                                             {{ $value }}</option>
                                                     @endforeach
                                                 </select>
                                             @elseif(!in_array(Auth::user()->role, config('constants.isAdmin')))
-                                                <select class="form-control @error('is_approved') is-invalid @enderror"
-                                                    id="is_approved" name="is_approved">
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
                                                     @foreach (config('constants.approvedRequested') as $key => $value)
                                                         <option value="{{ $key }}"
-                                                            @if ($key === $project->is_approved) selected @endif>
+                                                            @if ($community->website_status == $key) selected @endif>
                                                             {{ $value }}</option>
                                                     @endforeach
                                                 </select>
                                             @endif
-                                            @error('is_approved')
+                                            @error('website_status')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
@@ -146,6 +146,7 @@
                                             @enderror
                                         </div>
                                     </div>
+                                    {{-- 
                                     <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="reference_number">Reference Number</label>
@@ -160,7 +161,7 @@
                                         </div>
                                     </div>
 
-
+                                    
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="status">Status</label>
@@ -178,7 +179,7 @@
                                                 </span>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div> --}}
 
 
                                     <div class="col-sm-2">
@@ -264,7 +265,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="col-sm-1">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="used_for">Used For</label>
                                             <select class="form-control select1 @error('used_for') is-invalid @enderror"

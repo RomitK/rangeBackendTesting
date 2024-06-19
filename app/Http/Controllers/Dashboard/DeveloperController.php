@@ -16,15 +16,21 @@ use App\Models\{
     Developer,
     TagCategory,
     MetaDetail,
-    Project
+    Project,
+    LogActivity
 };
 use App\Jobs\{
-    DeveloperExportAndEmailData
+    DeveloperExportAndEmailData,
+    DeveloperLogExportAndEmailData
 };
 use Carbon\Carbon;
+use App\Repositories\Contracts\DeveloperRepositoryInterface;
+
 class DeveloperController extends Controller
 {
-    function __construct()
+    protected $developerRepository;
+
+    function __construct(DeveloperRepositoryInterface $developerRepository)
     {
         $this->middleware(function ($request, $next) {
             // Check if the user has the "real_estate" permission
@@ -46,6 +52,8 @@ class DeveloperController extends Controller
 
             return $next($request);
         });
+
+        $this->developerRepository = $developerRepository;
     }
     /**
      * Display a listing of the resource.
@@ -54,85 +62,23 @@ class DeveloperController extends Controller
      */
     public function index(Request $request)
     {
-        $page_size = 25;
-        $current_page = isset($request->item) ? $request->item : $page_size;
-        if (isset($request->page)) {
-            $sr_no_start = ($request->page * $current_page) - $current_page + 1;
+        $result = $this->developerRepository->filterData($request);
+
+        if ($request->has('export')) {
+            // Handle export scenario
+            return $result; // This will return the JSON response from your repository method
         } else {
-            $sr_no_start = 1;
+            // Handle normal pagination scenario
+            $developers = $result['developers'];
+            $current_page = $result['current_page'];
+            $sr_no_start = $result['sr_no_start'];
+
+            return view('dashboard.realEstate.developers.index', compact(
+                'developers',
+                'current_page',
+                'sr_no_start'
+            ));
         }
-
-
-        $collection = Developer::with('user');
-
-        if (isset($request->status)) {
-            $collection->where('status', $request->status);
-        }
-        if (isset($request->website_status)) {
-            $collection->WebsiteStatus($request->website_status);
-        }
-        if (isset($request->keyword)) {
-            $keyword = $request->keyword;
-            $collection->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%$keyword%");
-            });
-        }
-        if (isset($request->is_approved)) {
-            $collection->where('is_approved', $request->is_approved);
-        }
-
-        if (isset($request->data_range_input)) {
-            $dateRange = $request->data_range_input;
-            // Use explode to split the date range by " - "
-            $dates = explode(' - ', $dateRange);
-            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
-            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
-
-            $startDate = Carbon::parse($dates[0]);
-            $endDate = Carbon::parse($dates[1])->endOfDay();
-
-            $collection->whereBetween('created_at', [$startDate, $endDate]);
-        }
-
-
-        if (isset($request->orderby)) {
-            $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
-            $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $collection = $collection->orderByRaw('ISNULL(developerOrder)')->orderBy($orderBy, $direction);
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                DeveloperExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $developers = $collection->paginate($current_page);
-            }
-        } else {
-
-            $collection = $collection->latest();
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                DeveloperExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $developers = $collection->paginate($current_page);
-            }
-        }
-
-        return view('dashboard.realEstate.developers.index', compact(
-            'developers',
-            'sr_no_start',
-            'current_page'
-        ));
     }
 
     /**
@@ -142,17 +88,9 @@ class DeveloperController extends Controller
      */
     public function create()
     {
-        $tags = TagCategory::active()->developerTag()->orderBy('id', 'desc')->get();
-        return view('dashboard.realEstate.developers.create', compact('tags'));
+        return view('dashboard.realEstate.developers.create');
     }
-    public function mainImage()
-    {
-        foreach (Developer::where('logo_image', null)->latest()->get() as $developer) {
-            $developer->logo_image = $developer->logo;
-            $developer->save();
-            echo "developer-" . $developer->id;
-        }
-    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -162,76 +100,14 @@ class DeveloperController extends Controller
     public function store(DeveloperRequest $request)
     {
         try {
-            $developer = new Developer;
-            $developer->name = $request->name;
-            $developer->status = $request->status;
-            $developer->display_on_home = $request->display_on_home;
-            $developer->developerOrder = $request->developerOrder;
-            $developer->user_id = Auth::user()->id;
-            // $developer->orderBy = $request->orderBy;
-            $developer->short_description = $request->short_description;
-            $developer->long_description = $request->long_description;
-            $developer->meta_title = $request->meta_title;
-            $developer->meta_description = $request->meta_description;
-            $developer->meta_keywords = $request->meta_keywords;
 
-            if ($request->hasFile('logo')) {
-                $logo =  $request->file('logo');
-                $ext = $logo->getClientOriginalExtension();
-                $logoName =  Str::slug($request->name) . '_logo.' . $ext;
-                $developer->addMediaFromRequest('logo')->usingFileName($logoName)->toMediaCollection('logos', 'developerFiles');
-            }
-            if ($request->hasFile('image')) {
-                $img =  $request->file('image');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '_image.' . $ext;
-                $developer->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'developerFiles');
-            }
-            if ($request->hasFile('video')) {
-                $video =  $request->file('video');
-                $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->name) . '.' . $ext;
-                $developer->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'developerFiles');
-            }
-            if ($request->has('gallery')) {
-                foreach ($request->gallery as $key => $img) {
-                    if (array_key_exists("file", $img) && $img['file']) {
-                        $title = $img['title'] ?? $request->name;
-                        $order =  $img['order'] ?? null;
-
-                        $developer->addMedia($img['file'])
-                            ->withCustomProperties([
-                                'title' => $title,
-                                'order' => $order
-                            ])
-                            ->toMediaCollection('gallery', 'developerFiles');
-                    }
-                }
-            }
-
-            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
-                $developer->is_approved = config('constants.approved');
-                $developer->approval_id = Auth::user()->id;
-            } else {
-                //$developer->is_approved = config('constants.requested' );
-                $developer->is_approved = "requested";
-            }
-
-            $developer->updated_by = Auth::user()->id;
-            $developer->save();
-
-            $developer->logo_image = $developer->logo;
-            $developer->save();
-            if ($request->has('tagIds')) {
-                foreach ($request->tagIds as $tag) {
-                    $developer->tags()->create(['tag_category_id' => $tag]);
-                }
-            }
+            $result = $this->developerRepository->storeData($request);
 
             return response()->json([
-                'success' => true,
-                'message' => 'Developer has been created successfully.',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.developers.index'),
+                'developer_id' => $result['developer_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
             return response()->json([
@@ -252,7 +128,22 @@ class DeveloperController extends Controller
     {
         //
     }
+    public function logs(Developer $developer, Request $request)
+    {
+        if (isset($request->export)) {
+            $data = [
+                'email' => Auth::user()->email,
+                'userName' => Auth::user()->name,
+                'developer_id' => $developer->id, // Example of passing the developer ID
+            ];
 
+            DeveloperLogExportAndEmailData::dispatch($data, $developer);
+
+            return redirect()->route('dashboard.developers.logs', $developer->id)->with('success', 'Please Check Email, Log History has been sent');
+        } else {
+            return view('dashboard.realEstate.developers.details.index', compact('developer'));
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -261,8 +152,7 @@ class DeveloperController extends Controller
      */
     public function edit(Developer $developer)
     {
-        $tags = TagCategory::active()->developerTag()->orderBy('id', 'desc')->get();
-        return view('dashboard.realEstate.developers.edit', compact('developer', 'tags'));
+        return view('dashboard.realEstate.developers.edit', compact('developer'));
     }
 
     /**
@@ -274,106 +164,16 @@ class DeveloperController extends Controller
      */
     public function update(DeveloperRequest $request, Developer $developer)
     {
-        DB::beginTransaction();
         try {
-            $developer->name = $request->name;
-            $developer->status = $request->status;
-            $developer->display_on_home = $request->display_on_home;
-            $developer->developerOrder = $request->developerOrder;
-            $developer->short_description = $request->short_description;
-            // $developer->orderBy = $request->orderBy;
-            $developer->long_description = $request->long_description;
-            $developer->meta_title = $request->meta_title;
-            $developer->meta_description = $request->meta_description;
-            $developer->meta_keywords = $request->meta_keywords;
-
-
-            if ($request->hasFile('logo')) {
-                $developer->clearMediaCollection('logos');
-                $logo =  $request->file('logo');
-                $ext = $logo->getClientOriginalExtension();
-                $logoName =  Str::slug($request->name) . '_logo.' . $ext;
-                $developer->addMediaFromRequest('logo')->usingFileName($logoName)->toMediaCollection('logos', 'developerFiles');
-            }
-            if ($request->hasFile('image')) {
-                $developer->clearMediaCollection('images');
-                $img =  $request->file('image');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '_image.' . $ext;
-                $developer->addMediaFromRequest('image')->usingFileName($imageName)->toMediaCollection('images', 'developerFiles');
-            }
-            if ($request->hasFile('video')) {
-                $developer->clearMediaCollection('videos');
-                $video =  $request->file('video');
-                $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->name) . '.' . $ext;
-                $developer->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'developerFiles');
-            }
-
-            if ($request->has('gallery')) {
-                foreach ($request->gallery as $img) {
-                    $title = $img['title'] ?? $request->name;
-                    $order =  $img['order'] ?? null;
-
-                    if ($img['old_gallery_id'] > 0) {
-
-                        $mediaItem = Media::find($img['old_gallery_id']);
-                        $mediaItem->setCustomProperty('title', $title);
-                        $mediaItem->setCustomProperty('order', $order);
-                        $mediaItem->save();
-                    } else {
-                        if (array_key_exists("file", $img) && $img['file']) {
-                            $developer->addMedia($img['file'])
-                                ->withCustomProperties([
-                                    'title' => $title,
-                                    'order' => $order
-                                ])
-                                ->toMediaCollection('gallery', 'developerFiles');
-                        }
-                    }
-                }
-            }
-            // if(in_array(Auth::user()->role, config('constants.isAdmin'))){
-            //     $developer->approval_id = Auth::user()->id;
-            // }
-
-            // $developer->is_approved = $request->is_approved;
-
-
-
-
-            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
-                $developer->approval_id = Auth::user()->id;
-
-                if (in_array($request->is_approved, ["approved", "rejected"])) {
-                    $developer->is_approved = $request->is_approved;
-                }
-            } else {
-                $developer->is_approved = "requested";
-                $developer->approval_id = null;
-            }
-            $developer->updated_by = Auth::user()->id;
-
-            $developer->save();
-
-            $developer->logo_image = $developer->logo;
-            $developer->save();
-
-            if ($request->has('tagIds')) {
-                $developer->tags()->delete();
-                foreach ($request->tagIds as $tag) {
-                    $developer->tags()->create(['tag_category_id' => $tag]);
-                }
-            }
-
-            Project::where('developer_id', $developer->id)->update(['updated_brochure' => 0]);
-            DB::commit();
+            $result = $this->developerRepository->updateData($request, $developer);
             return response()->json([
-                'success' => true,
-                'message' => 'Developer has been updated successfully.',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.developers.index'),
+                'developer_id' => $result['developer_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
+
             return response()->json([
                 'success' => false,
                 'message' => $error->getMessage(),
@@ -381,6 +181,7 @@ class DeveloperController extends Controller
             ]);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -391,7 +192,6 @@ class DeveloperController extends Controller
     public function destroy(Developer $developer)
     {
         try {
-            $developer->tags()->delete();
             $developer->delete();
 
             return redirect()->route('dashboard.developers.index')->with('success', 'Developer has been deleted successfully');
@@ -424,19 +224,14 @@ class DeveloperController extends Controller
     }
     public function updateMeta(DeveloperMetaRequest $request, Developer $developer)
     {
-        DB::beginTransaction();
         try {
-            $developer->slug = $request->slug;
-            $developer->meta_title = $request->meta_title;
-            $developer->meta_description = $request->meta_description;
-            $developer->meta_keywords = $request->meta_keywords;
-            $developer->save();
-            DB::commit();
+            $result = $this->developerRepository->updateMetaData($request, $developer);
 
             return response()->json([
-                'success' => true,
-                'message' => 'Developer Meta Detail has been created successfully',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.developers.index'),
+                'developer_id' => $result['developer_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
             return response()->json([
@@ -446,6 +241,7 @@ class DeveloperController extends Controller
             ]);
         }
     }
+
     public function details(Developer $developer)
     {
         return view('dashboard.realEstate.developers.details.index', compact('developer'));

@@ -134,7 +134,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    {{-- <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="form-control" id="status" name="status">
@@ -158,7 +158,7 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="type">Is Furnish Status</label>
@@ -203,7 +203,19 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="updated_brochure">Brochure/SaleOffer </label>
+                                            <select class="form-control" id="updated_brochure" name="updated_brochure">
+                                                <option value="">All</option>
+                                                <option value="1" @if (request()->updated_brochure === '1') selected @endif>
+                                                    Updated</option>
+                                                <option value="0" @if (request()->updated_brochure === '0') selected @endif>
+                                                    Need to Update</option>
 
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="project_id">Project</label>
@@ -237,19 +249,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label for="updated_brochure">Brochure/SaleOffer </label>
-                                            <select class="form-control" id="updated_brochure" name="updated_brochure">
-                                                <option value="">All</option>
-                                                <option value="1" @if (request()->updated_brochure === '1') selected @endif>
-                                                    Updated</option>
-                                                <option value="0" @if (request()->updated_brochure === '0') selected @endif>
-                                                    Need to Update</option>
 
-                                            </select>
-                                        </div>
-                                    </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="permit_number">Permit Number </label>
@@ -258,6 +258,19 @@
                                                 <option value="1" @if (request()->permit_number === '1') selected @endif>
                                                     Exist</option>
                                                 <option value="0" @if (request()->permit_number === '0') selected @endif>
+                                                    Not Exist</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="qr_link">QR Code </label>
+                                            <select class="form-control" id="qr_link" name="qr_link">
+                                                <option value="">All</option>
+                                                <option value="1" @if (request()->qr_link === '1') selected @endif>
+                                                    Exist</option>
+                                                <option value="0" @if (request()->qr_link === '0') selected @endif>
                                                     Not Exist</option>
 
                                             </select>
@@ -369,8 +382,8 @@
                                         <th>Price</th>
 
                                         <th>Website Status</th>
-                                        <th>Status</th>
-                                        <th>Approval Status</th>
+                                        {{-- <th>Status</th>
+                                        <th>Approval Status</th> --}}
 
                                         <th>Exclusive</th>
                                         <th>Agent</th>
@@ -410,15 +423,15 @@
                                             <td>
                                                 <span
                                                     class="badge 
-                                                    @if ($property->websiteStatus === config('constants.NA')) bg-info 
-                                                    @elseif($property->websiteStatus === config('constants.Available')) bg-success 
-                                                    @elseif($property->websiteStatus === config('constants.Rejected'))  bg-danger 
-                                                    @elseif($property->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+                                                    @if ($property->website_status === config('constants.NA')) bg-info 
+                                                    @elseif($property->website_status === config('constants.available')) bg-success 
+                                                    @elseif($property->website_status === config('constants.rejected'))  bg-danger 
+                                                    @elseif($property->website_status === config('constants.requested'))  bg-warning @endif">
 
-                                                    {{ $property->websiteStatus }}
+                                                    {{ ucfirst($property->website_status) }}
                                                 </span>
                                             </td>
-
+                                            {{-- 
                                             <td>
                                                 <span
                                                     class="badge @if ($property->status === 'active') bg-success @else bg-danger @endif">
@@ -440,7 +453,7 @@
                                                         Rejected
                                                     @endif
                                                 </span>
-                                            </td>
+                                            </td> --}}
 
                                             <td> <span
                                                     class="badge @if ($property->exclusive === 1) bg-success @else bg-danger @endif">
@@ -512,7 +525,7 @@
                                                     @endcan
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
-                                                            href="{{ route('dashboard.property.meta', $property->id) }}">
+                                                            href="{{ route('dashboard.properties.meta', $property->id) }}">
                                                             <i class="fas fa-database"></i>
                                                             Meta Details
                                                         </a>
@@ -525,6 +538,11 @@
                                                         </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
+                                                        <a class="btn btn-dark btn-sm"
+                                                            href="{{ route('dashboard.properties.logs', $property->id) }}">
+                                                            <i class="fas fa-database"></i>
+                                                            History
+                                                        </a>
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
                                                             <i class="fas fa-trash"></i>
                                                             Delete

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Repositories\Contracts\ProjectRepositoryInterface;
 use App\Http\Requests\Dashboard\Project\{
     SubProjectRequest,
     ProjectPaymentRequest
@@ -17,13 +18,20 @@ use App\Models\{
 };
 use DB;
 use Auth;
+
 class SubProjectController extends Controller
 {
-    function __construct()
+    protected $projectRepository;
+
+    function __construct(ProjectRepositoryInterface $projectRepository)
     {
-        $this->middleware('permission:'.config('constants.Permissions.real_estate'),
-        ['only' => ['index','create', 'edit', 'update', 'destroy']
-        ]);
+        $this->middleware(
+            'permission:' . config('constants.Permissions.real_estate'),
+            [
+                'only' => ['index', 'create', 'edit', 'update', 'destroy']
+            ]
+        );
+        $this->projectRepository = $projectRepository;
     }
     /**
      * Display a listing of the resource.
@@ -44,8 +52,8 @@ class SubProjectController extends Controller
     {
         $amenities = Amenity::active()->latest()->get();
         $accommodations = Accommodation::active()->latest()->get();
-        $bedrooms = ['Studio',1,2,3,4,5,6,7,8,9,10,11];
-        return view('dashboard.realEstate.projects.sub.create', compact('project','amenities', 'accommodations', 'bedrooms'));
+        $bedrooms = ['Studio', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        return view('dashboard.realEstate.projects.sub.create', compact('project', 'amenities', 'accommodations', 'bedrooms'));
     }
 
     /**
@@ -56,53 +64,22 @@ class SubProjectController extends Controller
      */
     public function store(SubProjectRequest $request, Project $project)
     {
-        
-        DB::beginTransaction();
-        try{
 
-            $subProject = new Project;
-            $subProject->title = $request->title;
-            $subProject->status = $request->status;
-            $subProject->is_parent_project = 0;
-            $subProject->parent_project_id = $project->id;
-            $subProject->bedrooms = $request->bedrooms;
-            $subProject->list_type = $request->list_type;
-            $subProject->area = $request->area;
-            $subProject->builtup_area = $request->builtup_area;
-            $subProject->area_unit = $request->area_unit;
-            $subProject->starting_price = $request->starting_price;
-            $subProject->short_description = $request->short_description;
-            $subProject->user_id = Auth::user()->id;
-            $subProject->accommodation_id = $request->accommodation_id;
-            
-            if(in_array(Auth::user()->role, config('constants.isAdmin'))){
-                $subProject->is_approved = config('constants.approved' );
-                $subProject->approval_id = Auth::user()->id;
-                
-            }else{
-                $subProject->is_approved = config('constants.requested' );
-            }
-            $subProject->save();
-            // if($request->has('amenities')){
-            //     $subProject->amenities()->attach($request->amenities);
-            // }
-            // if($request->has('accommodationIds')){
-            //     $subProject->accommodations()->attach($request->accommodationIds);
-            // }
-            
-            if ($request->hasFile('floorPlan')) {
+        try {
+            $result = $this->projectRepository->subProjectStore($request, $project);
 
-                foreach($request->floorPlan as $floorPlan)
-                {
-                    $subProject->addMedia($floorPlan)->toMediaCollection('floorPlans', 'projectFiles');
-                }
-            }
-            
-            DB::commit();
-            return redirect()->route('dashboard.projects.subProjects',$project->id )->with('success','Sub Project has been created successfully.');
-        }catch(\Exception $error){
-            dd($error->getMessage());
-            return redirect()->back()->with('error',$error->getMessage());
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'redirect' => route('dashboard.projects.subProjects', $project->id),
+                //  'project_id' => $result['project_id'],
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.projects.subProjects', $project->id),
+            ]);
         }
     }
 
@@ -116,8 +93,8 @@ class SubProjectController extends Controller
     {
         $amenities = Amenity::active()->latest()->get();
         $accommodations = Accommodation::active()->latest()->get();
-        $bedrooms = ['Studio',1,2,3,4,5,6,7,8,9,10,11];
-        return view('dashboard.realEstate.projects.sub.edit', compact('amenities','project', 'subProject', 'accommodations', 'bedrooms'));
+        $bedrooms = ['Studio', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        return view('dashboard.realEstate.projects.sub.edit', compact('amenities', 'project', 'subProject', 'accommodations', 'bedrooms'));
     }
 
     /**
@@ -129,42 +106,21 @@ class SubProjectController extends Controller
      */
     public function update(SubProjectRequest $request, Project $project,  Project $subProject)
     {
-        try{
-            $subProject->title = $request->title;
-            $subProject->status = $request->status;
-            $subProject->is_parent_project = 0;
-            $subProject->parent_project_id = $project->id;
-            $subProject->bedrooms = $request->bedrooms;
-            $subProject->area = $request->area;
-            $subProject->builtup_area = $request->builtup_area;
-            $subProject->area_unit = $request->area_unit;
-            $subProject->list_type = $request->list_type;
-            $subProject->starting_price = $request->starting_price;
-            $subProject->accommodation_id = $request->accommodation_id;
 
-            // if($request->has('amenities')){
-            //     $subProject->amenities()->detach();
-            //     $subProject->amenities()->attach($request->amenities);
-            // }
-           
-            if ($request->hasFile('floorPlan')) {
+        try {
+            $result = $this->projectRepository->subProjectUpdate($request, $project, $subProject);
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'redirect' => route('dashboard.projects.subProjects', $project->id),
+            ]);
+        } catch (\Exception $error) {
 
-                foreach($request->floorPlan as $floorPlan)
-                {
-                    $subProject->addMedia($floorPlan)->toMediaCollection('floorPlans', 'projectFiles');
-                }
-            }
-            
-             if(in_array(Auth::user()->role, config('constants.isAdmin'))){
-                $subProject->approval_id = Auth::user()->id;
-            }
-            
-            $subProject->is_approved = $request->is_approved;
-            $subProject->save();
-            
-            return redirect()->route('dashboard.projects.subProjects',$project->id )->with('success','Sub Project has been created successfully.');
-        }catch(\Exception $error){
-            return redirect()->back()->with('error',$error->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.projects.subProjects', $project->id),
+            ]);
         }
     }
 
@@ -174,21 +130,21 @@ class SubProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Project $project , Project $subProject)
+    public function destroy(Project $project, Project $subProject)
     {
-        try{
+        try {
 
-            if($subProject->projectBedrooms->count() > 0){
+            if ($subProject->projectBedrooms->count() > 0) {
                 $subProject->projectBedrooms()->delete();
             }
             $subProject->delete();
-            return redirect()->route('dashboard.projects.subProjects',$project->id )->with('success','Sub Project has been deleted successfully.');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.projects.subProjects',$project->id)->with('error',$error->getMessage());
+            return redirect()->route('dashboard.projects.subProjects', $project->id)->with('success', 'Sub Project has been deleted successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.projects.subProjects', $project->id)->with('error', $error->getMessage());
         }
     }
-    
-    
+
+
     public function payments(Project $project, Project $subProject)
     {
         return view('dashboard.realEstate.projects.sub.paymentPlans.index', compact('project', 'subProject'));
@@ -200,57 +156,57 @@ class SubProjectController extends Controller
     public function storePayment(ProjectPaymentRequest $request, Project $project, Project $subProject)
     {
         DB::beginTransaction();
-        try{
-            $subProject->paymentPlans()->create(['name'=>$request->name, 'value'=>$request->value, 'key'=> $request->key]);
+        try {
+            $subProject->paymentPlans()->create(['name' => $request->name, 'value' => $request->value, 'key' => $request->key]);
             DB::commit();
-            return redirect()->route('dashboard.projects.subProjects.paymentPlans',[$project->id, $subProject->id] )->with('success','Payment Plan has been created successfully.');
-        }catch(\Exception $error){
-            return redirect()->back()->with('error',$error->getMessage());
+            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id, $subProject->id])->with('success', 'Payment Plan has been created successfully.');
+        } catch (\Exception $error) {
+            return redirect()->back()->with('error', $error->getMessage());
         }
     }
     public function editPayment(Project $project, Project $subProject, MetaDetail $payment)
     {
-        return view('dashboard.realEstate.projects.sub.paymentPlans.edit', compact('payment','project', 'subProject'));
+        return view('dashboard.realEstate.projects.sub.paymentPlans.edit', compact('payment', 'project', 'subProject'));
     }
-    public function updatePayment(ProjectPaymentRequest $request, Project $project,Project $subProject,   MetaDetail $payment)
+    public function updatePayment(ProjectPaymentRequest $request, Project $project, Project $subProject,   MetaDetail $payment)
     {
-        try{
+        try {
             $payment->name = $request->name;
             $payment->value = $request->value;
             $payment->key = $request->key;
             $payment->save();
-            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id, $subProject->id ])->with('success','Payment Plan has been updated successfully.');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id,  $subProject->id ])->with('error',$error->getMessage());
+            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id, $subProject->id])->with('success', 'Payment Plan has been updated successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id,  $subProject->id])->with('error', $error->getMessage());
         }
     }
-    public function destroyPayment(Project $project ,Project $subProject, MetaDetail $payment)
+    public function destroyPayment(Project $project, Project $subProject, MetaDetail $payment)
     {
-        try{
+        try {
             $payment->delete();
-            return redirect()->route('dashboard.projects.subProjects.paymentPlans',[$project->id,  $subProject->id])->with('success','Payment Plan has been deleted successfully.');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.projects.subProjects.paymentPlans',[$project->id, $subProject->id])->with('error',$error->getMessage());
+            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id,  $subProject->id])->with('success', 'Payment Plan has been deleted successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.projects.subProjects.paymentPlans', [$project->id, $subProject->id])->with('error', $error->getMessage());
         }
     }
     public function floorplansDestroy(Project $project, Project $subProject)
     {
-        try{
-           
+        try {
+
             $subProject->clearMediaCollection('floorplans');
-            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('success','Floor Plan has been deleted successfully.');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('error',$error->getMessage());
+            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('success', 'Floor Plan has been deleted successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('error', $error->getMessage());
         }
     }
-    
+
     public function floorplanDestroy(Project $project, Project $subProject, $floorplan)
     {
-        try{
+        try {
             $subProject->deleteMedia($floorplan);
-            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('success','Floor Plan has been deleted successfully.');
-        }catch(\Exception $error){
-            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('error',$error->getMessage());
+            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('success', 'Floor Plan has been deleted successfully.');
+        } catch (\Exception $error) {
+            return redirect()->route('dashboard.projects.subProjects.edit', [$project->id, $subProject->id])->with('error', $error->getMessage());
         }
     }
 }

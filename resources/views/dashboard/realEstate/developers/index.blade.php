@@ -135,8 +135,8 @@
                                                 class="arrow down"
                                                 onclick="orderBy('developerOrder', 'desc')">&#x25BC;</span></th>
                                         <th>Website Status</th>
-                                        <th>Status</th>
-                                        <th>Approval Status</th>
+                                        {{-- <th>Status</th>
+                                        <th>Approval Status</th> --}}
 
                                         <th>Approval By</th>
                                         <th>Added By</th>
@@ -164,23 +164,23 @@
                                             <td>
                                                 {{ $developer->developerOrder }}
                                             </td>
-                                            <td>
+                                          <td>
                                                 <span
                                                     class="badge 
-                                                    @if ($developer->websiteStatus === config('constants.NA')) bg-info 
-                                                    @elseif($developer->websiteStatus === config('constants.Available')) bg-success 
-                                                    @elseif($developer->websiteStatus === config('constants.Rejected'))  bg-danger 
-                                                    @elseif($developer->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+                                                    @if ($developer->website_status === config('constants.NA')) bg-info 
+                                                    @elseif($developer->website_status === config('constants.available')) bg-success 
+                                                    @elseif($developer->website_status === config('constants.rejected'))  bg-danger 
+                                                    @elseif($developer->website_status === config('constants.requested'))  bg-warning @endif">
 
-                                                    {{ $developer->websiteStatus }}
+                                                    {{ ucfirst($developer->website_status) }}
                                                 </span>
                                             </td>
-                                            <td>
+                                               {{--<td>
                                                 <span
                                                     class="badge @if ($developer->status === 'active') bg-success @else bg-danger @endif">
                                                     {{ $developer->status }}
                                                 </span>
-                                            </td>
+                                            </td> 
                                             <td>
                                                 <span
                                                     class="badge 
@@ -196,7 +196,7 @@
                                                         Rejected
                                                     @endif
                                                 </span>
-                                            </td>
+                                            </td>--}}
                                             <td>{{ $developer->approval ? $developer->approval->name : '' }}</td>
                                             <td>{{ $developer->user->name }}</td>
                                             <td>{{ $developer->updatedBy ? $developer->updatedBy->name : '' }}</td>
@@ -212,16 +212,11 @@
                                                         <i class="fas fa-eye"></i>
                                                         View
                                                     </a>
-
-                                                    <!-- <a class="btn btn-secondary btn-sm"
-                                                                                                                                           href="{{ route('dashboard.developer.details', $developer->id) }}">
-                                                                                                                                           <i class="fas fa-database"></i>
-                                                                                                                                           Details
-                                                                                                                                        </a> -->
+                                                   
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
-                                                            href="{{ route('dashboard.developer.meta', $developer->id) }}">
-                                                            <i class="fas fa-database"></i>
+                                                            href="{{ route('dashboard.developers.meta', $developer->id) }}">
+                                                            <i class="fas fa-search-plus"></i>
                                                             Meta Details
                                                         </a>
                                                     @endcan
@@ -233,6 +228,11 @@
                                                         </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
+                                                        <a class="btn btn-dark btn-sm"
+                                                            href="{{ route('dashboard.developers.logs', $developer->id) }}">
+                                                            <i class="fas fa-database"></i>
+                                                            History
+                                                        </a>
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
                                                             <i class="fas fa-trash"></i>
                                                             Delete

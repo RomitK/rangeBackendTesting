@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\{
     Project,
@@ -13,7 +14,8 @@ use App\Models\{
     Article,
     Career,
     Guide,
-    Agent
+    Agent,
+    LogActivity
 };
 
 if (!function_exists('activeParentNavBar')) {
@@ -324,5 +326,39 @@ if (!function_exists('countPropertiesForCommunity')) {
         $totalPropertiesCount = $community->projects->sum('properties_count');
 
         return $totalPropertiesCount;
+    }
+}
+
+if (!function_exists('logActivity')) {
+    function logActivity($description, $subject_id = 0, $type, $model)
+    {
+
+        $obj                = new LogActivity;
+        $obj->log_name      = 'default';
+        $obj->description   = $description;
+        $obj->subject_id    = $subject_id;
+        $obj->subject_type  = $type;
+        $obj->causer_id     = Auth::check() ? Auth::User()->id : 0;
+        $obj->causer_type   = $type;
+        $obj->properties    = $model;
+
+        $obj->save();
+    }
+}
+if (!function_exists('getActivity')) {
+    function getActivity($activity_id)
+    {
+
+        $logActivity = LogActivity::find($activity_id);
+        dd($logActivity);
+        $user = $logActivity->user ? $logActivity->user->full_name : 'Auto Assigned';
+
+        if ($logActivity->subject_type == 'App\LeadAgent') {
+            return $user . ', #' . $logActivity->subject_id . ' ' . $logActivity->description;
+        } else if ($logActivity->subject_type == 'App\Lead') {
+            return $user . ', ' . $logActivity->description . ', #' . $logActivity->subject_id;
+        } else {
+            return $user . ', ' . $logActivity->description;
+        }
     }
 }

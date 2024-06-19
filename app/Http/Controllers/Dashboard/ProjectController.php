@@ -38,16 +38,19 @@ use App\Models\{
 };
 use App\Jobs\{
     StoreProjectBrochure,
-    ProjectExportAndEmailData
+    ProjectLogExportAndEmailData
 };
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\Contracts\ProjectRepositoryInterface;
 use PDF;
 
 class ProjectController extends Controller
 {
-    function __construct()
+    protected $projectRepository;
+
+    function __construct(ProjectRepositoryInterface $projectRepository)
     {
         $this->middleware(
             'permission:' . config('constants.Permissions.offplan') . '|' . config('constants.Permissions.seo'),
@@ -58,6 +61,7 @@ class ProjectController extends Controller
                 ]
             ]
         );
+        $this->projectRepository = $projectRepository;
     }
     /**
      * Display a listing of the resource.
@@ -66,149 +70,46 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        // $projects=Project::mainProject()->with('subProjects')->get();
 
-        $page_size = 25;
-        $current_page = isset($request->item) ? $request->item : $page_size;
-        if (isset($request->page)) {
-            $sr_no_start = ($request->page * $current_page) - $current_page + 1;
+        $result = $this->projectRepository->filterData($request);
+
+        if ($request->has('export')) {
+            // Handle export scenario
+            return $result; // This will return the JSON response from your repository method
         } else {
-            $sr_no_start = 1;
+            // Handle normal pagination scenario
+            $projects = $result['projects'];
+            $current_page = $result['current_page'];
+            $sr_no_start = $result['sr_no_start'];
+
+
+            $completionStatuses = CompletionStatus::active()->where('for_property', 0)->latest()->pluck('name', 'id');
+            $completionStatuses->prepend('All', '');
+
+            $accommodations = Accommodation::latest()->pluck('name', 'id');
+            $accommodations->prepend('All', '');
+
+            $communities = Community::latest()->pluck('name', 'id');
+            $communities->prepend('All', '');
+
+            $developers = Developer::latest()->pluck('name', 'id');
+            $developers->prepend('All', '');
+
+            $users = User::latest()->pluck('name', 'id');
+            $users->prepend('All', '');
+
+
+            return view('dashboard.realEstate.projects.index', compact(
+                'projects',
+                'sr_no_start',
+                'completionStatuses',
+                'accommodations',
+                'communities',
+                'current_page',
+                'developers',
+                'users'
+            ));
         }
-
-        $collection = Project::mainProject()->with('user');
-        if (isset($request->website_status)) {
-            $collection->WebsiteStatus($request->website_status);
-        }
-        if (isset($request->data_range_input)) {
-            $dateRange = $request->data_range_input;
-            // Use explode to split the date range by " - "
-            $dates = explode(' - ', $dateRange);
-            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
-            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1])->endOfDay();
-
-
-            $startDate = Carbon::parse($dates[0]);
-            $endDate = Carbon::parse($dates[1])->endOfDay();
-
-
-            $collection->whereBetween('created_at', [$startDate, $endDate]);
-        }
-        if (isset($request->status)) {
-            $collection->where('status', $request->status);
-        }
-        if (isset($request->qr_link)) {
-
-            if ($request->qr_link == '1') {
-                $collection->where('qr_link', '!=', '');
-            } elseif ($request->qr_link == '0') {
-                $collection->where('qr_link', '');
-            }
-        }
-        if (isset($request->permit_number)) {
-            if ($request->permit_number == '1') {
-                $collection->whereNotNull('permit_number');
-            } elseif ($request->permit_number == '0') {
-                $collection->whereNull('permit_number');
-            }
-        }
-        if (isset($request->completion_status_ids)) {
-            $collection->whereIn('completion_status_id', $request->completion_status_ids);
-        }
-
-        if (isset($request->community_ids)) {
-            $collection->whereIn('community_id', $request->community_ids);
-        }
-        if (isset($request->developer_ids)) {
-            $collection->whereIn('developer_id', $request->developer_ids);
-        }
-        if (isset($request->updated_user_ids)) {
-            $collection->whereIn('updated_by', $request->updated_user_ids);
-        }
-
-        if (isset($request->added_user_ids)) {
-            $collection->whereIn('user_id', $request->added_user_ids);
-        }
-
-        if (isset($request->display_on_home)) {
-            $collection->where('is_display_home', $request->display_on_home);
-        }
-
-        if (isset($request->keyword)) {
-            $keyword = $request->keyword;
-            $collection->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%$keyword%")
-                    ->orWhere('projects.reference_number', 'like', "%$keyword%")
-                    ->orWhere('projects.permit_number', 'like', "%$keyword%");
-            });
-        }
-        if (isset($request->is_approved)) {
-            $collection->where('is_approved', $request->is_approved);
-        }
-        if (isset($request->updated_brochure)) {
-            $collection->where('updated_brochure', $request->updated_brochure);
-        }
-
-
-        if (isset($request->orderby)) {
-            $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
-            $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $collection = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy($orderBy, $direction);
-
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                ProjectExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $projects = $collection->paginate($current_page);
-            }
-        } else {
-            $collection = $collection->latest();
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                ProjectExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $projects = $collection->paginate($current_page);
-            }
-        }
-
-
-
-        $completionStatuses = CompletionStatus::active()->where('for_property', 0)->latest()->pluck('name', 'id');
-        $completionStatuses->prepend('All', '');
-
-        $accommodations = Accommodation::latest()->pluck('name', 'id');
-        $accommodations->prepend('All', '');
-
-        $communities = Community::latest()->pluck('name', 'id');
-        $communities->prepend('All', '');
-
-        $developers = Developer::latest()->pluck('name', 'id');
-        $developers->prepend('All', '');
-
-        $users = User::latest()->pluck('name', 'id');
-        $users->prepend('All', '');
-        return view('dashboard.realEstate.projects.index', compact(
-            'projects',
-            'sr_no_start',
-            'completionStatuses',
-            'accommodations',
-            'communities',
-            'current_page',
-            'developers',
-            'users'
-        ));
     }
 
     /**
@@ -221,12 +122,9 @@ class ProjectController extends Controller
         $amenities = Amenity::active()->latest()->get();
         $accommodations = Accommodation::active()->get();
         $communities = Community::latest()->get();
-        $developers = Developer::active()->latest()->get();
-        $agents = Agent::active()->latest()->get();
-        // $tags = TagCategory::projectTag()->active()->latest()->get();
-        // $highlights = Highlight::active()->latest()->get();
         $completionStatuses = CompletionStatus::active()->where('for_property', 0)->latest()->get();
-        return view('dashboard.realEstate.projects.create', compact('completionStatuses', 'agents', 'amenities', 'accommodations', 'communities', 'developers'));
+
+        return view('dashboard.realEstate.projects.create', compact('completionStatuses', 'amenities', 'accommodations', 'communities'));
     }
 
     public function generateBrochure($project)
@@ -346,264 +244,14 @@ class ProjectController extends Controller
      */
     public function store(ProjectRequest $request)
     {
-        DB::beginTransaction();
         try {
+            $result = $this->projectRepository->storeData($request);
 
-            $titleArray = explode(' ', $request->title);
-            $sub_title = $titleArray[0];
-
-            $subTitle1 = array_shift($titleArray);
-            $sub_title_1 = implode(" ",  $titleArray);
-
-            $project = new Project;
-            $project->title = $request->title;
-            $project->sub_title = $sub_title;
-            $project->used_for = $request->used_for;
-            $project->sub_title_1 = $sub_title_1;
-            $project->status = $request->status;
-            $project->project_source = 'crm';
-            $project->is_parent_project = 1;
-            $project->is_new_launch = $request->is_new_launch;
-            $project->reference_number = $request->reference_number;
-            $project->permit_number = $request->permit_number;
-            $project->is_featured = $request->is_featured;
-            $project->is_display_home = $request->is_display_home;
-            $project->starting_price = $request->starting_price;
-            $project->completion_date = $request->completion_date;
-            $project->bathrooms = $request->bathrooms;
-            $project->bedrooms = $request->bedrooms;
-            $project->area = $request->area;
-            $project->area_unit = $request->area_unit;
-            $project->features_description = $request->features_description;
-            $project->address = $request->address;
-            $project->address_latitude = $request->address_latitude;
-            $project->address_longitude = $request->address_longitude;
-            $project->meta_title = $request->meta_title;
-            $project->meta_description = $request->meta_description;
-            $project->meta_keywords = $request->meta_keywords;
-            $project->emirate = $request->emirate;
-
-            if ($request->has('completion_status_id')) {
-                $project->completionStatus()->associate($request->completion_status_id);
-            }
-            if ($request->has('starting_price_highlight')) {
-                $project->starting_price_highlight = $request->starting_price_highlight;
-            }
-            if ($request->has('completion_date_highlight')) {
-                $project->completion_date_highlight = $request->completion_date_highlight;
-            }
-            if ($request->has('area_highlight')) {
-
-                $project->area_highlight = $request->area_highlight;
-            }
-            if ($request->has('accommodation_id')) {
-                $project->accommodation_id = $request->accommodation_id;
-            }
-            if ($request->has('community_id_highlight')) {
-                $project->community_id_highlight = $request->community_id_highlight;
-            }
-            if ($request->has('agent_id')) {
-                $project->agent()->associate($request->agent_id);
-            }
-            if ($request->has('developer_id')) {
-                $project->developer()->associate($request->developer_id);
-            }
-            if ($request->has('main_community_id')) {
-                $project->mainCommunity()->associate($request->main_community_id);
-            }
-            // if($request->has('sub_community_id')){
-            //     $project->subCommunity()->associate($request->sub_community_id);
-            // }
-            $parentCommunity = null;
-            $childCommunity = null;
-
-            if ($request->main_community_id) {
-                $parentCommunity = Community::find($request->main_community_id);
-                $project->search_keyword = $request->name . "(" . $parentCommunity->name . ", " . $request->emirate . ")";
-
-                // if($request->has('sub_community_id')){
-                //     $childCommunity = Community::find($request->sub_community_id);
-
-                //     $project->search_keyword = $request->name ."(".$childCommunity->name.", ". $parentCommunity->name.", ".$request->emirate.")";
-                // }
-
-            } else {
-                $project->search_keyword = $request->name . "(" . $request->emirate . ")";
-            }
-
-
-            if ($request->hasFile('mainImage')) {
-                $img =  $request->file('mainImage');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '.' . $ext;
-
-                $project->addMediaFromRequest('mainImage')->usingFileName($imageName)->toMediaCollection('mainImages', 'projectFiles');
-            }
-
-            if ($request->hasFile('clusterPlan')) {
-                $img =  $request->file('clusterPlan');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '.' . $ext;
-
-                $project->addMediaFromRequest('clusterPlan')->usingFileName($imageName)->toMediaCollection('clusterPlans', 'projectFiles');
-            }
-
-            if ($request->hasFile('qr')) {
-                $img =  $request->file('qr');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '_qr.' . $ext;
-
-                $project->addMediaFromRequest('qr')->usingFileName($imageName)->toMediaCollection('qrs', 'projectFiles');
-            }
-
-
-            if ($request->hasFile('video')) {
-                $video =  $request->file('video');
-                $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->title) . '.' . $ext;
-                $project->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'projectFiles');
-            }
-            // if ($request->hasFile('exteriorGallery')) {
-            //     foreach($request->exteriorGallery as $img)
-            //     {
-            //         $project->addMedia($img)->toMediaCollection('exteriorGallery', 'projectFiles');
-            //     }
-            // }
-
-
-            if ($request->has('exteriorGallery')) {
-                foreach ($request->exteriorGallery as $key => $img) {
-                    if (array_key_exists("file", $img) && $img['file']) {
-                        $title = $img['title'] ?? $request->title;
-                        $order =  $img['order'] ?? null;
-
-                        $project->addMedia($img['file'])
-                            ->withCustomProperties([
-                                'title' => $title,
-                                'order' => $order
-                            ])
-                            ->toMediaCollection('exteriorGallery', 'projectFiles');
-                    }
-                }
-            }
-
-            if ($request->has('interiorGallery')) {
-                foreach ($request->interiorGallery as $key => $img) {
-                    if (array_key_exists("file", $img) && $img['file']) {
-                        $title = $img['title'] ?? $request->title;
-                        $order =  $img['order'] ?? null;
-
-                        $project->addMedia($img['file'])
-                            ->withCustomProperties([
-                                'title' => $title,
-                                'order' => $order
-                            ])
-                            ->toMediaCollection('interiorGallery', 'projectFiles');
-                    }
-                }
-            }
-
-
-            // if ($request->hasFile('interiorGallery')) {
-
-            //     foreach($request->interiorGallery as $img)
-            //     {
-            //         $project->addMedia($img)->toMediaCollection('interiorGallery', 'projectFiles');
-            //     }
-            // }
-
-            if ($request->hasFile('brochure')) {
-                $brochure =  $request->file('brochure');
-                $ext = $brochure->getClientOriginalExtension();
-                $brochureName =  Str::slug($request->title) . '._brochure.' . $ext;
-                $project->addMediaFromRequest('brochure')->usingFileName($brochureName)->toMediaCollection('brochures', 'projectFiles');
-            }
-
-            if ($request->hasFile('saleOffer')) {
-                $img =  $request->file('saleOffer');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '.' . $ext;
-
-                $project->addMediaFromRequest('saleOffer')->usingFileName($imageName)->toMediaCollection('saleOffers', 'projectFiles');
-            }
-
-            if ($request->hasFile('factsheet')) {
-                $factsheet =  $request->file('factsheet');
-                $ext = $factsheet->getClientOriginalExtension();
-                $factsheetName =  Str::slug($request->title) . '_factsheet.' . $ext;
-                $project->addMediaFromRequest('factsheet')->usingFileName($factsheetName)->toMediaCollection('factsheets', 'projectFiles');
-            }
-            if ($request->hasFile('paymentPlan')) {
-                $paymentPlan =  $request->file('paymentPlan');
-                $ext = $paymentPlan->getClientOriginalExtension();
-                $paymentPlantName =  Str::slug($request->title) . '_paymentPlan.' . $ext;
-                $project->addMediaFromRequest('paymentPlan')->usingFileName($paymentPlantName)->toMediaCollection('paymentPlans', 'projectFiles');
-            }
-
-            $project->short_description = $request->short_description;
-            $project->long_description = $request->long_description;
-            $project->user_id = Auth::user()->id;
-            $project->projectOrder = $request->projectOrder;
-
-            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
-                $project->is_approved = config('constants.approved');
-                $project->approval_id = Auth::user()->id;
-            } else {
-                $project->is_approved = config('constants.requested');
-            }
-            $project->save();
-
-            $reference_prefix = 'RIPI_' . strtoupper(substr(Str::slug($project->developer->name), 0, 3));
-            $nextInvoiceNumber = Project::getNextReferenceNumber($reference_prefix);
-            $project->reference_number = $reference_prefix . "_" . $nextInvoiceNumber;
-            $project->save();
-            $project->banner_image = $project->mainImage;
-            $project->qr_link = $project->qr;
-            $project->save();
-
-            if (isset($request->detailsKey)) {
-                foreach ($request->detailsKey as $key => $detKey) {
-                    if (!empty($detKey)) {
-                        $project->propertyDetails()->attach($detKey, ['value' => $request->detailsName[$key]]);
-                    }
-                }
-            }
-            // if($request->has('accommodationIds')){
-            //     $project->accommodations()->attach($request->accommodationIds);
-            // }
-            if ($request->has('highlightIds')) {
-                $project->highlights()->attach($request->highlightIds);
-            }
-
-            if ($request->has('amenities')) {
-                foreach ($request->amenities as $amenity) {
-                    ProjectAmenity::insert([
-                        'amenity_id' => $amenity,
-                        'project_id' => $project->id
-                    ]);
-                }
-            }
-            if ($request->has('highlight_amenities')) {
-
-                foreach ($request->highlight_amenities as $amenity) {
-                    $project->amenities()->attach($amenity, ['highlighted' => 1]);
-                }
-            }
-            if ($request->has('tagIds')) {
-                foreach ($request->tagIds as $tag) {
-                    $project->tags()->create(['tag_category_id' => $tag]);
-                }
-            }
-
-            if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
-                StoreProjectBrochure::dispatch($project->id);
-            }
-
-            DB::commit();
             return response()->json([
-                'success' => true,
-                'message' => 'Project has been created successfully.',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.projects.index'),
+                'project_id' => $result['project_id'],
             ]);
         } catch (\Exception $error) {
             return response()->json([
@@ -656,305 +304,38 @@ class ProjectController extends Controller
     public function update(ProjectRequest $request, Project $project)
     {
 
-        DB::beginTransaction();
         try {
-
-
-            Log::info("Project-update-start:" . Carbon::now());
-            $titleArray = explode(' ', $request->title);
-            $sub_title = $titleArray[0];
-
-            $subTitle1 = array_shift($titleArray);
-            $sub_title_1 = implode(" ",  $titleArray);
-
-            $project->title = $request->title;
-            $project->sub_title = $sub_title;
-            $project->sub_title_1 = $sub_title_1;
-            $project->used_for = $request->used_for;
-            $project->permit_number = $request->permit_number;
-            $project->status = $request->status;
-            $project->is_new_launch = $request->is_new_launch;
-            $project->project_source = $request->project_source;
-            $project->is_featured = $request->is_featured;
-            $project->is_display_home = $request->is_display_home;
-            $project->starting_price = $request->starting_price;
-            $project->completion_date = $request->completion_date;
-            $project->bathrooms = $request->bathrooms;
-            $project->bedrooms = $request->bedrooms;
-            $project->area = $request->area;
-            $project->area_unit = $request->area_unit;
-            $project->features_description = $request->features_description;
-            $project->address = $request->address;
-            $project->address_latitude = $request->address_latitude;
-            $project->address_longitude = $request->address_longitude;
-            $project->meta_title = $request->meta_title;
-            $project->meta_description = $request->meta_description;
-            $project->meta_keywords = $request->meta_keywords;
-            $project->emirate = $request->emirate;
-
-
-            if ($request->main_community_id) {
-                $parentCommunity = Community::find($request->main_community_id);
-                $project->search_keyword = $request->title . "(" . $parentCommunity->name . ", " . $request->emirate . ")";
-            } else {
-                $project->search_keyword = $request->title . "(" . $request->emirate . ")";
-            }
-
-            if ($request->has('completion_status_id')) {
-                $project->completionStatus()->associate($request->completion_status_id);
-            }
-
-            if ($request->has('agent_id')) {
-                $project->agent()->associate($request->agent_id);
-            }
-            if ($request->has('developer_id')) {
-                $project->developer()->associate($request->developer_id);
-            }
-            if ($request->has('main_community_id')) {
-                $project->mainCommunity()->associate($request->main_community_id);
-            }
-
-            if ($request->has('starting_price_highlight')) {
-                $project->starting_price_highlight = $request->starting_price_highlight;
-            } else {
-                $project->starting_price_highlight = 0;
-            }
-            if ($request->has('completion_date_highlight')) {
-                $project->completion_date_highlight = $request->completion_date_highlight;
-            } else {
-                $project->completion_date_highlight = 0;
-            }
-            if ($request->has('community_id_highlight')) {
-                $project->community_id_highlight = $request->community_id_highlight;
-            } else {
-                $project->community_id_highlight = 0;
-            }
-            if ($request->has('area_highlight')) {
-
-                $project->area_highlight = $request->area_highlight;
-            } else {
-                $project->area_highlight = 0;
-            }
-            if ($request->has('accommodation_id_highlight')) {
-                $project->accommodation_id_highlight = $request->accommodation_id_highlight;
-            } else {
-                $project->accommodation_id_highlight = 0;
-            }
-            if ($request->has('accommodation_id')) {
-                $project->accommodation_id = $request->accommodation_id;
-            }
-            if ($request->hasFile('mainImage')) {
-                $project->clearMediaCollection('mainImages');
-                $img =  $request->file('mainImage');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '.' . $ext;
-
-                $project->addMediaFromRequest('mainImage')->usingFileName($imageName)->toMediaCollection('mainImages', 'projectFiles');
-            }
-
-            if ($request->hasFile('clusterPlan')) {
-
-                $project->clearMediaCollection('clusterPlans');
-                $img =  $request->file('clusterPlan');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '.' . $ext;
-
-                $project->addMediaFromRequest('clusterPlan')->usingFileName($imageName)->toMediaCollection('clusterPlans', 'projectFiles');
-            }
-
-            if ($request->hasFile('qr')) {
-                $project->clearMediaCollection('qrs');
-                $img =  $request->file('qr');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '_qr.' . $ext;
-
-                $project->addMediaFromRequest('qr')->usingFileName($imageName)->toMediaCollection('qrs', 'projectFiles');
-            }
-
-            if ($request->hasFile('video')) {
-                $project->clearMediaCollection('videos');
-                $video =  $request->file('video');
-                $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->title) . '.' . $ext;
-                $project->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'projectFiles');
-            }
-
-
-            if ($request->has('exteriorGallery')) {
-                foreach ($request->exteriorGallery as $key => $img) {
-
-                    $title = $img['title'] ?? $request->title;
-                    $order =  $img['order'] ?? null;
-                    if ($img['old_gallery_id'] > 0) {
-
-                        $mediaItem = Media::find($img['old_gallery_id']);
-                        $mediaItem->setCustomProperty('title', $title);
-                        $mediaItem->setCustomProperty('order', $order);
-                        $mediaItem->save();
-                    } else {
-                        if (array_key_exists("file", $img) && $img['file']) {
-                            $project->addMedia($img['file'])
-                                ->withCustomProperties([
-                                    'title' => $title,
-                                    'order' => $order
-                                ])->toMediaCollection('exteriorGallery', 'projectFiles');
-                        }
-                    }
-                }
-            }
-
-            if ($request->has('interiorGallery')) {
-                foreach ($request->interiorGallery as $key => $img) {
-                    $title = $img['title'] ?? $request->title;
-                    $order =  $img['order'] ?? null;
-                    if ($img['old_gallery_id'] > 0) {
-                        $mediaItem = Media::find($img['old_gallery_id']);
-                        $mediaItem->setCustomProperty('title', $title);
-                        $mediaItem->setCustomProperty('order', $order);
-                        $mediaItem->save();
-                    } else {
-                        if (array_key_exists("file", $img) && $img['file']) {
-                            $project->addMedia($img['file'])
-                                ->withCustomProperties([
-                                    'title' => $title,
-                                    'order' => $order
-                                ])
-                                ->toMediaCollection('interiorGallery', 'projectFiles');
-                        }
-                    }
-                }
-            }
-            if ($request->hasFile('brochure')) {
-                if ($project->brochure) {
-                    $project->clearMediaCollection('brochures');
-                }
-                $brochure =  $request->file('brochure');
-                $ext = $brochure->getClientOriginalExtension();
-                $brochureName =  Str::slug($request->title) . '_brochure.' . $ext;
-
-                $project->addMedia($brochure)->usingFileName($brochureName)->toMediaCollection('brochures', 'projectFiles');
-            }
-
-            if ($request->hasFile('saleOffer')) {
-                $project->clearMediaCollection('saleOffers');
-                $img =  $request->file('saleOffer');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->title) . '.' . $ext;
-
-                $project->addMediaFromRequest('saleOffer')->usingFileName($imageName)->toMediaCollection('saleOffers', 'projectFiles');
-            }
-
-            if ($request->hasFile('factsheet')) {
-                if ($project->factsheet) {
-                    $project->clearMediaCollection('factsheets');
-                }
-                $factsheet =  $request->file('factsheet');
-                $ext = $factsheet->getClientOriginalExtension();
-                $factsheetName =  Str::slug($request->title) . '_factsheet.' . $ext;
-                $project->addMedia($factsheet)->usingFileName($factsheetName)->toMediaCollection('factsheets', 'projectFiles');
-            }
-            if ($request->hasFile('paymentPlan')) {
-                if ($project->paymentPlan) {
-                    $project->clearMediaCollection('paymentPlans');
-                }
-                $paymentPlan =  $request->file('paymentPlan');
-                $ext = $paymentPlan->getClientOriginalExtension();
-                $paymentPlantName =  Str::slug($request->title) . '_paymentPlan.' . $ext;
-                $project->addMedia($paymentPlan)->usingFileName($paymentPlantName)->toMediaCollection('paymentPlans', 'projectFiles');
-            }
-
-            $project->short_description = $request->short_description;
-            $project->long_description = $request->long_description;
-            // $project->user_id = Auth::user()->id;
-
-
-            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
-                $project->approval_id = Auth::user()->id;
-
-                if (in_array($request->is_approved, ["approved", "rejected"])) {
-                    $project->is_approved = $request->is_approved;
-                }
-            } else {
-                $project->is_approved = "requested";
-                $project->approval_id = null;
-            }
-
-            $project->updated_by = Auth::user()->id;
-            $project->projectOrder = $request->projectOrder;
-
-            $project->updated_brochure = 0;
-
-
-            $project->save();
-            $project->banner_image = $project->mainImage;
-            $project->qr_link = $project->qr;
-            $project->save();
-            $project->subProjects()->update(['is_approved' => $request->is_approved]);
-
-            Property::where('project_id', $project->id)->update(['updated_brochure' => 0]);
-
-            if ($project->status != '') {
-                $project->properties()->update(['status' => $request->status]);
-            }
-
-            if ($request->has('highlightIds')) {
-                $project->highlights()->detach();
-                $project->highlights()->attach($request->highlightIds);
-            } else {
-                $project->highlights()->detach();
-            }
-
-            if ($request->has('amenities')) {
-                ProjectAmenity::where('project_id', $project->id)->delete();
-
-                foreach ($request->amenities as $amenity) {
-                    ProjectAmenity::insert([
-                        'amenity_id' => $amenity,
-                        'project_id' => $project->id
-                    ]);
-                }
-            }
-
-            if ($request->has('tagIds')) {
-                $project->tags()->delete();
-                foreach ($request->tagIds as $tag) {
-                    $project->tags()->create(['tag_category_id' => $tag]);
-                }
-            }
-
-            if (in_array($request->is_approved, [config('constants.approved')]) &&  in_array($request->status, [config('constants.active')])) {
-                Log::info("project update for brochue");
-                StoreProjectBrochure::dispatch($project->id);
-
-
-
-                $subProjects = $project->subProjects()->active()->where('is_approved', 'requested')->pluck('id')->toArray();
-                Project::whereIn('id', $subProjects)->update([
-                    'approval_id' =>  $project->approval_id,
-                    'is_approved' => $project->is_approved,
-                    'updated_by' => $project->updated_by
-                ]);
-            }
-
-
-            DB::commit();
-
-            Log::info("Project Updated Data:");
-            Log::info("interiorGallery" . count($project->interiorGallery));
-            Log::info("exteriorGallery" . count($project->exteriorGallery));
-            Log::info("Project-update-end:" . Carbon::now());
-
+            $result = $this->projectRepository->updateData($request, $project);
             return response()->json([
-                'success' => true,
-                'message' => 'Project has been upated successfully.',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.projects.index'),
+                'project_id' => $result['project_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
+
             return response()->json([
                 'success' => false,
                 'message' => $error->getMessage(),
                 'redirect' => route('dashboard.projects.index'),
             ]);
+        }
+    }
+
+    public function logs(Project $project, Request $request)
+    {
+        if (isset($request->export)) {
+            $data = [
+                'email' => Auth::user()->email,
+                'userName' => Auth::user()->name,
+                'project_id' => $project->id,
+            ];
+
+            ProjectLogExportAndEmailData::dispatch($data, $project);
+
+            return redirect()->route('dashboard.projects.logs', $project->id)->with('success', 'Please Check Email, Log History has been sent');
+        } else {
+            return view('dashboard.realEstate.projects.logs.index', compact('project'));
         }
     }
 
@@ -967,7 +348,6 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         try {
-            $project->tags()->delete();
             $project->subProjects()->delete();
             $project->paymentPlans()->delete();
             $project->delete();
@@ -983,19 +363,14 @@ class ProjectController extends Controller
     }
     public function updateMeta(ProjectMetaRequest $request, Project $project)
     {
-        DB::beginTransaction();
         try {
-            $project->slug = $request->slug;
-            $project->meta_title = $request->meta_title;
-            $project->meta_description = $request->meta_description;
-            $project->meta_keywords = $request->meta_keywords;
-            $project->save();
-            DB::commit();
+            $result = $this->projectRepository->updateMetaData($request, $project);
 
             return response()->json([
-                'success' => true,
-                'message' => 'Project Meta Detail has been created successfully',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.projects.index'),
+                'project_id' => $result['project_id'],
             ]);
         } catch (\Exception $error) {
             return response()->json([

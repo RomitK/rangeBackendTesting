@@ -30,7 +30,8 @@ class ProjectRequest extends FormRequest
                     return [
                         'title' => ['required', 'min:3','max:225'],
                         'sub_title' => ['max:225'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
                         'is_new_launch'=> ['boolean'],
                         'is_featured'=> ['boolean'],
                         'is_display_home'=> ['required','boolean'],
@@ -83,7 +84,8 @@ class ProjectRequest extends FormRequest
                     return [
                         'title' => ['required', 'min:3','max:225'],
                         'sub_title' => ['max:225'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
                         'is_new_launch'=> ['boolean'],
                         'is_featured'=> ['boolean'],
                         'is_display_home'=> ['required','boolean'],

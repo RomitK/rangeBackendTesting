@@ -28,9 +28,9 @@
                         </div>
                         
                          @php 
-                                                    $total_gallery_row_count = count($community->imageGallery);
-                                                    $count = 0;
-                                                @endphp
+                            $total_gallery_row_count = count($community->imageGallery);
+                            $count = 0;
+                        @endphp
                         <!-- /.card-header -->
                         <!-- form start -->
                         <form class="form-boder" id="storeForm" method="POST" 
@@ -54,7 +54,36 @@
                                         </div>
                                     </div>
                                     <div class="col-sm-2">
+
                                         <div class="form-group">
+                                            <label for="website_status">Wesbite Status</label>
+                                            @if (in_array(Auth::user()->role, config('constants.isAdmin')))
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.newStatusesWithoutAll') as $key => $value)
+                                                        <option value="{{ $key }}"
+                                                            @if ($community->website_status == $key) selected @endif>
+                                                            {{ $value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @elseif(!in_array(Auth::user()->role, config('constants.isAdmin')))
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.approvedRequested') as $key => $value)
+                                                        <option value="{{ $key }}"
+                                                            @if ($community->website_status == $key) selected @endif>
+                                                            {{ $value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
+                                            @error('website_status')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+
+                                        {{-- <div class="form-group">
                                             <label for="is_approved">Approval Status</label>
                                              @if(in_array(Auth::user()->role, config('constants.isAdmin')))
                                             <select class="form-control @error('is_approved') is-invalid @enderror" id="is_approved" name="is_approved">
@@ -74,7 +103,7 @@
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="form-group">
@@ -94,7 +123,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    {{-- <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="status">Status</label>
                                             <select class="form-control select1 @error('status') is-invalid @enderror"
@@ -111,7 +140,7 @@
                                                 </span>
                                             @enderror
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="display_on_home">Display on Home Page</label>

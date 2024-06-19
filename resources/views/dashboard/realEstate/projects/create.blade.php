@@ -29,31 +29,31 @@
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form class="form-boder" id="storeForm" method="POST" action="{{ route('dashboard.projects.store') }}"
-                            enctype="multipart/form-data">
+                        <form class="form-boder" id="storeForm" method="POST"
+                            action="{{ route('dashboard.projects.store') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="card-body">
                                 <div class="row">
-                                    
+
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="main_community_id">Community</label>
                                             <div class="input-group">
-                                                
-                                            <select data-placeholder="Select Community"
-                                                class=" form-control select1 @error('main_community_id') is-invalid @enderror"
-                                                id="main_community_id" name="main_community_id" required>
-                                                <option></option>
-                                                 @foreach ($communities as $community)
-                                                    <option value="{{ $community->id }}">{{ $community->name }}</option>
-                                                @endforeach
-                                               
-                                            </select>
-                                            @error('main_community_id')
-                                                <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
+
+                                                <select data-placeholder="Select Community"
+                                                    class=" form-control select1 @error('main_community_id') is-invalid @enderror"
+                                                    id="main_community_id" name="main_community_id" required>
+                                                    <option></option>
+                                                    @foreach ($communities as $community)
+                                                        <option value="{{ $community->id }}">{{ $community->name }}</option>
+                                                    @endforeach
+
+                                                </select>
+                                                @error('main_community_id')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
 
                                         </div>
@@ -62,11 +62,10 @@
                                         <div class="form-group">
                                             <label for="developer">Developer</label>
                                             <select class="form-control select1 @error('developer_id') is-invalid @enderror"
-                                                id="developer_id" name="developer_id" data-placeholder="Select Developer" required>
+                                                id="developer_id" name="developer_id" data-placeholder="Select Developer"
+                                                required>
                                                 <option></option>
-                                                <!--@foreach ($developers as $developer)-->
-                                                <!--    <option value="{{ $developer->id }}">{{ $developer->name }}</option>-->
-                                                <!--@endforeach-->
+
                                             </select>
                                             @error('developer_id')
                                                 <span class="invalid-feedback" role="alert">
@@ -79,8 +78,8 @@
                                         <div class="form-group">
                                             <label for="projectOrder">Project Order</label>
                                             <input type="number" value="{{ old('projectOrder') }}"
-                                                class="form-control @error('projectOrder') is-invalid @enderror" id="projectOrder"
-                                                 name="projectOrder" min="1">
+                                                class="form-control @error('projectOrder') is-invalid @enderror"
+                                                id="projectOrder" name="projectOrder" min="1">
                                             @error('projectOrder')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -88,8 +87,8 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="title">Name</label>
@@ -116,7 +115,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    {{-- <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="reference_number">Reference Number</label>
                                             <input type="text" value="{{ old('reference_number') }}"
@@ -129,32 +128,41 @@
                                                 </span>
                                             @enderror
                                         </div>
-                                    </div>
-                                    <div class="col-sm-2">
+                                    </div> --}}
+                                    <div class="col-sm-3">
                                         <div class="form-group">
-                                            <label for="status">Status</label>
-                                            <select class="form-control @error('status') is-invalid @enderror"
-                                                id="status" name="status">
-                                                @foreach (config('constants.statuses') as $key => $value)
-                                                    <option value="{{ $key }}">{{ $value }}</option>
-                                                @endforeach
-                                            </select>
-                                            @error('status')
+                                            <label for="website_status">Wesbite Status</label>
+                                            @if (in_array(Auth::user()->role, config('constants.isAdmin')))
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.newStatusesWithoutAll') as $key => $value)
+                                                        <option value="{{ $key }}">{{ $value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @elseif(!in_array(Auth::user()->role, config('constants.isAdmin')))
+                                                <select class="form-control @error('website_status') is-invalid @enderror"
+                                                    id="website_status" name="website_status">
+                                                    @foreach (config('constants.approvedRequested') as $key => $value)
+                                                        <option value="{{ $key }}">{{ $value }}</option>
+                                                    @endforeach
+                                                </select>
+                                            @endif
+                                            @error('website_status')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
                                     </div>
-                                    
-                                    
+
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="is_display_home">Is Display on Home Page?</label>
                                             <select class="form-control @error('is_display_home') is-invalid @enderror"
                                                 id="is_display_home" name="is_display_home">
-                                                @foreach (config('constants.booleanOptions') as $key=>$value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
+                                                @foreach (config('constants.booleanOptions') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('is_display_home')
@@ -164,13 +172,13 @@
                                             @enderror
                                         </div>
                                     </div>
-                                   
+
 
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="completion_date">HandOver</label>
                                             <div class="input-group">
-                                               
+
                                                 <input type="date" value="{{ old('completion_date') }}"
                                                     class="form-control @error('completion_date') is-invalid @enderror"
                                                     id="completion_date" name="completion_date">
@@ -200,39 +208,39 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="accommodation_id">Property Type</label>
                                             <div class="input-group">
-                                                
+
                                                 <div class="overflow-hidden noSideBorder flex-grow-1">
-                                                <select  data-placeholder="Select Accommodation" style="width: 100%;"
-                                                    class="select2 form-control @error('accommodation_id') is-invalid @enderror"
-                                                    id="accommodation_id" name="accommodation_id">
-                                                    @foreach ($accommodations as $accommodation)
-                                                        <option value="{{ $accommodation->id }}">
-                                                            {{ $accommodation->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                @error('accommodation_id')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
+                                                    <select data-placeholder="Select Accommodation" style="width: 100%;"
+                                                        class="select2 form-control @error('accommodation_id') is-invalid @enderror"
+                                                        id="accommodation_id" name="accommodation_id">
+                                                        @foreach ($accommodations as $accommodation)
+                                                            <option value="{{ $accommodation->id }}">
+                                                                {{ $accommodation->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('accommodation_id')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                    @enderror
+                                                </div>
                                             </div>
 
                                         </div>
                                     </div>
-                                    <div class="col-sm-1">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="used_for">Used For</label>
                                             <select class="form-control select1 @error('used_for') is-invalid @enderror"
                                                 id="used_for" name="used_for">
-                                                 @foreach (config('constants.accommodationType') as $key=>$value)
-                                                <option value="{{ $key }}">{{ $value }}</option>
+                                                @foreach (config('constants.accommodationType') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('used_for')
@@ -242,13 +250,15 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="project_source">Project Source</label>
-                                            <select class="form-control select1 @error('project_source') is-invalid @enderror" id="project_source" name="project_source">
+                                            <select
+                                                class="form-control select1 @error('project_source') is-invalid @enderror"
+                                                id="project_source" name="project_source">
                                                 @foreach (config('constants.propertySources') as $value)
-                                                <option value="{{ $value }}">{{ $value }}</option>
+                                                    <option value="{{ $value }}">{{ $value }}</option>
                                                 @endforeach
                                             </select>
                                             @error('project_source')
@@ -258,13 +268,14 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
-                                    
-                                    
-                                    
+
+
+
+
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                           <label for="features_description">Hightlights Description <small class="text-danger">(Not more 400 characters)</small></label>
+                                            <label for="features_description">Hightlights Description <small
+                                                    class="text-danger">(Not more 400 characters)</small></label>
                                             <textarea id="features_description"
                                                 class="summernote form-control @error('features_description') is-invalid @enderror" name="features_description">{{ old('features_description') }}</textarea>
                                             @error('features_description')
@@ -276,7 +287,8 @@
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="short_description">Short Description<small class="text-danger">(Not more 400 characters)</small></label>
+                                            <label for="short_description">Short Description<small
+                                                    class="text-danger">(Not more 400 characters)</small></label>
                                             <textarea id="short_description" class="summernote form-control @error('short_description') is-invalid @enderror"
                                                 name="short_description">{{ old('short_description') }}</textarea>
                                             @error('short_description')
@@ -298,9 +310,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                     <div class="col-sm-12">
+                                    <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="amenities">Amenities<small class="text-danger">(At least 8 Amenities )</small></label>
+                                            <label for="amenities">Amenities<small class="text-danger">(At least 8
+                                                    Amenities )</small></label>
                                             <select multiple="multiple" data-placeholder="Select Amenities"
                                                 style="width: 100%;"
                                                 class="select2 form-control @error('amenities') is-invalid @enderror"
@@ -316,7 +329,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label for="address">Address</label>
@@ -342,25 +355,6 @@
                                         </div>
                                     </div>
 
-                                    
-                                    <!--<div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="agent_id">Agent</label>-->
-                                    <!--        <select class="form-control select1 @error('agent_id') is-invalid @enderror"-->
-                                    <!--            id="agent_id" name="agent_id">-->
-                                    <!--            @foreach ($agents as $agent)-->
-                                    <!--                <option value="{{ $agent->id }}">{{ $agent->name }}</option>-->
-                                    <!--            @endforeach-->
-                                    <!--        </select>-->
-                                    <!--        @error('agent_id')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    
-                                    
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label for="meta_title">Meta Title</label>
@@ -376,7 +370,8 @@
                                     </div>
                                     <div class="col-sm-12">
                                         <div class="form-group">
-                                            <label for="meta_keywords">Meta Keywords<small class="text-danger">(Multiple keywords separated with comas)</small></label>
+                                            <label for="meta_keywords">Meta Keywords<small class="text-danger">(Multiple
+                                                    keywords separated with comas)</small></label>
                                             <input type="text" value="{{ old('meta_keywords') }}"
                                                 class="form-control @error('meta_keywords') is-invalid @enderror"
                                                 id="meta_keywords" placeholder="Enter Meta Keywords"
@@ -400,46 +395,20 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <!--<div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="brochure">Brochure <small class="text-danger">(PreferSize  less than or equal 2 MB)</small>  </label>-->
-                                    <!--        <div class="custom-file   @error('brochure') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input @error('brochure') is-invalid @enderror" id="brochure"-->
-                                    <!--                name="brochure" accept=".pdf">-->
-                                    <!--            <label class="custom-file-label" for="brochure">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('brochure')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-                                    <!-- <div class="col-sm-6">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="saleOffer">Sale Offer <small class="text-danger">(PreferSize  less than or equal 2 MB)</small>  </label>-->
-                                    <!--        <div class="custom-file  @error('saleOffer') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input" id="saleOffer" name="saleOffer" accept=".pdf" >-->
-                                    <!--            <label class="custom-file-label" for="saleOffer">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('saleOffer')-->
-                                    <!--            <span class="invalid-feedback" role="alert">-->
-                                    <!--                <strong>{{ $message }}</strong>-->
-                                    <!--            </span>-->
-                                    <!--        @enderror-->
-                                            
-                                    <!--    </div>-->
-                                    <!--</div>-->
+
                                     <div class="col-sm-4">
                                         <div class="form-group">
-                                            <label for="mainImage">Main Image <small class="text-danger">(Prefer Dimension 600X300)</small></label>
+                                            <label for="mainImage">Main Image <small class="text-danger">(Prefer Dimension
+                                                    600X300)</small></label>
                                             <div class="custom-file   @error('mainImage') is-invalid @enderror">
-                                                <input type="file" class="custom-file-input   @error('mainImage') is-invalid @enderror" id="mainImage"
-                                                    name="mainImage" accept="image/*">
+                                                <input type="file"
+                                                    class="custom-file-input   @error('mainImage') is-invalid @enderror"
+                                                    id="mainImage" name="mainImage" accept="image/*">
                                                 <label class="custom-file-label" for="mainImage">Choose file</label>
                                             </div>
-                                            <img id="mainImagePreview" style="max-width: 100%; height: 100px; display: none;" />
-                                            
+                                            <img id="mainImagePreview"
+                                                style="max-width: 100%; height: 100px; display: none;" />
+
                                             @error('mainImage')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -447,18 +416,21 @@
                                             @enderror
                                         </div>
                                     </div>
-                                  
-                                    
+
+
                                     <div class="col-sm-4">
                                         <div class="form-group">
-                                            <label for="clusterPlan">Cluster Plan <small class="text-danger">(Prefer Dimension 600X1000)</small></label>
+                                            <label for="clusterPlan">Cluster Plan <small class="text-danger">(Prefer
+                                                    Dimension 600X1000)</small></label>
                                             <div class="custom-file   @error('clusterPlan') is-invalid @enderror">
-                                                <input type="file" class="custom-file-input   @error('clusterPlan') is-invalid @enderror" id="clusterPlan"
-                                                    name="clusterPlan" accept="image/*">
+                                                <input type="file"
+                                                    class="custom-file-input   @error('clusterPlan') is-invalid @enderror"
+                                                    id="clusterPlan" name="clusterPlan" accept="image/*">
                                                 <label class="custom-file-label" for="clusterPlan">Choose file</label>
                                             </div>
-                                            <img id="clusterPlanPreview" style="max-width: 100%; height: 100px; display: none;" />
-                                            
+                                            <img id="clusterPlanPreview"
+                                                style="max-width: 100%; height: 100px; display: none;" />
+
                                             @error('clusterPlan')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -470,12 +442,13 @@
                                         <div class="form-group">
                                             <label for="qr">QR </label>
                                             <div class="custom-file   @error('qr') is-invalid @enderror">
-                                                <input type="file" class="custom-file-input   @error('qr') is-invalid @enderror" id="qr"
-                                                    name="qr" accept="image/*">
+                                                <input type="file"
+                                                    class="custom-file-input   @error('qr') is-invalid @enderror"
+                                                    id="qr" name="qr" accept="image/*">
                                                 <label class="custom-file-label" for="qr">Choose file</label>
                                             </div>
                                             <img id="qrPreview" style="display: none;" />
-                                            
+
                                             @error('qr')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -483,128 +456,158 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-12">
                                         <div class="table-responsive">
                                             <table id="items" class="table table-no-more table-bordered mb-none ">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="4">
-                                                        <label for="gallery">Exterior Gallery<small class="text-danger">(Prefer Dimension 1600x800)</small></label>
-                                                    </th>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="4">
+                                                            <label for="gallery">Exterior Gallery<small
+                                                                    class="text-danger">(Prefer Dimension
+                                                                    1600x800)</small></label>
+                                                        </th>
+                                                    </tr>
+                                                    <tr style="">
+                                                        <th>Image</th>
+                                                        <th>Title</th>
+                                                        <th>Order</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                    @error('exteriorGallery')
+                                                        <tr>
+                                                            <th colspan="4">
+                                                                @error('exteriorGallery')
+                                                                    <span class="invalid-feedback" role="alert">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+                                                                @error('exteriorGallery.*')
+                                                                    <span class="invalid-feedback" role="alert"
+                                                                        style="display: block">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+
+                                                            </th>
+                                                        </tr>
+                                                    @enderror
+                                                </thead>
+
+                                                <tr class="exterior-item-row" style="border-bottom: solid 1px black">
+                                                    <td>
+                                                        <div
+                                                            class="custom-file   @error('exteriorGallery') is-invalid @enderror">
+                                                            <input type="file"
+                                                                class="custom-file-input @error('exteriorGallery') is-invalid @enderror"
+                                                                id="gallery" name="exteriorGallery[0][file]"
+                                                                accept="image/*" onchange="exteriorPreviewImage(event)">
+                                                            <label class="custom-file-label" for="gallery">Choose
+                                                                file</label>
+
+                                                        </div>
+                                                        <img id="exterior-image-preview" src="#"
+                                                            alt="Image Preview" style="display: none;" height="100" />
+
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                            class="form-control @error('key') is-invalid @enderror"
+                                                            placeholder="Enter Title" name="exteriorGallery[0][title]">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0"
+                                                            class="form-control @error('value') is-invalid @enderror"
+                                                            placeholder="Enter Order" name="exteriorGallery[0][order]">
+                                                    </td>
+
+                                                    <td><a class="btn btn-block btn-primary btn-sm addRowExterior updateRow0"
+                                                            href="javascript:;"><i class="fa fa-plus"
+                                                                aria-hidden="true"></i> Add</a>
+                                                    </td>
                                                 </tr>
-                                                <tr style="">
-                                                    <th>Image</th>
-                                                    <th>Title</th>
-                                                    <th>Order</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                                @error('exteriorGallery')
-                                                <tr>
-                                                    <th colspan="4">
-                                                        @error('exteriorGallery')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                        @error('exteriorGallery.*')
-                                                            <span class="invalid-feedback" role="alert" style="display: block">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                            
-                                                    </th>
-                                                </tr>
-                                                @enderror
-                                            </thead>
-        
-                                            <tr class="exterior-item-row" style="border-bottom: solid 1px black">
-                                                <td>
-                                                    <div class="custom-file   @error('exteriorGallery') is-invalid @enderror">
-                                                        <input type="file" class="custom-file-input @error('exteriorGallery') is-invalid @enderror" id="gallery" name="exteriorGallery[0][file]" accept="image/*" onchange="exteriorPreviewImage(event)">
-                                                        <label class="custom-file-label" for="gallery">Choose file</label>
-                                                       
-                                                    </div>
-                                                    <img id="exterior-image-preview" src="#" alt="Image Preview" style="display: none;" height="100"/>
-                                            
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control @error('key') is-invalid @enderror" placeholder="Enter Title" name="exteriorGallery[0][title]" >
-                                                </td>
-                                                <td>
-                                                    <input type="number" min="0" class="form-control @error('value') is-invalid @enderror" placeholder="Enter Order" name="exteriorGallery[0][order]" >
-                                                </td>
-                                               
-                                                <td><a class="btn btn-block btn-primary btn-sm addRowExterior updateRow0" href="javascript:;"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
-                                                </td>
-                                            </tr>
-        
-                                        </table>
+
+                                            </table>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-12">
                                         <div class="table-responsive">
                                             <table id="items" class="table table-no-more table-bordered mb-none ">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="4">
-                                                        <label for="gallery">Interior Gallery<small class="text-danger">(Prefer Dimension 600x600)</small></label>
-                                                    </th>
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="4">
+                                                            <label for="gallery">Interior Gallery<small
+                                                                    class="text-danger">(Prefer Dimension
+                                                                    600x600)</small></label>
+                                                        </th>
+                                                    </tr>
+                                                    <tr style="">
+                                                        <th>Image</th>
+                                                        <th>Title</th>
+                                                        <th>Order</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                    @error('interiorGallery')
+                                                        fdsd
+                                                        <tr>
+                                                            <th colspan="4">
+                                                                @error('interiorGallery')
+                                                                    <span class="invalid-feedback" role="alert">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+                                                                @error('interiorGallery.*')
+                                                                    <span class="invalid-feedback" role="alert"
+                                                                        style="display: block">
+                                                                        <strong>{{ $message }}</strong>
+                                                                    </span>
+                                                                @enderror
+
+                                                            </th>
+                                                        </tr>
+                                                    @enderror
+                                                </thead>
+
+                                                <tr class="interior-item-row" style="border-bottom: solid 1px black">
+                                                    <td>
+                                                        <!--<input type="file" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Installment" name="rows[0][name]" >-->
+
+                                                        <div
+                                                            class="custom-file   @error('interiorGallery') is-invalid @enderror">
+                                                            <input type="file"
+                                                                class="custom-file-input @error('interiorGallery') is-invalid @enderror"
+                                                                id="gallery" name="interiorGallery[0][file]"
+                                                                accept="image/*" onchange="interiorPreviewImage(event)">
+                                                            <label class="custom-file-label" for="gallery">Choose
+                                                                file</label>
+
+                                                        </div>
+                                                        <img id="interior-image-preview" src="#"
+                                                            alt="Image Preview" style="display: none;" height="100" />
+
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                            class="form-control @error('key') is-invalid @enderror"
+                                                            placeholder="Enter Title" name="interiorGallery[0][title]">
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" min="0"
+                                                            class="form-control @error('value') is-invalid @enderror"
+                                                            placeholder="Enter Order" name="interiorGallery[0][order]">
+                                                    </td>
+
+                                                    <td><a class="btn btn-block btn-primary btn-sm addRowInterior updateRow0"
+                                                            href="javascript:;"><i class="fa fa-plus"
+                                                                aria-hidden="true"></i> Add</a>
+                                                    </td>
                                                 </tr>
-                                                <tr style="">
-                                                    <th>Image</th>
-                                                    <th>Title</th>
-                                                    <th>Order</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                                @error('interiorGallery')
-                                                fdsd
-                                                <tr>
-                                                    <th colspan="4">
-                                                        @error('interiorGallery')
-                                                            <span class="invalid-feedback" role="alert">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                        @error('interiorGallery.*')
-                                                            <span class="invalid-feedback" role="alert" style="display: block">
-                                                                <strong>{{ $message }}</strong>
-                                                            </span>
-                                                        @enderror
-                                                        
-                                                    </th>
-                                                </tr>
-                                                @enderror
-                                            </thead>
-        
-                                            <tr class="interior-item-row" style="border-bottom: solid 1px black">
-                                                <td>
-                                                    <!--<input type="file" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Installment" name="rows[0][name]" >-->
-                                                    
-                                                    <div class="custom-file   @error('interiorGallery') is-invalid @enderror">
-                                                        <input type="file" class="custom-file-input @error('interiorGallery') is-invalid @enderror" id="gallery" name="interiorGallery[0][file]" accept="image/*" onchange="interiorPreviewImage(event)">
-                                                        <label class="custom-file-label" for="gallery">Choose file</label>
-                                                       
-                                                    </div>
-                                                    <img id="interior-image-preview" src="#" alt="Image Preview" style="display: none;" height="100"/>
-                                            
-                                                </td>
-                                                <td>
-                                                    <input type="text" class="form-control @error('key') is-invalid @enderror" placeholder="Enter Title" name="interiorGallery[0][title]" >
-                                                </td>
-                                                <td>
-                                                    <input type="number" min="0" class="form-control @error('value') is-invalid @enderror" placeholder="Enter Order" name="interiorGallery[0][order]" >
-                                                </td>
-                                               
-                                                <td><a class="btn btn-block btn-primary btn-sm addRowInterior updateRow0" href="javascript:;"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
-                                                </td>
-                                            </tr>
-        
-                                        </table>
+
+                                            </table>
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                             <!-- /.card-body -->
@@ -703,127 +706,134 @@
     </script>
 @endsection
 @section('js')
-<script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(document).ready(function() {
+
+            // $('#developer_id').on('change', function(e) {
+            //     var developer_id = e.target.value;
+            //     $.ajax({
+            //         url: "{{ route('dashboard.developers.communities') }}",
+            //         type: "POST",
+            //         data: {
+            //             developer_id: developer_id
+            //         },
+            //         success: function(data) {
+            //             $('#main_community_id').empty();
+            //             $('#main_community_id').append('<option value=""></option>');
+            //             $.each(data.communities, function(index, community) {
+            //                 $('#main_community_id').append('<option value="' + community.id + '">' + community.name + '</option>');
+            //             })
+            //         }
+            //     })
+            // });
+
+            $('#main_community_id').on('change', function(e) {
+                var category_id = e.target.value;
+                $.ajax({
+                    url: "{{ route('dashboard.community.developers') }}",
+                    type: "POST",
+                    data: {
+                        category_id: category_id
+                    },
+                    success: function(data) {
+                        $('#developer_id').empty();
+                        $('#developer_id').append('<option value=""></option>');
+                        $.each(data.developers, function(index, developer) {
+                            $('#developer_id').append('<option value="' + developer.id +
+                                '">' + developer.name + '</option>');
+                        })
+                    }
+                })
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function exteriorPreviewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('exterior-image-preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
         }
-    });
-    $(document).ready(function() {
-        
-        // $('#developer_id').on('change', function(e) {
-        //     var developer_id = e.target.value;
-        //     $.ajax({
-        //         url: "{{ route('dashboard.developers.communities') }}",
-        //         type: "POST",
-        //         data: {
-        //             developer_id: developer_id
-        //         },
-        //         success: function(data) {
-        //             $('#main_community_id').empty();
-        //             $('#main_community_id').append('<option value=""></option>');
-        //             $.each(data.communities, function(index, community) {
-        //                 $('#main_community_id').append('<option value="' + community.id + '">' + community.name + '</option>');
-        //             })
-        //         }
-        //     })
-        // });
-        
-        $('#main_community_id').on('change', function(e) {
-            var category_id = e.target.value;
-            $.ajax({
-                url: "{{ route('dashboard.community.developers') }}",
-                type: "POST",
-                data: {
-                    category_id: category_id
-                },
-                success: function(data) {
-                    $('#developer_id').empty();
-                    $('#developer_id').append('<option value=""></option>');
-                    $.each(data.developers, function(index, developer) {
-                        $('#developer_id').append('<option value="' + developer.id + '">' + developer.name + '</option>');
-                    })
-                }
-            })
-        });
-    });
-</script>
 
-<script type="text/javascript">
-    function exteriorPreviewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('exterior-image-preview');
-            output.src = reader.result;
-            output.style.display = 'block';
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function interiorPreviewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('interior-image-preview');
-            output.src = reader.result;
-            output.style.display = 'block';
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    
-
-    $(document).on('change', '.exterior-file-upload', function() {
-        
-        var previewId = $(this).data('target');
-       
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#' + previewId).attr('src', e.target.result);
-            $('#' + previewId).show();
-        };
-        reader.readAsDataURL(this.files[0]);
-    });
-
-    $(document).on('change', '.interior-file-upload', function() {
-        
-        var previewId = $(this).data('target');
-       
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $('#' + previewId).attr('src', e.target.result);
-            $('#' + previewId).show();
-        };
-        reader.readAsDataURL(this.files[0]);
-    });
+        function interiorPreviewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('interior-image-preview');
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
 
 
-    $(document).ready(function() {
-        var exterior = 1;
-        var exteriorCount = 0;
-        $(document).on('click', '.addRowExterior', function() {
-            $(this).text('x Remove');
-            $(this).attr('class', 'btn btn-danger btn-sm delExterior');
-            $(".exterior-item-row:last").find('.exteriorMybtn').hide();
-            exterior++;
-            exteriorCount++;
-            var exteriorId = exteriorCount;
-        
-            var exteriorNewRow = '<tr class="exterior-item-row" style="border-bottom: solid 1px black">' +
-                         '<td class="main_td">' +
-                         '  <input type="file" class="form-control exterior-file-upload"  accept="image/*" data-target="exteriorPreviewImage' + exteriorId + '" name="exteriorGallery[' + exteriorId +'][file]" required>' +
-                         '  <img id="exteriorPreviewImage' + exteriorId + '" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />' +
-                         '</td>' +
-                         '<td class="main_td"><input type="text" class="form-control" placeholder="Enter Title" name="exteriorGallery[' + exteriorId +'][title]"></td>' +
-                         '<td class="main_td"><input type="number" min="0" class="form-control" placeholder="Enter Order" name="exteriorGallery[' + exteriorId +'][order]"></td>' +
-                         '<td data-title="Action" class="main_td"> <button type="button" class="btn btn-primary btn-sm addRowExterior" id="updateRow' +  exteriorId +  '">+ Add</button> ' +
-                         '  <a class="Remove exteriorMybtn btn btn-danger btn-sm" href="javascript:;" title="Remove row"> x Remove</a>' +
-                         '</td>' +
-                         '</tr>';
-        
-            $(".exterior-item-row:last").after(exteriorNewRow);
+
+        $(document).on('change', '.exterior-file-upload', function() {
+
+            var previewId = $(this).data('target');
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#' + previewId).attr('src', e.target.result);
+                $('#' + previewId).show();
+            };
+            reader.readAsDataURL(this.files[0]);
         });
 
-        $(document).on('click', '.delExterior', function() {
+        $(document).on('change', '.interior-file-upload', function() {
+
+            var previewId = $(this).data('target');
+
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#' + previewId).attr('src', e.target.result);
+                $('#' + previewId).show();
+            };
+            reader.readAsDataURL(this.files[0]);
+        });
+
+
+        $(document).ready(function() {
+            var exterior = 1;
+            var exteriorCount = 0;
+            $(document).on('click', '.addRowExterior', function() {
+                $(this).text('x Remove');
+                $(this).attr('class', 'btn btn-danger btn-sm delExterior');
+                $(".exterior-item-row:last").find('.exteriorMybtn').hide();
+                exterior++;
+                exteriorCount++;
+                var exteriorId = exteriorCount;
+
+                var exteriorNewRow =
+                    '<tr class="exterior-item-row" style="border-bottom: solid 1px black">' +
+                    '<td class="main_td">' +
+                    '  <input type="file" class="form-control exterior-file-upload"  accept="image/*" data-target="exteriorPreviewImage' +
+                    exteriorId + '" name="exteriorGallery[' + exteriorId + '][file]" required>' +
+                    '  <img id="exteriorPreviewImage' + exteriorId +
+                    '" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />' +
+                    '</td>' +
+                    '<td class="main_td"><input type="text" class="form-control" placeholder="Enter Title" name="exteriorGallery[' +
+                    exteriorId + '][title]"></td>' +
+                    '<td class="main_td"><input type="number" min="0" class="form-control" placeholder="Enter Order" name="exteriorGallery[' +
+                    exteriorId + '][order]"></td>' +
+                    '<td data-title="Action" class="main_td"> <button type="button" class="btn btn-primary btn-sm addRowExterior" id="updateRow' +
+                    exteriorId + '">+ Add</button> ' +
+                    '  <a class="Remove exteriorMybtn btn btn-danger btn-sm" href="javascript:;" title="Remove row"> x Remove</a>' +
+                    '</td>' +
+                    '</tr>';
+
+                $(".exterior-item-row:last").after(exteriorNewRow);
+            });
+
+            $(document).on('click', '.delExterior', function() {
                 $(this).parent().parent().remove();
             });
             $(document).on('click', '.Remove', function() {
@@ -832,9 +842,9 @@
                 $('.delExterior').eq(-1).attr('class', 'btn btn-primary btn-sm addRowExterior');
             });
         })
-    
-    
-    
+
+
+
         var interior = 1;
         var interiorcount = 0;
         $(document).on('click', '.addRowInterior', function() {
@@ -844,32 +854,37 @@
             interior++;
             interiorcount++;
             var interiorId = interiorcount;
-        
+
             var interiorNewRow = '<tr class="interior-item-row" style="border-bottom: solid 1px black">' +
-                         '<td class="main_td">' +
-                         '  <input type="file" class="form-control interior-file-upload" accept="image/*" data-target="interiorPreviewImage' + interiorId + '" name="exteriorGallery[' + interiorId +'][file]" required>' +
-                         '  <img id="interiorPreviewImage' + interiorId + '" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />' +
-                         '</td>' +
-                         '<td class="main_td"><input type="text" class="form-control" placeholder="Enter Title" name="exteriorGallery[' + interiorId +'][title]"></td>' +
-                         '<td class="main_td"><input type="number" min="0" class="form-control" placeholder="Enter Order" name="exteriorGallery[' + interiorId +'][order]"></td>' +
-                         '<td data-title="Action" class="main_td"> <button type="button" class="btn btn-primary btn-sm addRowInterior" id="updateRow' +  interiorId +  '">+ Add</button> ' +
-                         '  <a class="interiorRemove interiorMybtn btn btn-danger btn-sm" href="javascript:;" title="interiorRemove row"> x Remove</a>' +
-                         '</td>' +
-                         '</tr>';
-        
+                '<td class="main_td">' +
+                '  <input type="file" class="form-control interior-file-upload" accept="image/*" data-target="interiorPreviewImage' +
+                interiorId + '" name="exteriorGallery[' + interiorId + '][file]" required>' +
+                '  <img id="interiorPreviewImage' + interiorId +
+                '" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />' +
+                '</td>' +
+                '<td class="main_td"><input type="text" class="form-control" placeholder="Enter Title" name="exteriorGallery[' +
+                interiorId + '][title]"></td>' +
+                '<td class="main_td"><input type="number" min="0" class="form-control" placeholder="Enter Order" name="exteriorGallery[' +
+                interiorId + '][order]"></td>' +
+                '<td data-title="Action" class="main_td"> <button type="button" class="btn btn-primary btn-sm addRowInterior" id="updateRow' +
+                interiorId + '">+ Add</button> ' +
+                '  <a class="interiorRemove interiorMybtn btn btn-danger btn-sm" href="javascript:;" title="interiorRemove row"> x Remove</a>' +
+                '</td>' +
+                '</tr>';
+
             $(".interior-item-row:last").after(interiorNewRow);
         });
 
         $(document).on('click', '.interiorDel', function() {
-                $(this).parent().parent().remove();
+            $(this).parent().parent().remove();
         });
         $(document).on('click', '.interiorRemove', function() {
-                $(this).parent().parent().remove();
-                $(".interiorDel").eq(-1).text('+ Add');
-                $('.interiorDel').eq(-1).attr('class', 'btn btn-primary btn-sm addRowInterior');
+            $(this).parent().parent().remove();
+            $(".interiorDel").eq(-1).text('+ Add');
+            $('.interiorDel').eq(-1).attr('class', 'btn btn-primary btn-sm addRowInterior');
         });
-       
-        
+
+
         document.getElementById('mainImage').addEventListener('change', function(event) {
             showPreview(event, 'mainImagePreview');
         });
@@ -880,8 +895,8 @@
             showPreview(event, 'qrPreview');
         });
 
-        
-        
+
+
         function showPreview(event, previewId) {
             var reader = new FileReader();
             reader.onload = function() {
@@ -891,6 +906,5 @@
             };
             reader.readAsDataURL(event.target.files[0]);
         }
-
-</script>
+    </script>
 @endsection

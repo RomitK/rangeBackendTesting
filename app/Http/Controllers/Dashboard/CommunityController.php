@@ -29,20 +29,17 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\{
-    CommunityExportAndEmailData
+    CommunityExportAndEmailData,
+    CommunityLogExportAndEmailData
 };
+use App\Repositories\Contracts\CommunityRepositoryInterface;
 
 class CommunityController extends Controller
 {
-    function __construct()
-    {
-        // $this->middleware(
-        //     'permission:' . config('constants.Permissions.real_estate') . '|' . config('constants.Permissions.seo'),
-        //     [
-        //         'only' => ['index', 'create', 'store', 'show', 'edit', 'update', 'destroy', 'subCommunities', 'mediaDestroy', 'mediasDestroy']
-        //     ]
-        // );
+    protected $communityRepository;
 
+    function __construct(CommunityRepositoryInterface $communityRepository)
+    {
 
         $this->middleware(function ($request, $next) {
             // Check if the user has the "real_estate" permission
@@ -63,6 +60,7 @@ class CommunityController extends Controller
 
             return $next($request);
         });
+        $this->communityRepository = $communityRepository;
     }
     /**
      * Display a listing of the resource.
@@ -71,100 +69,29 @@ class CommunityController extends Controller
      */
     public function index(Request $request)
     {
-        $page_size = 25;
-        $current_page = isset($request->item) ? $request->item : $page_size;
-        if (isset($request->page)) {
-            $sr_no_start = ($request->page * $current_page) - $current_page + 1;
+
+
+        $result = $this->communityRepository->filterData($request);
+
+        if ($request->has('export')) {
+            // Handle export scenario
+            return $result; // This will return the JSON response from your repository method
         } else {
-            $sr_no_start = 1;
+            // Handle normal pagination scenario
+            $communities = $result['communities'];
+            $current_page = $result['current_page'];
+            $sr_no_start = $result['sr_no_start'];
+
+            $developers = Developer::latest()->pluck('name', 'id');
+
+
+            return view('dashboard.realEstate.communities.index', compact(
+                'communities',
+                'current_page',
+                'sr_no_start',
+                'developers'
+            ));
         }
-
-        $collection = Community::with(['user' => function ($query) {
-            return $query->select('id', 'name');
-        }]);
-        if (isset($request->data_range_input)) {
-            $dateRange = $request->data_range_input;
-            // Use explode to split the date range by " - "
-            $dates = explode(' - ', $dateRange);
-            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
-            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
-
-            $startDate = Carbon::parse($dates[0]);
-            $endDate = Carbon::parse($dates[1])->endOfDay();
-
-            $collection->whereBetween('created_at', [$startDate, $endDate]);
-        }
-        if (isset($request->website_status)) {
-            $collection->WebsiteStatus($request->website_status);
-        }
-        if (isset($request->status)) {
-            $collection->where('status', $request->status);
-        }
-        if (isset($request->display_on_home)) {
-            $collection->where('display_on_home', $request->display_on_home);
-        }
-        if (isset($request->developer_ids)) {
-            $developer_ids =  $request->developer_ids;
-
-            $collection->whereHas('developers', function ($query) use ($developer_ids) {
-                $query->whereIn('developers.id', $developer_ids);
-            });
-        }
-        if (isset($request->is_approved)) {
-            $collection->where('is_approved', $request->is_approved);
-        }
-
-        if (isset($request->keyword)) {
-            $keyword = $request->keyword;
-            $collection->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%$keyword%");
-            });
-        }
-
-        if (isset($request->orderby)) {
-            $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
-            $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $collection = $collection->orderByRaw('ISNULL(communityOrder)')->orderBy($orderBy, $direction);
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                CommunityExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $communities = $collection->paginate($current_page);
-            }
-        } else {
-            $collection = $collection->latest();
-
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                CommunityExportAndEmailData::dispatch($request->all(), $collection->get());
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $communities = $collection->paginate($current_page);
-            }
-        }
-
-
-        // $communities = $collection->latest()->paginate($current_page);
-        $developers = Developer::latest()->pluck('name', 'id');
-
-        return view('dashboard.realEstate.communities.index', compact(
-            'communities',
-            'developers',
-            'sr_no_start',
-            'current_page'
-        ));
     }
 
     /**
@@ -183,15 +110,7 @@ class CommunityController extends Controller
 
         return view('dashboard.realEstate.communities.create', compact('developers', 'amenities', 'highlights'));
     }
-    public function mainImage()
-    {
 
-        foreach (Community::latest()->get() as $communnity) {
-            $communnity->listing_image = $communnity->listMainImage;
-            $communnity->save();
-            echo "communnity-" . $communnity->id;
-        }
-    }
     /**
      * Store a newly created resource in storage.
      *
@@ -201,122 +120,12 @@ class CommunityController extends Controller
     public function store(CommunityRequest $request)
     {
         try {
-            $community = new Community;
-            $community->name = $request->name;
-            $community->status = $request->status;
-            $community->communityOrder = $request->communityOrder;
-            $community->emirates = $request->emirates;
-            //$community->short_description = $request->short_description;
-            $community->shortDescription = $request->shortDescription;
-            $community->description = $request->description;
-            $community->meta_title = $request->meta_title;
-            $community->meta_description = $request->meta_description;
-            $community->meta_keywords = $request->meta_keywords;
-            $community->location_iframe = $request->location_iframe;
-            $community->display_on_home = $request->display_on_home;
-            $community->address = $request->address;
-            $community->address_latitude = $request->address_latitude;
-            $community->address_longitude = $request->address_longitude;
-            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
-                $community->is_approved = config('constants.approved');
-                $community->approval_id = Auth::user()->id;
-            } else {
-                $community->is_approved = config('constants.requested');
-            }
-
-            if ($request->hasFile('mainImage')) {
-                $img =  $request->file('mainImage');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '.' . $ext;
-                $community->addMediaFromRequest('mainImage')->usingFileName($imageName)->toMediaCollection('mainImages', 'commnityFiles');
-            }
-
-            if ($request->hasFile('listMainImage')) {
-                $img =  $request->file('listMainImage');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '.' . $ext;
-                $community->addMediaFromRequest('listMainImage')->usingFileName($imageName)->toMediaCollection('listMainImages', 'commnityFiles');
-            }
-
-
-            if ($request->hasFile('clusterPlan')) {
-
-                $img =  $request->file('clusterPlan');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '.' . $ext;
-                $community->addMediaFromRequest('clusterPlan')->usingFileName($imageName)->toMediaCollection('clusterPlans', 'commnityFiles');
-            }
-
-            // if ($request->hasFile('imageGallery')) {
-            //     $subImages = $request->file('imageGallery');
-
-            //     foreach ($subImages as $subImage) {
-            //         $community->addMedia($subImage)->toMediaCollection('imageGalleries', 'commnityFiles');
-            //     }
-            // }
-
-            if ($request->has('gallery')) {
-                foreach ($request->gallery as $key => $img) {
-                    if (array_key_exists("file", $img) && $img['file']) {
-                        $title = $img['title'] ?? $request->name;
-                        $order =  $img['order'] ?? null;
-
-                        $community->addMedia($img['file'])
-                            ->withCustomProperties([
-                                'title' => $title,
-                                'order' => $order
-                            ])
-                            ->toMediaCollection('imageGalleries', 'commnityFiles');
-                    }
-                }
-            }
-
-
-            if ($request->hasFile('video')) {
-                $video =  $request->file('video');
-                $ext = $video->getClientOriginalExtension();
-                $videoName =  Str::slug($request->name) . '.' . $ext;
-                $community->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'commnityFiles');
-            }
-
-            $community->user_id = Auth::user()->id;
-            //$community->parent_id = $request->parent_id;
-            // if($request->parant_id){
-            //     $parentCommunity = Community::find($request->parant_id);
-            //     $community->search_keyword = $request->name ."(". $parentCommunity->name.", ".$request->emirates.")";
-            // }else{
-            //      $community->search_keyword = $request->name."(".$request->emirates.")";
-            // }
-
-            $community->updated_by = Auth::user()->id;
-
-            $community->save();
-
-            $community->banner_image = $community->mainImage;
-            $community->listing_image = $community->listMainImage;
-            $community->save();
-            if ($request->has('categoryIds')) {
-                $community->categories()->attach($request->categoryIds);
-            }
-            if ($request->has('tagIds')) {
-                foreach ($request->tagIds as $tag) {
-                    $community->tags()->create(['tag_category_id' => $tag]);
-                }
-            }
-            if ($request->has('developerIds')) {
-                $community->communityDevelopers()->attach($request->developerIds);
-            }
-            if ($request->has('amenityIds')) {
-                $community->amenities()->attach($request->amenityIds);
-            }
-            if ($request->has('highlightIds')) {
-                $community->highlights()->attach($request->highlightIds);
-            }
-
+            $result = $this->communityRepository->storeData($request);
             return response()->json([
-                'success' => true,
-                'message' => 'Community has been created successfully.',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.communities.index'),
+                'developer_id' => $result['developer_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
             return response()->json([
@@ -338,7 +147,23 @@ class CommunityController extends Controller
 
         return redirect()->route('community', $community->slug);
     }
+    public function logs(Community $community, Request $request)
+    {
 
+        if (isset($request->export)) {
+            $data = [
+                'email' => Auth::user()->email,
+                'userName' => Auth::user()->name,
+                'developer_id' => $community->id, // Example of passing the developer ID
+            ];
+
+            CommunityLogExportAndEmailData::dispatch($data, $community);
+
+            return redirect()->route('dashboard.communities.logs', $community->id)->with('success', 'Please Check Email, Log History has been sent');
+        } else {
+            return view('dashboard.realEstate.communities.logs.index', compact('community'));
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *
@@ -347,22 +172,14 @@ class CommunityController extends Controller
      */
     public function edit($community)
     {
-        $community = Community::with('amenities', 'highlights')->find($community);
 
-        $amenities = DB::table('amenities')->select('id', 'name')->get();
-        $developers = DB::table('developers')->select('id', 'name')->get();
-        $highlights = DB::table('highlights')->select('id', 'name')->get();
+        $community = Community::with('amenities', 'highlights', 'communityDevelopers')->find($community);
 
-        // $amenities = [];
-        // $developers =  [];
-        // $highlights =  [];
+        $amenities = DB::table('amenities')->select('id', 'name')->whereNull('deleted_at')->get();
+        $developers = DB::table('developers')->select('id', 'name')->whereNull('deleted_at')->get();
+        $highlights = DB::table('highlights')->select('id', 'name')->whereNull('deleted_at')->get();
 
-        //   return response()->json([
-        //       'developers'=>$devlopers,
-        //       'community'=>$community,
-        //       'amenities'=>$amenities, 
-        //       'highlights'=>$highlights
-        //       ]);
+
         return view('dashboard.realEstate.communities.edit', compact('developers', 'community', 'amenities', 'highlights'));
     }
 
@@ -375,139 +192,16 @@ class CommunityController extends Controller
      */
     public function update(CommunityRequest $request, Community $community)
     {
-        DB::beginTransaction();
         try {
-
-            $community->name = $request->name;
-            $community->status = $request->status;
-            $community->communityOrder = $request->communityOrder;
-            $community->emirates = $request->emirates;
-
-            $community->shortDescription = $request->shortDescription;
-            $community->description = $request->description;
-            $community->meta_title = $request->meta_title;
-            $community->meta_description = $request->meta_description;
-            $community->meta_keywords = $request->meta_keywords;
-            $community->location_iframe = $request->location_iframe;
-            $community->display_on_home = $request->display_on_home;
-            $community->address = $request->address;
-            $community->address_latitude = $request->address_latitude;
-            $community->address_longitude = $request->address_longitude;
-
-            if ($request->hasFile('mainImage')) {
-                $community->clearMediaCollection('mainImages');
-                $img =  $request->file('mainImage');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '.' . $ext;
-                $community->addMediaFromRequest('mainImage')->usingFileName($imageName)->toMediaCollection('mainImages', 'commnityFiles');
-            }
-
-
-            // if ($request->hasFile('listMainImage')) {
-            //     $community->clearMediaCollection('listMainImages');
-
-            //     $img =  $request->file('listMainImage');
-            //     $ext = $img->getClientOriginalExtension();
-            //     $imageName =  Str::slug($request->name).'.'.$ext;
-            //     $community->addMediaFromRequest('listMainImage')->usingFileName($imageName)->toMediaCollection('listMainImages', 'commnityFiles');
-            // }
-            if ($request->hasFile('clusterPlan')) {
-
-                $community->clearMediaCollection('clusterPlans');
-                $img =  $request->file('clusterPlan');
-                $ext = $img->getClientOriginalExtension();
-                $imageName =  Str::slug($request->name) . '.' . $ext;
-                $community->addMediaFromRequest('clusterPlan')->usingFileName($imageName)->toMediaCollection('clusterPlans', 'commnityFiles');
-            }
-
-            // if ($request->hasFile('imageGallery')) {
-            //     $subImages = $request->file('imageGallery');
-
-            //     foreach ($subImages as $subImage) {
-            //         $community->addMedia($subImage)->toMediaCollection('imageGalleries', 'commnityFiles');
-            //     }
-            // }
-
-
-            if ($request->has('gallery')) {
-                foreach ($request->gallery as $img) {
-                    $title = $img['title'] ?? $request->name;
-                    $order =  $img['order'] ?? null;
-
-                    if ($img['old_gallery_id'] > 0) {
-
-                        $mediaItem = Media::find($img['old_gallery_id']);
-                        $mediaItem->setCustomProperty('title', $title);
-                        $mediaItem->setCustomProperty('order', $order);
-                        $mediaItem->save();
-                    } else {
-                        if (array_key_exists("file", $img) && $img['file']) {
-                            $community->addMedia($img['file'])
-                                ->withCustomProperties([
-                                    'title' => $title,
-                                    'order' => $order
-                                ])
-                                ->toMediaCollection('imageGalleries', 'commnityFiles');
-                        }
-                    }
-                }
-            }
-
-
-
-
-            $community->user_id = Auth::user()->id;
-
-            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
-                $community->approval_id = Auth::user()->id;
-
-                if (in_array($request->is_approved, ["approved", "rejected"])) {
-                    $community->is_approved = $request->is_approved;
-                }
-            } else {
-                $community->is_approved = "requested";
-                $community->approval_id = null;
-            }
-            $community->updated_by = Auth::user()->id;
-
-            $community->save();
-            $community->banner_image = $community->mainImage;
-
-
-
-            $community->save();
-
-
-            if ($request->has('developerIds')) {
-                $community->communityDevelopers()->detach();
-                $community->communityDevelopers()->attach($request->developerIds);
-            } else {
-                $community->communityDevelopers()->detach();
-            }
-
-
-            if ($request->has('amenityIds')) {
-                $community->amenities()->detach();
-                $community->amenities()->attach($request->amenityIds);
-            } else {
-                $community->amenities()->detach();
-            }
-
-            if ($request->has('highlightIds')) {
-                $community->highlights()->detach();
-                $community->highlights()->attach($request->highlightIds);
-            } else {
-                $community->highlights()->detach();
-            }
-
-            Project::where('community_id', $community->id)->update(['updated_brochure' => 0]);
-            DB::commit();
+            $result = $this->communityRepository->updateData($request, $community);
             return response()->json([
-                'success' => true,
-                'message' => 'Community has been updated successfully.',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.communities.index'),
+                'community_id' => $result['community_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
+
             return response()->json([
                 'success' => false,
                 'message' => $error->getMessage(),
@@ -600,19 +294,14 @@ class CommunityController extends Controller
     }
     public function updateMeta(CommunityMetaRequest $request, Community $community)
     {
-        DB::beginTransaction();
         try {
-            $community->slug = $request->slug;
-            $community->meta_title = $request->meta_title;
-            $community->meta_description = $request->meta_description;
-            $community->meta_keywords = $request->meta_keywords;
-            $community->save();
-            DB::commit();
+            $result = $this->communityRepository->updateMetaData($request, $community);
 
             return response()->json([
-                'success' => true,
-                'message' => 'Community Meta Detail has been created successfully',
+                'success' => $result['success'],
+                'message' => $result['message'],
                 'redirect' => route('dashboard.communities.index'),
+                'community_id' => $result['community_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
             return response()->json([

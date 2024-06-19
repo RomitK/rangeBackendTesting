@@ -25,40 +25,41 @@ class DeveloperRequest extends FormRequest
     public function rules()
     {
         switch ($this->method()) {
-            case 'POST':
-                {
+            case 'POST': {
                     return [
-                        'name' => ['required',Rule::unique('developers')->whereNull('deleted_at'), 'min:3','max:225'],
-                        'logo' => ['required','image','max:2048'],
-                        'image'=>['image'],
-                        'video'=>['mimes:mp4,mov,ogx,oga,ogv,ogg,webm', 'max:2048'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'orderBy'=>['integer','min:0'],
-                        'tagIds'=>['array'],
+                        'name' => ['required', Rule::unique('developers')->whereNull('deleted_at'), 'min:3', 'max:225'],
+                        // 'logo' => ['required', 'image', 'max:2048'],
+                        'image' => ['image'],
+                        'video' => ['mimes:mp4,mov,ogx,oga,ogv,ogg,webm', 'max:2048'],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
+                        'orderBy' => ['integer', 'min:0'],
+                        'tagIds' => ['array'],
                         'tagIds.*' => [Rule::exists('tag_categories', 'id')],
-                        
-                        'gallery'=>['array'],
-                        'gallery.*.file' => ['image','max:1048'] 
-                        
+
+                        'gallery' => ['array'],
+                        'gallery.*.file' => ['image', 'max:1048']
+
                     ];
                 }
             case 'PATCH':
-            case 'PUT':
-                {
+            case 'PUT': {
                     return [
-                        'name' => ['required',Rule::unique('developers')->ignore($this->developer)->whereNull('deleted_at'), 'min:3','max:225'],
+                        'name' => ['required', Rule::unique('developers')->ignore($this->developer)->whereNull('deleted_at'), 'min:3', 'max:225'],
                         'logo' => ['image', 'max:2048'],
-                        'image'=>['image'],
-                        'video'=>['mimes:mp4,mov,ogx,oga,ogv,ogg,webm', 'max:2048'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'orderBy'=>['integer','min:0'],
-                        'tagIds'=>['array'],
+                        'image' => ['image'],
+                        'video' => ['mimes:mp4,mov,ogx,oga,ogv,ogg,webm', 'max:2048'],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
+                        'orderBy' => ['integer', 'min:0'],
+                        'tagIds' => ['array'],
                         'tagIds.*' => [Rule::exists('tag_categories', 'id')],
-                        'gallery'=>['array'],
-                        'gallery.*.file' => ['image','max:1048']
+                        'gallery' => ['array'],
+                        'gallery.*.file' => ['image', 'max:1048']
                     ];
                 }
-            default: break;
+            default:
+                break;
         }
     }
 }

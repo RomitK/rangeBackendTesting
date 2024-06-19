@@ -173,8 +173,8 @@
                                         <th>SR.NO</th>
                                         <th>Name</th>
                                         <th>Website Status</th>
-                                        <th>Status</th>
-                                        <th>Approval Status</th>
+                                        {{-- <th>Status</th>
+                                        <th>Approval Status</th> --}}
                                         <th>Display on Home</th>
                                         <th>Order Number <span class="arrow up"
                                                 onclick="orderBy('communityOrder', 'asc')">&#x25B2;</span><span
@@ -195,15 +195,15 @@
                                             <td>
                                                 <span
                                                     class="badge 
-                                                    @if ($community->websiteStatus === config('constants.NA')) bg-info 
-                                                    @elseif($community->websiteStatus === config('constants.Available')) bg-success 
-                                                    @elseif($community->websiteStatus === config('constants.Rejected'))  bg-danger 
-                                                    @elseif($community->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+                                                    @if ($community->website_status === config('constants.NA')) bg-info 
+                                                    @elseif($community->website_status === config('constants.available')) bg-success 
+                                                    @elseif($community->website_status === config('constants.rejected'))  bg-danger 
+                                                    @elseif($community->website_status === config('constants.requested'))  bg-warning @endif">
 
-                                                    {{ $community->websiteStatus }}
+                                                    {{ ucfirst($community->website_status) }}
                                                 </span>
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 <span
                                                     class="badge @if ($community->status === 'active') bg-success @else bg-danger @endif">
                                                     {{ $community->status }}
@@ -224,7 +224,7 @@
                                                         Rejected
                                                     @endif
                                                 </span>
-                                            </td>
+                                            </td> --}}
 
                                             <td>
                                                 <span
@@ -261,7 +261,7 @@
                                                     </a>
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"
-                                                            href="{{ route('dashboard.community.meta', $community->id) }}">
+                                                            href="{{ route('dashboard.communities.meta', $community->id) }}">
                                                             <i class="fas fa-database"></i>
                                                             Meta Details
                                                         </a>
@@ -274,6 +274,12 @@
                                                         </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
+                                                        <a class="btn btn-dark btn-sm"
+                                                            href="{{ route('dashboard.communities.logs', $community->id) }}">
+                                                            <i class="fas fa-database"></i>
+                                                            History
+                                                        </a>
+
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
                                                             <i class="fas fa-trash"></i>
                                                             Delete
@@ -287,7 +293,7 @@
                             </table>
                             <div class="row">
                                 <div class="col-12 text-center pagination">
-                                
+
                                     {!! $communities->appends(request()->query())->links() !!}
                                 </div>
 

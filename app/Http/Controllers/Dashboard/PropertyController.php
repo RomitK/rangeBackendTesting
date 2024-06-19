@@ -34,17 +34,22 @@ use App\Models\{
 use App\Jobs\{
     StorePropertyBrochure,
     StorePropertySaleOffer,
-    PropertyExportAndEmailData
+    PropertyExportAndEmailData,
+    PropertyLogExportAndEmailData
 };
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\Contracts\PropertyRepositoryInterface;
 use PDF;
 
 class PropertyController extends Controller
 {
-    function __construct()
+    protected $propertyRepository;
+    function __construct(PropertyRepositoryInterface $propertyRepository)
     {
+        $this->propertyRepository = $propertyRepository;
+
         //$this->middleware('permission:'.config('constants.Permissions.xml_listings'), ['only' => ['index','create', 'edit', 'update', 'destroy']]);
     }
     /**
@@ -54,199 +59,50 @@ class PropertyController extends Controller
      */
     public function index(Request $request)
     {
-        $page_size = 25;
-        $current_page = isset($request->item) ? $request->item : $page_size;
-        if (isset($request->page)) {
-            $sr_no_start = ($request->page * $current_page) - $current_page + 1;
+        $result = $this->propertyRepository->filterData($request);
+
+        if ($request->has('export')) {
+            // Handle export scenario
+            return $result; // This will return the JSON response from your repository method
         } else {
-            $sr_no_start = 1;
+            // Handle normal pagination scenario
+            $properties = $result['properties'];
+            $current_page = $result['current_page'];
+            $sr_no_start = $result['sr_no_start'];
+
+            $agents = Agent::select('id', 'name')->latest()->get();
+            $categories = Category::active()->latest()->pluck('name', 'id');
+            $categories->prepend('All', '');
+            $projects = Project::mainProject()->latest()->pluck('title', 'id');
+            $completionStatuses = CompletionStatus::active()->where('for_property', 1)->latest()->pluck('name', 'id');
+            $completionStatuses->prepend('All', '');
+            $exclusiveOptions = [
+                'All' => 'All',
+                'non-exclusive' => 'Non-Exclusive',
+                'exclusive' => 'Exclusive',
+            ];
+            $properties->appends($request->all());
+
+            $users = User::latest()->pluck('name', 'id');
+            $users->prepend('All', '');
+
+
+            $accommodations = Accommodation::active()->pluck('name', 'id');
+            $accommodations->prepend('All', '');
+
+            return view('dashboard.realEstate.properties.index', compact(
+                'properties',
+                'completionStatuses',
+                'projects',
+                'current_page',
+                'agents',
+                'exclusiveOptions',
+                'categories',
+                'sr_no_start',
+                'users',
+                'accommodations'
+            ));
         }
-
-        $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
-
-        if (isset($request->website_status)) {
-            $collection->WebsiteStatus($request->website_status);
-        }
-        if (isset($request->qr_link)) {
-
-            if ($request->qr_link == '1') {
-                $collection->whereHas('project', function ($query) {
-                    $query->where('qr_link', '!=', '');
-                });
-            } elseif ($request->qr_link == '0') {
-                $collection->whereHas('project', function ($query) {
-                    $query->where('qr_link',  '');
-                });
-            }
-        }
-        if (isset($request->permit_number)) {
-            if ($request->permit_number == '1') {
-                $collection->whereHas('project', function ($query) {
-                    $query->whereNotNull('permit_number');
-                });
-            } elseif ($request->permit_number == '0') {
-
-                $collection->whereHas('project', function ($query) {
-                    $query->whereNull('permit_number');
-                });
-            }
-        }
-
-        if (isset($request->data_range_input)) {
-            $dateRange = $request->data_range_input;
-            $dates = explode(' - ', $dateRange);
-            // $startDate = Carbon::createFromFormat('F j, Y', $dates[0]);
-            // $endDate = Carbon::createFromFormat('F j, Y', $dates[1]);
-
-            $startDate = Carbon::parse($dates[0]);
-            $endDate = Carbon::parse($dates[1])->endOfDay();
-
-            $collection->whereBetween('created_at', [$startDate, $endDate]);
-        }
-
-        if (isset($request->agent_ids) && !empty(array_filter($request->agent_ids))) {
-            $agent_ids = $request->agent_ids;
-            $collection->whereIn('agent_id', $agent_ids);
-        }
-
-        if (isset($request->project_ids) && !empty(array_filter($request->project_ids))) {
-            $project_ids = $request->project_ids;
-            $collection->whereIn('project_id', $project_ids);
-        }
-
-        if (isset($request->exclusive)) {
-            if ($request->exclusive == 'exclusive') {
-                $collection->where('exclusive', 1);
-            } elseif ($request->exclusive == 'non-exclusive') {
-                $collection->where('exclusive', 0);
-            }
-        }
-        if (isset($request->is_duplicate)) {
-            if ($request->is_duplicate == 'duplicate') {
-                $collection->where('is_duplicate', 1);
-            } elseif ($request->is_duplicate == 'not_duplicate') {
-                $collection->where('is_duplicate', 0);
-            }
-        }
-
-        if (isset($request->category_id)) {
-            $collection->where('category_id', $request->category_id);
-        }
-        if (isset($request->is_furniture)) {
-            $collection->where('is_furniture', $request->is_furniture);
-        }
-
-        if (isset($request->completion_status_id)) {
-            $collection->where('completion_status_id', $request->completion_status_id);
-        }
-
-        if (isset($request->updated_user_ids)) {
-            $collection->whereIn('updated_by', $request->updated_user_ids);
-        }
-
-        if (isset($request->added_user_ids)) {
-            $collection->whereIn('user_id', $request->added_user_ids);
-        }
-
-
-        if (isset($request->accommodation_ids)) {
-            $collection->whereIn('accommodation_id', $request->accommodation_ids);
-        }
-
-        if (isset($request->status)) {
-            $collection->where('status', $request->status);
-        }
-
-        if (isset($request->property_source)) {
-            $collection->where('property_source', $request->property_source);
-        }
-
-        if (isset($request->keyword)) {
-
-            $keyword = $request->keyword;
-            $collection->where(function ($q) use ($keyword) {
-                $q->where('properties.id', 'like', "%$keyword%")
-                    ->orWhere('properties.name', 'like', "%$keyword%")
-                    ->orWhere('properties.reference_number', 'like', "%$keyword%");
-            });
-        }
-        if (isset($request->is_approved)) {
-            $collection->where('is_approved', $request->is_approved);
-        }
-        if (isset($request->updated_brochure)) {
-
-            $collection->where('updated_brochure', $request->updated_brochure);
-        }
-
-
-        if (isset($request->orderby)) {
-            $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
-            $direction = $request->input('direction', 'asc'); // Default sorting direction
-            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy($orderBy, $direction);
-
-
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                PropertyExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $properties = $collection->paginate($current_page);
-            }
-        } else {
-            $collection = $collection->latest();
-            if (isset($request->export)) {
-                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
-
-                PropertyExportAndEmailData::dispatch($request->all(), $collection->get());
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Please Check Email, Report has been sent.',
-                ]);
-            } else {
-                $projects = $collection->paginate($current_page);
-            }
-
-            $properties = $collection->paginate($current_page);
-        }
-
-        //$properties = $collection->latest()->paginate($current_page);
-
-        $agents = Agent::select('id', 'name')->latest()->get();
-        $categories = Category::active()->latest()->pluck('name', 'id');
-        $categories->prepend('All', '');
-        $projects = Project::mainProject()->latest()->pluck('title', 'id');
-        $completionStatuses = CompletionStatus::active()->where('for_property', 1)->latest()->pluck('name', 'id');
-        $completionStatuses->prepend('All', '');
-        $exclusiveOptions = [
-            'All' => 'All',
-            'non-exclusive' => 'Non-Exclusive',
-            'exclusive' => 'Exclusive',
-        ];
-        $properties->appends($request->all());
-
-        $users = User::latest()->pluck('name', 'id');
-        $users->prepend('All', '');
-
-
-        $accommodations = Accommodation::active()->pluck('name', 'id');
-        $accommodations->prepend('All', '');
-
-        return view('dashboard.realEstate.properties.index', compact(
-            'properties',
-            'completionStatuses',
-            'projects',
-            'current_page',
-            'agents',
-            'exclusiveOptions',
-            'categories',
-            'sr_no_start',
-            'users',
-            'accommodations'
-        ));
     }
 
     public function updateBrochure(Property $property)
@@ -333,6 +189,23 @@ class PropertyController extends Controller
      */
     public function store(PropertyRequest $request)
     {
+        try {
+            $result = $this->propertyRepository->storeData($request);
+
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'redirect' => route('dashboard.properties.index'),
+                'property_id' => $result['property_id'],
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.properties.index'),
+            ]);
+        }
+
         DB::beginTransaction();
         try {
 
@@ -342,7 +215,6 @@ class PropertyController extends Controller
             $property->sub_title = $request->sub_title;
             $property->is_furniture = $request->is_furniture;
             $property->propertyOrder = $request->propertyOrder;
-            // $property->reference_number = $nextReferenceNumber;
             $property->emirate = $request->emirate;
             $property->permit_number = $request->permit_number;
             $property->meta_title = $request->meta_title;
@@ -359,12 +231,10 @@ class PropertyController extends Controller
             $property->parking_space = $request->parking_space;
             $property->price = $request->price;
             $property->rental_period = $request->rental_period;
-            //$property->cheque_frequency = $request->cheque_frequency;
             $property->status = $request->status;
             $property->is_feature = $request->is_feature;
             $property->exclusive = $request->exclusive;
             $property->property_source = 'crm';
-            //$property->rating = $request->rating;
             $property->primary_view = $request->primary_view;
             $property->is_display_home = $request->is_display_home;
             $property->address_longitude = $request->address_longitude;
@@ -426,14 +296,6 @@ class PropertyController extends Controller
                 $property->addMediaFromRequest('qr')->usingFileName($imageName)->toMediaCollection('qrs', 'propertyFiles');
             }
 
-            // if ($request->hasFile('subImages')) {
-            //     foreach($request->subImages as $img)
-            //     {
-            //         $property->addMedia($img)->toMediaCollection('subImages', 'propertyFiles');
-            //     }
-            // }
-
-
             if ($request->has('subImages')) {
                 foreach ($request->subImages as $key => $img) {
                     if (array_key_exists("file", $img) && $img['file']) {
@@ -471,16 +333,7 @@ class PropertyController extends Controller
                 $property->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'propertyFiles');
             }
 
-            // if(in_array(Auth::user()->role, config('constants.isAdmin'))){
-            //     $property->approval_id = Auth::user()->id;
 
-            //     // if(in_array($request->is_approved, ["approved", "rejected"]) ){
-            //         $property->is_approved = "approved";
-            //     // }
-            // }else{
-            //     $property->is_approved = "requested";
-            //     $property->approval_id = null;
-            // }
             $property->updated_by = Auth::user()->id;
 
 
@@ -531,6 +384,24 @@ class PropertyController extends Controller
     {
         //
     }
+
+    public function logs(Property $property, Request $request)
+    {
+        if (isset($request->export)) {
+            $data = [
+                'email' => Auth::user()->email,
+                'userName' => Auth::user()->name,
+                'property_id' => $property->id,
+            ];
+
+            PropertyLogExportAndEmailData::dispatch($data, $property);
+
+            return redirect()->route('dashboard.properties.logs', $property->id)->with('success', 'Please Check Email, Log History has been sent');
+        } else {
+            return view('dashboard.realEstate.properties.logs.index', compact('property'));
+        }
+    }
+
     public function duplicateProperty(Property $property)
     {
         DB::beginTransaction();
@@ -630,6 +501,21 @@ class PropertyController extends Controller
      */
     public function update(PropertyRequest $request, Property $property)
     {
+        try {
+            $result = $this->propertyRepository->updateData($request, $property);
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'redirect' => route('dashboard.properties.index'),
+            ]);
+        } catch (\Exception $error) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.properties.index'),
+            ]);
+        }
 
         DB::beginTransaction();
 
@@ -865,6 +751,23 @@ class PropertyController extends Controller
     }
     public function updateMeta(PropertyMetaRequest $request, Property $property)
     {
+        try {
+            $result = $this->propertyRepository->updateMetaData($request, $property);
+
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'redirect' => route('dashboard.properties.index'),
+                'property_id' => $result['property_id'],
+            ]);
+        } catch (\Exception $error) {
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.properties.index'),
+            ]);
+        }
+
         DB::beginTransaction();
         try {
             $property->slug = $request->slug;

@@ -25,32 +25,33 @@ class SubProjectRequest extends FormRequest
     public function rules()
     {
         switch ($this->method()) {
-            case 'POST':
-                {
+            case 'POST': {
                     return [
-                        'title' => ['required', 'min:3','max:225'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'is_parent_project'=>['boolean'],
-                        'parent_project_id'=>[Rule::exists('projects', 'id')],
+                        'title' => ['required', 'min:3', 'max:225'],
+                        //'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
+                        'is_parent_project' => ['boolean'],
+                        'parent_project_id' => [Rule::exists('projects', 'id')],
                         // 'starting_price'=>['required','max:225'],
-                        'amenities'=>['array'],
+                        'amenities' => ['array'],
                         'amenities.*' => [Rule::exists('amenities', 'id')],
                     ];
                 }
             case 'PATCH':
-            case 'PUT':
-                {
+            case 'PUT': {
                     return [
-                        'title' => ['required', 'min:3','max:225'],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'is_parent_project'=>['boolean'],
-                        'parent_project_id'=>[Rule::exists('projects', 'id')],
+                        'title' => ['required', 'min:3', 'max:225'],
+                        //'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
+                        'is_parent_project' => ['boolean'],
+                        'parent_project_id' => [Rule::exists('projects', 'id')],
                         // 'starting_price'=>['required','max:225'],
-                        'amenities'=>['array'],
+                        'amenities' => ['array'],
                         'amenities.*' => [Rule::exists('amenities', 'id')],
                     ];
                 }
-            default: break;
+            default:
+                break;
         }
     }
 }

@@ -67,6 +67,38 @@ class CronController extends Controller
         }
         echo "deleteNAProperties Done";
     }
+    public function activeProperties()
+    {
+
+        Log::info('activeProperties Start-' . Carbon::now());
+        DB::beginTransaction();
+        try {
+
+            $projects = Project::mainProject()->where('website_status', config('constants.available'))->latest()->get();
+
+
+            $properties = Property::with('project')->latest()->get();
+
+            foreach ($projects as $project) {
+                Property::getModel()->timestamps = false;
+
+                Property::where('project_id', $project->id)
+                    ->where('status', config('constants.inactive'))
+                    ->where('is_approved', config('constants.approved'))
+                    ->where('website_status', config('constants.NA'))
+                    ->update(['status' => config('constants.active'), 'website_status' => config('constants.available'),]);
+
+                Property::getModel()->timestamps = TRUE; // Disable timestamps
+
+            }
+
+            DB::commit();
+            Log::info('activeProperties End-' . Carbon::now());
+            echo  "properties done";
+        } catch (\Exception $error) {
+            echo  $error->getMessage();
+        }
+    }
     public function inactiveProperties()
     {
         Log::info('inactiveProperties');
@@ -76,6 +108,7 @@ class CronController extends Controller
             foreach ($subprojects  as $subproject) {
                 Log::info('project_id' . $project);
                 Log::info('sub_project_id' . $subproject);
+
 
                 $lowestPricePropertyId = Property::where('project_id', $project)
                     ->where('sub_project_id', $subproject)

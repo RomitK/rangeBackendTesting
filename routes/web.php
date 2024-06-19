@@ -92,6 +92,10 @@ Route::get('cronjob/deleteNAProperties', 'App\Http\Controllers\CronController@de
 Route::get('projectQR', 'App\Http\Controllers\CronController@projectQR');
 
 Route::get('inactiveProperties', 'App\Http\Controllers\CronController@inactiveProperties');
+
+Route::get('activeProperties', 'App\Http\Controllers\CronController@activeProperties');
+
+
 Route::get('cronjob/subProjects', 'App\Http\Controllers\CronController@subProjects');
 
 Route::get('makeRequest', 'App\Http\Controllers\CronController@makeRequest');
@@ -170,8 +174,11 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
 
     Route::resource('defaultStats', DefaultStatController::class, ['as' => 'dashboard']);
 
-    Route::get('developer/{developer}/meta', 'DeveloperController@meta')->name('dashboard.developer.meta');
-    Route::post('developer/{developer}/meta', 'DeveloperController@updateMeta')->name('dashboard.developer.meta.store');
+    Route::get('developers/{developer}/meta', 'DeveloperController@meta')->name('dashboard.developers.meta');
+    Route::post('developers/{developer}/meta', 'DeveloperController@updateMeta')->name('dashboard.developers.meta.store');
+
+    Route::get('developers/{developer}/logs', 'DeveloperController@logs')->name('dashboard.developers.logs');
+
     Route::get('developer/{developer}/details', 'DeveloperController@details')->name('dashboard.developer.details');
     Route::get('developer/{developer}/details/create', 'DeveloperController@createDetail')->name('dashboard.developer.details.create');
     Route::post('developer/{developer}/details', 'DeveloperController@storeDetail')->name('dashboard.developer.details.store');
@@ -193,7 +200,9 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     // Route::get('communities/{community}/edit',  'CommunityController@edit');
     Route::resource('communities', CommunityController::class, ['as' => 'dashboard']);
 
-    Route::get('communities/{community}/meta', 'CommunityController@meta')->name('dashboard.community.meta');
+    Route::get('communities/{community}/logs', 'CommunityController@logs')->name('dashboard.communities.logs');
+
+    Route::get('communities/{community}/meta', 'CommunityController@meta')->name('dashboard.communities.meta');
     Route::post('communities/{community}/meta', 'CommunityController@updateMeta')->name('dashboard.community.meta.store');
     Route::get('community/mainImage', 'CommunityController@mainImage');
     Route::get('communities/{community}/media/{media}', 'CommunityController@mediaDestroy')->name('dashboard.communities.media.delete');
@@ -229,17 +238,17 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::get('properties/{property}/updateBrochure', 'PropertyController@updateBrochure')->name('dashboard.properties.updateBrochure');
 
     Route::resource('properties', PropertyController::class, ['as' => 'dashboard']);
-    Route::get('properties/{property}/meta', 'PropertyController@meta')->name('dashboard.property.meta');
+    Route::get('properties/{property}/logs', 'PropertyController@logs')->name('dashboard.properties.logs');
+    Route::get('properties/{property}/meta', 'PropertyController@meta')->name('dashboard.properties.meta');
     Route::post('properties/{property}/meta', 'PropertyController@updateMeta')->name('dashboard.property.meta.store');
     Route::get('properties/{property}/duplicate', 'PropertyController@duplicateProperty')->name('dashboard.properties.duplicate');
     Route::get('properties/{property}/media/{media}', 'PropertyController@mediaDestroy')->name('dashboard.properties.media.delete');
     Route::get('properties/{property}/medias', 'PropertyController@mediasDestroy')->name('dashboard.properties.medias.delete');
 
     Route::resource('projects', ProjectController::class, ['as' => 'dashboard']);
+    Route::get('projects/{project}/logs', 'ProjectController@logs')->name('dashboard.projects.logs');
 
-    //Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.project.meta');
-
-    Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.project.meta');
+    Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.projects.meta');
     Route::post('projects/{project}/meta', 'ProjectController@updateMeta')->name('dashboard.project.meta.store');
     Route::get('project/mainImage', 'ProjectController@mainImage');
     Route::get('projects/{project}/media/{media}', 'ProjectController@mediaDestroy')->name('dashboard.projects.media.delete');

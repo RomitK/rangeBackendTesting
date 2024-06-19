@@ -25,50 +25,51 @@ class CommunityRequest extends FormRequest
     public function rules()
     {
         switch ($this->method()) {
-            case 'POST':
-                {
+            case 'POST': {
                     return [
-                        'name' =>['required','min:3','max:225'],
-                        'emirates'=>['required', Rule::in(config('constants.emirates'))],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'name' => ['required', 'min:3', 'max:225'],
+                        'emirates' => ['required', Rule::in(config('constants.emirates'))],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
                         'mainImage' => ['image', 'max:2048'],
                         // 'imageGallery' => ['required','array'],
                         // 'imageGallery.*' => ['image', 'max:2048'],
-                        'video'=>['mimes:mp4,mov,ogx,oga,ogv,ogg,webm'],
-                        'categoryIds'=>['array'],
+                        'video' => ['mimes:mp4,mov,ogx,oga,ogv,ogg,webm'],
+                        'categoryIds' => ['array'],
                         'categoryIds.*' => [Rule::exists('categories', 'id')],
-                        'tagIds'=>['array'],
+                        'tagIds' => ['array'],
                         'tagIds.*' => [Rule::exists('tag_categories', 'id')],
-                        'developerIds'=>['array'],
+                        'developerIds' => ['array'],
                         'developerIds.*' => [Rule::exists('developers', 'id')],
-                        
-                        'gallery'=>['array'],
-                        'gallery.*.file' => ['image','max:2048']
-                        
+
+                        'gallery' => ['array'],
+                        'gallery.*.file' => ['image', 'max:2048']
+
                     ];
                 }
             case 'PATCH':
-            case 'PUT':
-                {
+            case 'PUT': {
                     return [
-                        'name' =>['required','min:3','max:225'],
-                        'emirates'=>['required', Rule::in(config('constants.emirates'))],
-                        'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
-                        'mainImage' => ['image','max:2048'],
+                        'name' => ['required', 'min:3', 'max:225'],
+                        'emirates' => ['required', Rule::in(config('constants.emirates'))],
+                        // 'status' => ['required', Rule::in(array_keys(config('constants.statuses')))],
+                        'website_status' => ['required', Rule::in(array_keys(config('constants.newStatusesWithoutAll')))],
+                        'mainImage' => ['image', 'max:2048'],
                         // 'imageGallery' => ['array'],
                         // 'imageGallery.*' => ['image', 'max:2048'],
-                        'video'=>['mimes:mp4,mov,ogx,oga,ogv,ogg,webm'],
-                        'categoryIds'=>['array'],
+                        'video' => ['mimes:mp4,mov,ogx,oga,ogv,ogg,webm'],
+                        'categoryIds' => ['array'],
                         'categoryIds.*' => [Rule::exists('categories', 'id')],
-                        'tagIds'=>['array'],
+                        'tagIds' => ['array'],
                         'tagIds.*' => [Rule::exists('tag_categories', 'id')],
-                        'developerIds'=>['array'],
+                        'developerIds' => ['array'],
                         'developerIds.*' => [Rule::exists('developers', 'id')],
-                        'gallery'=>['array'],
-                        'gallery.*.file' => ['image','max:2048']
+                        'gallery' => ['array'],
+                        'gallery.*.file' => ['image', 'max:2048']
                     ];
                 }
-            default: break;
+            default:
+                break;
         }
     }
 }

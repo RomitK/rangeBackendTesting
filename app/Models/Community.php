@@ -44,7 +44,7 @@ class Community extends Model implements HasMedia
      * @var array
      */
     protected $appends = [
-        'websiteStatus',
+        //'websiteStatus',
         'mainImage',
         // 'listMainImage'
         'clusterPlan',
@@ -53,18 +53,18 @@ class Community extends Model implements HasMedia
         //'formattedCreatedAt',
 
     ];
-    public function getWebsiteStatusAttribute()
-    {
-        if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
-            return config('constants.Available');
-        } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
-            return config('constants.NA');
-        } elseif ($this->is_approved == config('constants.rejected')) {
-            return config('constants.Rejected');
-        } elseif ($this->is_approved == config('constants.requested')) {
-            return config('constants.Requested');
-        }
-    }
+    // public function getWebsiteStatusAttribute()
+    // {
+    //     if ($this->status == config('constants.active') && $this->is_approved == config('constants.approved')) {
+    //         return config('constants.Available');
+    //     } elseif ($this->status == config('constants.Inactive') && $this->is_approved == config('constants.approved')) {
+    //         return config('constants.NA');
+    //     } elseif ($this->is_approved == config('constants.rejected')) {
+    //         return config('constants.Rejected');
+    //     } elseif ($this->is_approved == config('constants.requested')) {
+    //         return config('constants.Requested');
+    //     }
+    // }
     /**
      * Get the options for generating the slug.
      */
@@ -256,6 +256,10 @@ class Community extends Model implements HasMedia
     {
         return $this->belongsToMany(Developer::class, 'community_developers', 'community_id', 'developer_id');
     }
+    public function logActivity()
+    {
+        return $this->hasMany(LogActivity::class, 'subject_id', 'id')->orderBy('id', 'desc');
+    }
 
 
     /**
@@ -319,6 +323,21 @@ class Community extends Model implements HasMedia
             ->first();
     }
 
+    public static function getCountsByWebsiteStatus($startDate, $endDate)
+    {
+        return DB::table('communities')
+            ->whereNull('deleted_at')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw('
+                COUNT(CASE WHEN website_status = "available" THEN 1 END) as available,
+                COUNT(CASE WHEN website_status = "NA" THEN 1 END) as NA,
+                COUNT(CASE WHEN website_status = "rejected" THEN 1 END) as rejected,
+                COUNT(CASE WHEN website_status = "requested" THEN 1 END) as requested
+            ')
+            ->first();
+    }
+
+
     public static function getCountsByApprovalStatus($startDate, $endDate)
     {
         return DB::table('communities')
@@ -336,18 +355,23 @@ class Community extends Model implements HasMedia
      *
      * Filters
      */
+    // public function scopeWebsiteStatus($query, $status)
+    // {
+    //     if ($status == config('constants.Available')) {
+    //         $query->active()->approved();
+    //     } elseif ($status == config('constants.NA')) {
+    //         $query->deactive()->approved();
+    //     } elseif ($status == config('constants.Requested')) {
+    //         $query->requested();
+    //     } elseif ($status == config('constants.Rejected')) {
+    //         $query->rejected();
+    //     }
+    // }
     public function scopeWebsiteStatus($query, $status)
     {
-        if ($status == config('constants.Available')) {
-            $query->active()->approved();
-        } elseif ($status == config('constants.NA')) {
-            $query->deactive()->approved();
-        } elseif ($status == config('constants.Requested')) {
-            $query->requested();
-        } elseif ($status == config('constants.Rejected')) {
-            $query->rejected();
-        }
+        return $query->where('website_status', $status);
     }
+
     public function scopeApplyFilters($query, array $filters)
     {
         $filters = collect($filters);

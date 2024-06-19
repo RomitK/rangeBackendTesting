@@ -38,7 +38,7 @@ class ProjectDataExport implements FromCollection, WithHeadings, WithMapping, Wi
             'Name',
             'Reference Number',
             'Permit Number',
-            'QR Code Link',
+            
             'Completion Status',
             'HandOver',
             'Property Type',
@@ -49,12 +49,13 @@ class ProjectDataExport implements FromCollection, WithHeadings, WithMapping, Wi
             'Payment',
             'Properties',
             'Website Status',
-            'Status Name',
-            'Approval Status',
+            // 'Status Name',
+            // 'Approval Status',
             'Approval By',
             'Added By',
             'Created At',
             'Updated At',
+            'QR Code Link', 
         ];
     }
 
@@ -65,7 +66,7 @@ class ProjectDataExport implements FromCollection, WithHeadings, WithMapping, Wi
             $project->title,
             $project->reference_number,
             $project->permit_number,
-            $project->qr_link,
+           
             $project->completionStatus ? $project->completionStatus->name : '',
             $project->completion_date,
             $project->accommodations ? $project->accommodations->name : '',
@@ -75,13 +76,14 @@ class ProjectDataExport implements FromCollection, WithHeadings, WithMapping, Wi
             $project->subProjects->count(),
             $project->mPaymentPlans->count(),
             $project->properties->count(),
-            $project->websiteStatus,
-            $project->status,
-            $project->is_approved,
+            ucfirst($project->website_status),
+            // $project->status,
+            // $project->is_approved,
             $project->approval ? $project->approval->name : '',
             $project->user->name,
             $project->formattedCreatedAt,
             $project->formattedUpdatedAt,
+            $project->qr_link,
         ];
     }
     public function styles(Worksheet $sheet)

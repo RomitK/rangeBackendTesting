@@ -34,40 +34,40 @@ class SingleDeveloperResource extends JsonResource
      */
     public function toArray($request)
     {
-        
+
         $accommodationId = null;
         $completionStatusId = null;
         $communityId = null;
-                
-        if($request->accommodation && $request->accommodation != 'All'){
+
+        if ($request->accommodation && $request->accommodation != 'All') {
             $accommodationId = Accommodation::where('name', $request->accommodation)->first()->id;
         }
-        if($request->completionStatus && $request->completionStatus !='All'){
-           
+        if ($request->completionStatus && $request->completionStatus != 'All') {
+
             $completionStatusId = CompletionStatus::where('name', $request->completionStatus)->first()->id;
         }
-                
-       if($request->community && $request->community !='All'){
+
+        if ($request->community && $request->community != 'All') {
             $communityId = Community::where('name', $request->community)->first()->id;
         }
-                
-       
-        if($this->meta_title){
+
+
+        if ($this->meta_title) {
             $meta_title = $this->meta_title;
-        }else{
-            $meta_title = WebsiteSetting::getSetting('website_name')? WebsiteSetting::getSetting('website_name') : '' ;
+        } else {
+            $meta_title = WebsiteSetting::getSetting('website_name') ? WebsiteSetting::getSetting('website_name') : '';
         }
-        if($this->meta_description){
+        if ($this->meta_description) {
             $meta_description = $this->meta_description;
-        }else{
-            $meta_description = WebsiteSetting::getSetting('description')? WebsiteSetting::getSetting('description') : '' ;
+        } else {
+            $meta_description = WebsiteSetting::getSetting('description') ? WebsiteSetting::getSetting('description') : '';
         }
-        if($this->meta_keywords){
+        if ($this->meta_keywords) {
             $meta_keywords = $this->meta_keywords;
-        }else{
-            $meta_keywords = WebsiteSetting::getSetting('keywords')? WebsiteSetting::getSetting('keywords') : '' ;
+        } else {
+            $meta_keywords = WebsiteSetting::getSetting('keywords') ? WebsiteSetting::getSetting('keywords') : '';
         }
-        
+
         $propertiesQuery = "SELECT properties.id, properties.property_banner, 
                 communities.name as communityName,  
                 accommodations.name as accommodation, 
@@ -88,25 +88,25 @@ class SingleDeveloperResource extends JsonResource
                 projects.is_approved = 'approved' AND
                 projects.is_parent_project IS true AND
                 developers.id = $this->id";
-        
-        if($accommodationId){
-           $propertiesQuery .= " AND properties.accommodation_id = $accommodationId"; 
+
+        if ($accommodationId) {
+            $propertiesQuery .= " AND properties.accommodation_id = $accommodationId";
         }
-        if($communityId){
-            $propertiesQuery .= " AND properties.community_id = $communityId"; 
+        if ($communityId) {
+            $propertiesQuery .= " AND properties.community_id = $communityId";
         }
-       
-        
+
+
         //For category_id 8
         $properties = DB::select(DB::raw($propertiesQuery . "  limit 0,12"));
-        
-          
-         
+
+
+
         $saleProperties = DB::select(DB::raw($propertiesQuery . " AND properties.category_id = 8 limit 0,12"));
-        
+
         // For category_id 9
         $rentProperties = DB::select(DB::raw($propertiesQuery . " AND properties.category_id = 9 limit 0,12"));
-        
+
         // $properties = DB::select(DB::raw("SELECT properties.id, properties.property_banner, 
         //         communities.name as communityName,  
         //         accommodations.name as accommodation, 
@@ -128,44 +128,58 @@ class SingleDeveloperResource extends JsonResource
         //         developers.id = $this->id
         //         limit 0,12
         //         ;"));
-        
-                
-                
+
+
+
         $developerProjects = Project::mainProject()->where('developer_id', $this->id)->approved()->active();
-        if($accommodationId){
-            $developerProjects = $developerProjects->where('accommodation_id',$accommodationId);
+        if ($accommodationId) {
+            $developerProjects = $developerProjects->where('accommodation_id', $accommodationId);
         }
-        if($completionStatusId){
+        if ($completionStatusId) {
             $developerProjects = $developerProjects->where('completion_status_id', $completionStatusId);
         }
-        if($communityId){
+        if ($communityId) {
             $developerProjects = $developerProjects->where('community_id', $communityId);
         }
-        
-       
-        
-        
-        
+
+
+        $exteriorGallery = $this->gallery;
+
+        $count = count($exteriorGallery);
+
+        // Duplicate elements until the count reaches at least 3
+        while ($count < 3) {
+            // Choose an element to duplicate (you can choose any index or the last one as an example)
+            $elementToDuplicate = end($exteriorGallery);
+
+            // Duplicate the element
+            $exteriorGallery[] = $elementToDuplicate;
+
+            // Update the count
+            $count++;
+        }
+
+
         $projectOptions = clone $developerProjects;
-        
-         
+
+
         return [
-            'id'=>'developer-'.$this->id,
+            'id' => 'developer-' . $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
-            'imageGallery' => $this->gallery,
+            'imageGallery' => $this->exteriorGallery,
             'longDescription' => $this->long_description->render(),
             'shortDescription' => $this->short_description->render(),
-            'newProjects'=>ProjectOptionResource::collection($projectOptions->OrderBy('title', 'asc')->get()),
-            'projects'=> DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
-            'developrMapProjects'=>  DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
-            'communities'=>DeveloperCommunitiesResource::collection($this->communityDevelopers()->active()->approved()->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get()),
+            'newProjects' => ProjectOptionResource::collection($projectOptions->OrderBy('title', 'asc')->get()),
+            'projects' => DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
+            'developrMapProjects' =>  DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
+            'communities' => DeveloperCommunitiesResource::collection($this->communityDevelopers()->active()->approved()->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get()),
             // 'properties'=> DeveloperPropertiesResource::collection($properties),
             'saleProperties' => DeveloperPropertiesResource::collection($saleProperties),
-            'rentProperties' => DeveloperPropertiesResource::collection($rentProperties), 
-            'meta_keyword'=>$meta_keywords,
-            'meta_title'=>$meta_title,
-            'meta_description'=>$meta_description,
+            'rentProperties' => DeveloperPropertiesResource::collection($rentProperties),
+            'meta_keyword' => $meta_keywords,
+            'meta_title' => $meta_title,
+            'meta_description' => $meta_description,
         ];
     }
 }

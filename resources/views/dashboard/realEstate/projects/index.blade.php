@@ -298,9 +298,9 @@
                                         <th>Completion Status</th>
                                         <th>Display On Home</th>
                                         <th>Website Status</th>
-                                        <th>Status</th>
+                                        {{-- <th>Status</th>
 
-                                        <th>Approval Status</th>
+                                        <th>Approval Status</th> --}}
                                         <th>Order Number <span class="arrow up"
                                                 onclick="orderBy('projectOrder', 'asc')">&#x25B2;</span><span
                                                 class="arrow down"
@@ -334,16 +334,16 @@
                                             <td>
                                                 <span
                                                     class="badge 
-                                                    @if ($project->websiteStatus === config('constants.NA')) bg-info 
-                                                    @elseif($project->websiteStatus === config('constants.Available')) bg-success 
-                                                    @elseif($project->websiteStatus === config('constants.Rejected'))  bg-danger 
-                                                    @elseif($project->websiteStatus === config('constants.Requested'))  bg-warning @endif">
+                                                    @if ($project->website_status === config('constants.NA')) bg-info 
+                                                    @elseif($project->website_status === config('constants.available')) bg-success 
+                                                    @elseif($project->website_status === config('constants.rejected'))  bg-danger 
+                                                    @elseif($project->website_status === config('constants.requested'))  bg-warning @endif">
 
-                                                    {{ $project->websiteStatus }}
+                                                    {{ ucfirst($project->website_status) }}
                                                 </span>
                                             </td>
 
-                                            <td>
+                                            {{-- <td>
                                                 <span
                                                     class="badge @if ($project->status === 'active') bg-success @else bg-danger @endif">
                                                     {{ $project->status }}
@@ -365,7 +365,7 @@
                                                         Rejected
                                                     @endif
                                                 </span>
-                                            </td>
+                                            </td> --}}
                                             <td>
                                                 {{ $project->projectOrder }}
                                             </td>
@@ -389,7 +389,7 @@
                                                         View
                                                     </a>
                                                     <a class="btn btn-secondary btn-sm"
-                                                        href="{{ route('dashboard.project.meta', $project->id) }}">
+                                                        href="{{ route('dashboard.projects.meta', $project->id) }}">
                                                         <i class="fas fa-database"></i>
                                                         Meta Details
                                                     </a>
@@ -431,6 +431,11 @@
                                                         </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
+                                                        <a class="btn btn-dark btn-sm"
+                                                            href="{{ route('dashboard.projects.logs', $project->id) }}">
+                                                            <i class="fas fa-database"></i>
+                                                            History
+                                                        </a>
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
                                                             <i class="fas fa-trash"></i>
                                                             Delete

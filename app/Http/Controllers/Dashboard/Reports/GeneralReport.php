@@ -49,20 +49,20 @@ class GeneralReport extends Controller
         $guideStatusCounts = Guide::getCountsByStatus($startDate, $endDate);
 
         $communityCounts = Community::getCountsByDate($startDate, $endDate);
-        $communityStatusCounts = Community::getCountsByStatus($startDate, $endDate);
+        $communityStatusCounts = Community::getCountsByWebsiteStatus($startDate, $endDate);
 
 
         $developerCounts = Developer::getCountsByDate($startDate, $endDate);
-        $developerStatusCounts = Developer::getCountsByStatus($startDate, $endDate);
+        $developerStatusCounts = Developer::getCountsByWebsiteStatus($startDate, $endDate);
 
 
         $projectCounts = Project::getCountsByDate($startDate, $endDate);
-        $projectStatusCounts = Project::getCountsByStatus($startDate, $endDate);
+        $projectStatusCounts = Project::getCountsByWebsiteStatus($startDate, $endDate);
         $projectPermitCounts = Project::getCountsByPermitNumber($startDate, $endDate);
-
+       
         $propertyCounts = Property::getCountsByDate($startDate, $endDate);
-        $propertyStatusCounts = Property::getCountsByStatus($startDate, $endDate);
-      
+        $propertyStatusCounts = Property::getCountsByWebsiteStatus($startDate, $endDate);
+
         $propertyPermitCounts = Property::getCountsByPermitNumber($startDate, $endDate);
         $propertyCateoryWiseCounts = Property::getCountsByCategory($startDate, $endDate);
         $propertyAgentWiseCount = Property::getCountsByAgent($startDate, $endDate);
@@ -109,7 +109,7 @@ class GeneralReport extends Controller
 
         $projectPermitCounts = [
             [
-                'status' => 'Without Permit Number',
+                'status' => 'Without Permit Number+QR',
                 'count' => [
                     'available' => $projectPermitCounts->without_permit_available,
                     'NA' => $projectPermitCounts->without_permit_NA,
@@ -119,7 +119,7 @@ class GeneralReport extends Controller
 
             ],
             [
-                'status' => 'With Permit Number',
+                'status' => 'With Permit Number+QR',
                 'count' => [
                     'available' => $projectPermitCounts->with_permit_available,
                     'NA' => $projectPermitCounts->with_permit_NA,
@@ -132,7 +132,7 @@ class GeneralReport extends Controller
 
         $propertyPermitCategoryCount = [
             [
-                'status' => 'Without Permit Number',
+                'status' => 'Without Permit Number+QR',
                 'count' => [
                     'ready' => $propertyPermitCategoryWiseCount->without_permit_ready,
                     'offplan' => $propertyPermitCategoryWiseCount->without_permit_offplan,
@@ -142,7 +142,7 @@ class GeneralReport extends Controller
 
             ],
             [
-                'status' => 'With Permit Number',
+                'status' => 'With Permit Number+QR',
                 'count' => [
                     'ready' => $propertyPermitCategoryWiseCount->with_permit_ready,
                     'offplan' => $propertyPermitCategoryWiseCount->with_permit_offplan,
@@ -154,7 +154,7 @@ class GeneralReport extends Controller
 
         $propertyPermitCounts = [
             [
-                'status' => 'Without Permit Number',
+                'status' => 'Without Permit Number+QR',
                 'count' => [
                     'available' => $propertyPermitCounts->without_permit_available,
                     'NA' => $propertyPermitCounts->without_permit_NA,
@@ -164,7 +164,7 @@ class GeneralReport extends Controller
 
             ],
             [
-                'status' => 'With Permit Number',
+                'status' => 'With Permit Number+QR',
                 'count' => [
                     'available' => $propertyPermitCounts->with_permit_available,
                     'NA' => $propertyPermitCounts->with_permit_NA,

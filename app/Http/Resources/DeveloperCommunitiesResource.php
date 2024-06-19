@@ -13,7 +13,6 @@ use App\Http\Resources\{
     HighlightsResource,
     NearByCommunitiesResource,
     CommunityProperties,
-    DeveloperCommunitiesResource
 };
 use Illuminate\Support\Arr;
 use DB;
