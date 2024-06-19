@@ -837,7 +837,7 @@ class PropertyController extends Controller
             }
 
             $collection = Property::with('completionStatus', 'accommodations', 'category', 'project')->active()->approved()->available()->whereHas('project', function ($query) {
-                $query->whereNotNull('permit_number');
+                $query->whereNotNull('permit_number')->where('qr_link',  '!=', '')->whereNotNull('qr_link');
             });
 
             //$collection = Property::with('completionStatus', 'accommodations', 'category');
