@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
 
 
-        $schedule->job(new InactivePropertyJob)->daily()->at('02:00')->timezone('Asia/Dubai');
+        // $schedule->job(new InactivePropertyJob)->daily()->at('02:00')->timezone('Asia/Dubai');
 
         $schedule->command('backup:clean')->daily()->at('01:00');
         $schedule->command('backup:run')->daily()->at('01:30');
