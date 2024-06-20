@@ -63,7 +63,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="is_management">Is Management?</label>
                                             <select class="form-control @error('is_management') is-invalid @enderror"
@@ -79,6 +79,24 @@
                                             @enderror
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="is_display_details">Is Display Contact Detail?</label>
+                                            <select class="form-control @error('is_display_details') is-invalid @enderror"
+                                                id="is_display_details" name="is_display_details">
+
+                                                <option value="0">No</option>
+                                                <option value="1">Yes</option>
+                                            </select>
+                                            @error('is_display_details')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+
                                     <!--<div class="col-sm-3">-->
                                     <!--    <div class="form-group">-->
                                     <!--        <label for="is_display_home">Is Display on Home Page?</label>-->

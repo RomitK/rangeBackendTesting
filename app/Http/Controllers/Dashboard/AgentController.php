@@ -80,6 +80,7 @@ class AgentController extends Controller
             $agent->message = $request->message;
             $agent->meta_title = $request->meta_title;
             $agent->is_management = $request->is_management;
+            $agent->is_display_details = $request->is_display_details;
             $agent->meta_keywords = $request->meta_keywords;
             $agent->meta_description = $request->meta_description;
             $agent->employeeId = $request->employeeId;
@@ -190,6 +191,7 @@ class AgentController extends Controller
             $agent->contact_number = $request->contact_number;
             $agent->whatsapp_number = $request->whatsapp_number;
             $agent->is_management = $request->is_management;
+            $agent->is_display_details = $request->is_display_details;
             $agent->designation = $request->designation;
             $agent->specialization = $request->specialization;
             $agent->nationality = $request->nationality;
