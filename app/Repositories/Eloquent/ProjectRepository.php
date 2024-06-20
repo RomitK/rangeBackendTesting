@@ -54,6 +54,9 @@ class ProjectRepository implements ProjectRepositoryInterface
         if (isset($request->status)) {
             $collection->where('status', $request->status);
         }
+        if (isset($request->is_valid)) {
+            $collection->where('is_valid', $request->is_valid);
+        }
         if (isset($request->qr_link)) {
 
             if ($request->qr_link == '1') {
@@ -309,6 +312,15 @@ class ProjectRepository implements ProjectRepositoryInterface
                 $project->qr_link = $project->qr;
             }
 
+
+            $project->save();
+
+
+            if (!empty($project->permit_number) && !empty($project->qr_link)) {
+                $project->is_valid = 1;
+            } else {
+                $project->is_valid = 0; // Optionally set to false if not valid
+            }
             $project->save();
 
             $originalAttributes = $project->getOriginal();
@@ -560,6 +572,14 @@ class ProjectRepository implements ProjectRepositoryInterface
                 $project->qr_link = $project->qr;
             }
             $project->save();
+
+            if (!empty($project->permit_number) && !empty($project->qr_link)) {
+                $project->is_valid = 1;
+            } else {
+                $project->is_valid = 0; // Optionally set to false if not valid
+            }
+            $project->save();
+
 
             // Retrieve the updated attributes
             $newProjectOriginalAttributes = $project->getOriginal();

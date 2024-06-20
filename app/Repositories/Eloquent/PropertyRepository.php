@@ -36,11 +36,22 @@ class PropertyRepository implements PropertyRepositoryInterface
         if (isset($request->website_status)) {
             $collection->where('website_status', $request->website_status);
         }
+
+        if (isset($request->is_valid)) {
+            // $collection->whereHas('project', function ($query) use ($request, $collection) {
+            //     $collection->where('is_valid', $request->is_valid);
+            // });
+
+            $collection->whereHas('project', function ($query) use ($request) {
+                $query->where('is_valid', $request->is_valid);
+            });
+        }
+
         if (isset($request->qr_link)) {
 
             if ($request->qr_link == '1') {
                 $collection->whereHas('project', function ($query) {
-                    $query->where('qr_link', '!=', '');
+                    $query->where('qr_link', '!=', '')->orWhereNull('qr_link');
                 });
             } elseif ($request->qr_link == '0') {
                 $collection->whereHas('project', function ($query) {
@@ -176,6 +187,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                     'message' => 'Please Check Email, Report has been sent.',
                 ]);
             } else {
+
                 $properties = $collection->paginate($current_page);
             }
         }

@@ -510,16 +510,15 @@ class Project extends Model implements HasMedia
             ->whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('
             
-            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NULL AND (qr_link IS NULL OR qr_link ="")  THEN 1 END) as without_permit_available,
-            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NULL AND (qr_link IS NULL OR qr_link = "") THEN 1 END) as without_permit_NA,
-            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NULL  AND (qr_link IS NULL OR qr_link ="")  THEN 1 END) as without_permit_rejected,
-            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NULL AND (qr_link IS NULL OR qr_link ="") THEN 1 END) as without_permit_requested,
+            COUNT(CASE WHEN website_status = "available" AND  is_valid = 0  THEN 1 END) as without_permit_available,
+            COUNT(CASE WHEN website_status = "NA" AND is_valid = 0 THEN 1 END) as without_permit_NA,
+            COUNT(CASE WHEN website_status = "rejected" AND is_valid =0  THEN 1 END) as without_permit_rejected,
+            COUNT(CASE WHEN website_status = "requested" AND is_valid = 0 THEN 1 END) as without_permit_requested,
 
-
-            COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_available,
-            COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_NA,
-            COUNT(CASE WHEN is_approved = "rejected" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_rejected,
-            COUNT(CASE WHEN is_approved = "requested" AND permit_number IS NOT NULL AND qr_link != "" THEN 1 END) as with_permit_requested
+            COUNT(CASE WHEN website_status = "available" AND is_valid = 1 THEN 1 END) as with_permit_available,
+            COUNT(CASE WHEN website_status = "NA" AND is_valid = 1 THEN 1 END) as with_permit_NA,
+            COUNT(CASE WHEN website_status = "rejected" AND is_valid = 1 THEN 1 END) as with_permit_rejected,
+            COUNT(CASE WHEN website_status = "requested" AND is_valid = 1 THEN 1 END) as with_permit_requested
 
 
         ')->first();

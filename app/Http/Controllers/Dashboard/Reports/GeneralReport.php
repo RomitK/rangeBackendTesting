@@ -59,7 +59,7 @@ class GeneralReport extends Controller
         $projectCounts = Project::getCountsByDate($startDate, $endDate);
         $projectStatusCounts = Project::getCountsByWebsiteStatus($startDate, $endDate);
         $projectPermitCounts = Project::getCountsByPermitNumber($startDate, $endDate);
-       
+
         $propertyCounts = Property::getCountsByDate($startDate, $endDate);
         $propertyStatusCounts = Property::getCountsByWebsiteStatus($startDate, $endDate);
 

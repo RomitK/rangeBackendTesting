@@ -55,6 +55,7 @@ class PropertyDataExport implements FromCollection, WithHeadings, WithMapping, W
             'Added By',
             'Created At',
             'Updated At',
+            'QR',
         ];
     }
 
@@ -84,6 +85,7 @@ class PropertyDataExport implements FromCollection, WithHeadings, WithMapping, W
             $property->user->name,
             $property->formattedCreatedAt,
             $property->formattedUpdatedAt,
+            $property->project ? $property->project->qr_link ?  $property->project->qr_link : '' : '',
         ];
     }
     public function styles(Worksheet $sheet)

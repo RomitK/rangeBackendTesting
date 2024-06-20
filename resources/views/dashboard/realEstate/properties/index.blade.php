@@ -252,18 +252,18 @@
 
                                     <div class="col-sm-2">
                                         <div class="form-group">
-                                            <label for="permit_number">Permit Number </label>
-                                            <select class="form-control" id="permit_number" name="permit_number">
+                                            <label for="is_valid">Permit Number+QR Code </label>
+                                            <select class="form-control" id="is_valid" name="is_valid">
                                                 <option value="">All</option>
-                                                <option value="1" @if (request()->permit_number === '1') selected @endif>
+                                                <option value="1" @if (request()->is_valid === '1') selected @endif>
                                                     Exist</option>
-                                                <option value="0" @if (request()->permit_number === '0') selected @endif>
+                                                <option value="0" @if (request()->is_valid === '0') selected @endif>
                                                     Not Exist</option>
 
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    {{-- <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="qr_link">QR Code </label>
                                             <select class="form-control" id="qr_link" name="qr_link">
@@ -275,7 +275,7 @@
 
                                             </select>
                                         </div>
-                                    </div>
+                                    </div> --}}
 
                                     <div class="col-sm-3">
                                         <div class="form-group">

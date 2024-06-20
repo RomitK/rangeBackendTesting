@@ -530,23 +530,23 @@ class Property extends Model implements HasMedia
 
     public static function getCountsByPermitNumber($startDate, $endDate)
     {
+
         return DB::table('properties')
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
-            ->join('projects', 'properties.project_id', '=', 'projects.id')->selectRaw('
-           
-                COUNT(CASE WHEN properties.status = "active" AND properties.is_approved = "approved" AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END) as without_permit_available,
-                COUNT(CASE WHEN properties.status = "inactive" AND properties.is_approved = "approved" AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END) as without_permit_NA,
-                COUNT(CASE WHEN properties.is_approved = "rejected" AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END ) as without_permit_rejected,
-                COUNT(CASE WHEN properties.is_approved = "requested" AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END) as without_permit_requested,
+            ->join('projects', 'properties.project_id', '=', 'projects.id')
+            ->selectRaw('
+                COUNT(CASE WHEN properties.website_status = "available" AND projects.is_valid = 0 THEN 1 END) as without_permit_available,
+                COUNT(CASE WHEN properties.website_status = "NA" AND projects.is_valid = 0 THEN 1 END) as without_permit_NA,
+                COUNT(CASE WHEN properties.website_status = "rejected" AND projects.is_valid = 0 THEN 1 END) as without_permit_rejected,
+                COUNT(CASE WHEN properties.website_status = "requested" AND projects.is_valid = 0 THEN 1 END) as without_permit_requested,
 
-
-                COUNT(CASE WHEN properties.status = "active" AND properties.is_approved = "approved" AND projects.permit_number IS NOT NULL AND projects.qr_link != "" THEN 1 END) as with_permit_available,
-                COUNT(CASE WHEN properties.status = "inactive" AND properties.is_approved = "approved" AND projects.permit_number IS NOT NULL  AND projects.qr_link != "" THEN 1 END) as with_permit_NA,
-                COUNT(CASE WHEN properties.is_approved = "rejected" AND projects.permit_number IS NOT NULL AND projects.qr_link != "" THEN 1 END) as with_permit_rejected,
-                COUNT(CASE WHEN properties.is_approved = "requested" AND projects.permit_number IS NOT NULL AND projects.qr_link != "" THEN 1 END) as with_permit_requested
-
-            ')->first();
+                COUNT(CASE WHEN properties.website_status = "available" AND projects.is_valid = 1 THEN 1 END) as with_permit_available,
+                COUNT(CASE WHEN properties.website_status = "NA" AND projects.is_valid = 1 THEN 1 END) as with_permit_NA,
+                COUNT(CASE WHEN properties.website_status = "rejected" AND projects.is_valid = 1 THEN 1 END) as with_permit_rejected,
+                COUNT(CASE WHEN properties.website_status = "requested" AND projects.is_valid = 1 THEN 1 END) as with_permit_requested
+            ')
+            ->first();
     }
 
     public static function getCountsByPermitCategory($startDate, $endDate)
@@ -556,13 +556,13 @@ class Property extends Model implements HasMedia
             ->whereBetween('properties.created_at', [$startDate, $endDate])
             ->join('projects', 'properties.project_id', '=', 'projects.id')
             ->selectRaw('
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END) as without_permit_ready,
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END) as without_permit_offplan,
-                COUNT(CASE WHEN properties.category_id = 9 AND projects.permit_number IS NULL AND (projects.qr_link IS NULL OR projects.qr_link ="") THEN 1 END) as without_permit_rent,
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.is_valid = 0 THEN 1 END) as without_permit_ready,
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.is_valid = 0 THEN 1 END) as without_permit_offplan,
+                COUNT(CASE WHEN properties.category_id = 9  AND projects.is_valid = 0 THEN 1 END) as without_permit_rent,
 
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.permit_number IS NOT NULL AND projects.qr_link != "" THEN 1 END) as with_permit_ready,
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.permit_number IS NOT NULL AND projects.qr_link != "" THEN 1 END) as with_permit_offplan,
-                COUNT(CASE WHEN properties.category_id = 9 AND projects.permit_number IS NOT NULL AND projects.qr_link != "" THEN 1 END) as with_permit_rent
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286  AND projects.is_valid = 1 THEN 1 END) as with_permit_ready,
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287  AND projects.is_valid = 1 THEN 1 END) as with_permit_offplan,
+                COUNT(CASE WHEN properties.category_id = 9 AND projects.is_valid = 1 THEN 1 END) as with_permit_rent
             ')
             ->first();
     }
