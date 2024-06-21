@@ -31,9 +31,52 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 
 class CronController extends Controller
 {
+    public function getRentListings()
+    {
+
+        $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode=$R@nGe!NteRn@t!on@l&GroupCode=5084&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
+        $xml_arr  = simplexml_load_file($feed,'SimpleXMLElement',LIBXML_NOCDATA);
+        
+        $xml_arr  = json_decode(json_encode($xml_arr,true),true);
+        dd($xml_arr);
+
+        $baseUrl = 'https://webapi.goyzer.com';
+        $endpoint = '/Company.asmx/RentListings';
+
+        $queryParams = [
+            'AccessCode' => env('API_ACCESS_CODE'),
+            'GroupCode' => env('API_GROUP_CODE'),
+            'PropertyType' => '',
+            'Bedrooms' => '',
+            'StartPriceRange' => '',
+            'EndPriceRange' => '',
+            'categoryID' => '',
+            'CountryID' => '',
+            'StateID' => '',
+            'CommunityID' => '',
+            'FloorAreaMin' => '',
+            'FloorAreaMax' => '',
+            'UnitCategory' => '',
+            'UnitID' => '',
+            'BedroomsMax' => '',
+            'PropertyID' => '',
+            'ReadyNow' => '',
+            'PageIndex' => '',
+        ];
+
+        $response = Http::get($baseUrl . $endpoint, $queryParams);
+
+        if ($response->successful()) {
+            dd($response);
+            return $response->json();
+        } else {
+            return response()->json(['error' => 'Unable to fetch data'], 500);
+        }
+    }
     public function deleteNAProperties()
     {
         Log::info('deleteNAProperties');

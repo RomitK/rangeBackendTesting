@@ -632,27 +632,30 @@ class PropertyRepository implements PropertyRepositoryInterface
                     $property->status = config('constants.inactive');
                     $property->website_status = config('constants.NA');
                     $property->save();
+
+
+                    $newPropertyOriginalAttributes = $property->getOriginal();
+
+                    if ($request->has('amenityIds')) {
+                        $newPropertyOriginalAttributes['amenityIds'] = $amenityIds;
+                    } else {
+                        $newPropertyOriginalAttributes['amenityIds'] = [];
+                    }
+
+
+                    if (isset($property->description)) {
+                        $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                    }
+                    if (isset($property->short_description)) {
+                        $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                    }
+
+                    $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+
+                    logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
+
                 }
 
-                $newPropertyOriginalAttributes = $property->getOriginal();
-
-                if ($request->has('amenityIds')) {
-                    $newPropertyOriginalAttributes['amenityIds'] = $amenityIds;
-                } else {
-                    $newPropertyOriginalAttributes['amenityIds'] = [];
-                }
-
-
-                if (isset($property->description)) {
-                    $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
-                }
-                if (isset($property->short_description)) {
-                    $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
-                }
-
-                $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
-
-                logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
             }
 
 
