@@ -302,7 +302,7 @@ class DeveloperRepository implements DeveloperRepositoryInterface
             return [
                 'success' => true,
                 'message' => 'Developer has been updated successfully.',
-                'developer_id' => $developer->id, // Optionally return the created developer ID
+                //'developer_id' => $developer->id, // Optionally return the created developer ID
             ];
         } catch (\Exception $error) {
             // Return error response

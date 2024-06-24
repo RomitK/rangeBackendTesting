@@ -170,7 +170,7 @@ class DeveloperController extends Controller
                 'success' => $result['success'],
                 'message' => $result['message'],
                 'redirect' => route('dashboard.developers.index'),
-                'developer_id' => $result['developer_id'], // If returned from repository
+                // 'developer_id' => $result['developer_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
 
