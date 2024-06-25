@@ -265,6 +265,7 @@ class DeveloperRepository implements DeveloperRepositoryInterface
                 $developer->website_status = $request->website_status;
             } else {
                 $developer->is_approved = config('constants.requested');
+                $developer->status = config('constants.active');
                 $developer->website_status = $request->website_status;
                 $developer->approval_id = null;
             }
