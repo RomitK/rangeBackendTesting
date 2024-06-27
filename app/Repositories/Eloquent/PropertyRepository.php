@@ -545,25 +545,27 @@ class PropertyRepository implements PropertyRepositoryInterface
                         $property->is_approved = config('constants.approved');
                         $property->status = config('constants.active');
                         $property->approval_id = Auth::user()->id;
+                        $property->website_status = $request->website_status;
                         break;
                     case config('constants.NA'):
                         $property->is_approved = config('constants.approved');
                         $property->status = config('constants.inactive');
                         $property->approval_id = Auth::user()->id;
+                        $property->website_status = $request->website_status;
                         break;
                     case config('constants.rejected'):
                         $property->is_approved = config('constants.rejected');
                         $property->status = config('constants.active');
                         $property->approval_id = Auth::user()->id;
+                        $property->website_status = $request->website_status;
                         break;
                     case config('constants.requested'):
                         $property->is_approved = config('constants.requested');
                         $property->status = config('constants.active');
                         $property->approval_id = null;
+                        $property->website_status = $request->website_status;
                         break;
                 }
-                $property->website_status = $request->website_status;
-                $property->status = config('constants.active');
             } else {
                 $property->is_approved = config('constants.requested');
                 $property->website_status = $request->website_status;
@@ -653,9 +655,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                     $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
 
                     logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
-
                 }
-
             }
 
 
@@ -727,7 +727,7 @@ class PropertyRepository implements PropertyRepositoryInterface
             'updateAttribute' => $updatedCoumnAttributesString,
             'attribute' => $updatedAttributesString
         ]);
-
+        Log::info('properties'.$properties);
         return $properties;
     }
 

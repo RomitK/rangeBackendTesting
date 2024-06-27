@@ -245,6 +245,7 @@ return [
     ],
 
     'active' => 'active',
+    'inactive' => 'Inactive',
     'Inactive' => 'Inactive',
     'emirates' => [
         'Abu Dhabi',
