@@ -23,7 +23,6 @@ if (!function_exists('activeParentNavBar')) {
     {
         if ($parentNav == 'realEstate') {
             $childElements = [
-
                 'dashboard.projects',
                 'dashboard.properties',
                 'dashboard.accommodations',
@@ -34,7 +33,7 @@ if (!function_exists('activeParentNavBar')) {
                 'dashboard.offer-types',
                 'dashboard.developers',
                 'dashboard.developer',
-                'dashboard.agents',
+
                 'dashboard.completion-statuses',
                 'dashboard.categories',
                 'dashboard.communities',
@@ -64,7 +63,8 @@ if (!function_exists('activeParentNavBar')) {
                 'dashboard.reports.developers',
                 'dashboard.reports.communities',
                 'dashboard.reports.properties',
-                'dashboard.reports.projects'
+                'dashboard.reports.projects',
+                'dashboard.reports.inventory-report'
             ];
         } elseif ($parentNav == 'SEO') {
             $childElements = [

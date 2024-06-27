@@ -167,8 +167,8 @@
                 @endcanany
 
                 @can(config('constants.Permissions.teams'))
-                    <li class="nav-item">
-                        <a href="{{ url('dashboard/agents') }}" class="nav-link ">
+                    <li class="nav-item {{ activeChildNavBar('dashboard.agents') }}">
+                        <a href="{{ url('dashboard/agents') }} " class="nav-link ">
                             <i class="nav-icon fa fa-users"></i>
                             <p>Teams</p>
                         </a>
@@ -374,6 +374,15 @@
                                 <p>General Report</p>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a href="{{ url('dashboard/inventory-report') }}"
+                                class="nav-link {{ activeChildNavBar('dashboard.reports.inventory-report') }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Inventory Report</p>
+                            </a>
+                        </li>
+
 
                         {{-- <li class="nav-item">
                             <a href="{{ url('dashboard/communities-report') }}"

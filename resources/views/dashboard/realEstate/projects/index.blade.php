@@ -314,7 +314,7 @@
                                 <tbody>
                                     @foreach ($projects as $key => $project)
                                         <tr>
-                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $project->title }}</td>
                                             <td>{{ $project->reference_number }}</td>
                                             <td>{{ $project->permit_number }}</td>
@@ -450,7 +450,6 @@
                                 <div class="col-12 text-center pagination">
                                     {!! $projects->appends(request()->query())->links() !!}
                                 </div>
-
                             </div>
                         </div>
                         <!-- /.card-body -->

@@ -16,13 +16,15 @@ use App\Repositories\Contracts\{
     DeveloperRepositoryInterface,
     CommunityRepositoryInterface,
     ProjectRepositoryInterface,
-    PropertyRepositoryInterface
+    PropertyRepositoryInterface,
+    InventoryRepositoryInterface
 };
 use App\Repositories\Eloquent\{
     DeveloperRepository,
     CommunityRepository,
     ProjectRepository,
-    PropertyRepository
+    PropertyRepository,
+    InventoryRepository
 };
 
 
@@ -39,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CommunityRepositoryInterface::class, CommunityRepository::class);
         $this->app->bind(ProjectRepositoryInterface::class, ProjectRepository::class);
         $this->app->bind(PropertyRepositoryInterface::class, PropertyRepository::class);
+        $this->app->bind(InventoryRepositoryInterface::class, InventoryRepository::class);
     }
 
     /**

@@ -329,6 +329,10 @@ class Project extends Model implements HasMedia
     {
         return $this->hasMany(Property::class, 'project_id', 'id');
     }
+    public function getLastPropertyUpdateAttribute()
+    {
+        return $this->properties()->orderBy('updated_at', 'desc')->value('updated_at');
+    }
 
     public function subProjects()
     {
