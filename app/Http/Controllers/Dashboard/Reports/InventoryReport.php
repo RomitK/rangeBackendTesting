@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\InventoryRequest;
 use App\Repositories\Contracts\InventoryRepositoryInterface;
 use Carbon\Carbon;
+use App\Exceptions\InventoryException;
 use App\Models\{
     Community,
     Developer,
@@ -86,9 +87,26 @@ class InventoryReport extends Controller
     }
     public function  inventoryUpdate(InventoryRequest $request, Project $project)
     {
-        if ($request->hasFile('inventoryFile')) {
-            $file = $request->inventoryFile;
-            Excel::import(new InventoryImport($project), $file);
+        try {
+            if ($request->hasFile('inventoryFile')) {
+                $file = $request->file('inventoryFile');
+                Excel::import(new InventoryImport, $file);
+            }
+            return response()->json(['message' => 'File imported successfully'], 200);
+        } catch (InventoryException $e) {
+            return response()->json([
+                'errors' => [
+                    'code' => $e->getErrorCode(),
+                    'message' => $e->getMessage(),
+                ]
+            ], $e->getErrorCode());
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => [
+                    'code' => 500,
+                    'message' => 'An unexpected error occurred',
+                ]
+            ], 500);
         }
     }
 }

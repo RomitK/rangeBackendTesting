@@ -43,19 +43,27 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (InventoryException $e, $request) {
+            return response()->json([
+                'errors' => [
+                    'code' => $e->getErrorCode(),
+                    'message' => $e->getMessage(),
+                ]
+            ], $e->getErrorCode());
         });
     }
-    
-//     public function render($request, Exception $exception)
-// {
-//     if ($exception instanceof NotFoundHttpException) {
-//         if ($request->is('api/*')) {
-//             return response()->json(['error' => 'Not Found'], 404);
-//         }
-//         return response()->view('404', [], 404);
-//     }
-//     return parent::render($request, $exception);
-// }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof InventoryException) {
+            return response()->json([
+                'errors' => [
+                    'code' => $exception->getErrorCode(),
+                    'message' => $exception->getMessage(),
+                ]
+            ], $exception->getErrorCode());
+        }
+
+        return parent::render($request, $exception);
+    }
 }

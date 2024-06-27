@@ -170,60 +170,61 @@ class ProjectController extends Controller
 
     public function updateBrochure(Project $project)
     {
-        try {
-
-            $minBed = $project->subProjects->min('bedrooms');
-            $maxBed = $project->subProjects->max('bedrooms');
-            if ($minBed != $maxBed) {
-                if ($maxBed === "Studio") {
-                    $bedroom = $maxBed . "-" . $minBed;
+        // Disable timestamps for this scope
+        Project::withoutTimestamps(function () use ($project) {
+            try {
+                $minBed = $project->subProjects->min('bedrooms');
+                $maxBed = $project->subProjects->max('bedrooms');
+                if ($minBed != $maxBed) {
+                    if ($maxBed === "Studio") {
+                        $bedroom = $maxBed . "-" . $minBed;
+                    } else {
+                        $bedroom = $minBed . "-" . $maxBed;
+                    }
                 } else {
-                    $bedroom = $minBed . "-" . $maxBed;
+                    $bedroom = $minBed;
                 }
-            } else {
-                $bedroom = $minBed;
+                $area_unit = 'sq ft';
+
+                $starting_price = 0;
+                $dateStr = $project->completion_date;
+                $month = date("n", strtotime($dateStr));
+                $yearQuarter = ceil($month / 3);
+
+                view()->share([
+                    'project' => $project,
+                    'area_unit' => $area_unit,
+                    'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
+                    'bedrooms' => $bedroom,
+                    'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
+                    'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
+                ]);
+                $pdf = PDF::loadView('pdf.projectBrochure');
+                //return $pdf->stream();
+                //return $pdf->download($project->title.' Brochure.pdf');
+
+                // $pdfContent = $this->generateBrochure($project);
+                $pdfContent = $pdf->output();
+
+                $project->clearMediaCollection('brochures');
+
+                $project->addMediaFromString($pdfContent)
+                    ->usingFileName($project->title . '-brochure.pdf')
+                    ->toMediaCollection('brochures', 'projectFiles');
+
+                $project->save();
+
+                $project->brochure_link = $project->brochure;
+                $project->updated_brochure = 1;
+                $project->save();
+
+                return redirect()->route('dashboard.projects.index')->with('success', 'Project Brochure has been updated successfully.');
+            } catch (\Exception $error) {
+                return redirect()->route('dashboard.projects.index')->with('error', $error->getMessage());
             }
-            $area_unit = 'sq ft';
-
-            $starting_price = 0;
-            $dateStr = $project->completion_date;
-            $month = date("n", strtotime($dateStr));
-            $yearQuarter = ceil($month / 3);
-
-            view()->share([
-                'project' => $project,
-                'area_unit' => $area_unit,
-                'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
-                'bedrooms' => $bedroom,
-                'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
-                'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
-
-            ]);
-            $pdf = PDF::loadView('pdf.projectBrochure');
-            //return $pdf->stream();
-            //return $pdf->download($project->title.' Brochure.pdf');
-
-            // $pdfContent = $this->generateBrochure($project);
-            $pdfContent = $pdf->output();
-
-
-            $project->clearMediaCollection('brochures');
-
-            $project->addMediaFromString($pdfContent)
-                ->usingFileName($project->title . '-brochure.pdf')
-                ->toMediaCollection('brochures', 'projectFiles');
-
-            $project->save();
-
-            $project->brochure_link = $project->brochure;
-            $project->updated_brochure = 1;
-            $project->save();
-
-            return redirect()->route('dashboard.projects.index')->with('success', 'Project Brchure has been updated successfully.');
-        } catch (\Exception $error) {
-            return redirect()->route('dashboard.projects.index')->with('error', $error->getMessage());
-        }
+        });
     }
+
     public function viewBrochure(Project $project)
     {
         dd($project);

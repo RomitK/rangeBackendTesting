@@ -1333,6 +1333,7 @@ class HomeController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json();
+                Log::info($data);
                 return $this->success('Form Submit', [], 200);
             } else {
                 Log::error('SMS API Error: ' . $response->body());
