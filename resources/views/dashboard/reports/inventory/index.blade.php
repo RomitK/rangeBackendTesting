@@ -223,6 +223,13 @@
                                                     <i class="fas fa-database"></i>
                                                     Update Inventory
                                                 </a>
+
+                                                <a class="btn btn-info btn-sm"
+                                                    href="{{ route('dashboard.projects.inventory', $project->id) }}">
+                                                    <i class="fas fa-store nav-icon"></i>
+                                                    Inventory File
+                                                </a>
+
                                             </td>
                                         </tr>
                                     @endforeach

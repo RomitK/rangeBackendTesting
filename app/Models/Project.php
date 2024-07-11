@@ -57,6 +57,7 @@ class Project extends Model implements HasMedia
         'saleOffer',
         'interiorGallery',
         'exteriorGallery',
+        'inventory',
         'factsheet',
         'brochure',
         'paymentPlan',
@@ -127,6 +128,18 @@ class Project extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('clusterPlans', 'resize');
     }
+    public function getInventoryAttribute()
+    {
+        // Get all media files from the 'inventoryFiles' collection
+        $mediaItems = $this->getMedia('inventoryFiles')->sortBy(function ($item) {
+            return $item->created_at->timestamp; // Adjust this to match your actual field name
+        });
+
+        // Return the media items
+        return $mediaItems;
+    }
+
+
     public function getVideoAttribute()
     {
         return $this->getFirstMediaUrl('videos');

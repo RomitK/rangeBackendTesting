@@ -650,6 +650,7 @@ class ProjectRepository implements ProjectRepositoryInterface
         try {
             $properties = Property::where('project_id', $project->id)
                 ->where('status', config('constants.inactive'))
+                ->where('out_of_inventory', 0)
                 ->where('is_approved', config('constants.approved'))
                 ->where('website_status', config('constants.NA'))->latest()->get();
 

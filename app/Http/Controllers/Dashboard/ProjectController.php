@@ -127,6 +127,8 @@ class ProjectController extends Controller
         return view('dashboard.realEstate.projects.create', compact('completionStatuses', 'amenities', 'accommodations', 'communities'));
     }
 
+
+
     public function generateBrochure($project)
     {
         try {
@@ -273,6 +275,7 @@ class ProjectController extends Controller
     {
         return redirect()->route('dubai-offplan', $project->slug);
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -293,6 +296,11 @@ class ProjectController extends Controller
         $completionStatuses = CompletionStatus::active()->where('for_property', 0)->latest()->get();
 
         return view('dashboard.realEstate.projects.edit', compact('completionStatuses', 'highlights', 'tags', 'project', 'agents', 'amenities', 'accommodations', 'communities', 'developers'));
+    }
+
+    public function inventory(Project $project)
+    {
+        return view('dashboard.realEstate.projects.inventory', compact('project'));
     }
 
     /**
@@ -523,6 +531,8 @@ class ProjectController extends Controller
             'subProjects' => $subProjects
         ]);
     }
+
+    
     public function singleProjectDetail(Request $request)
     {
         $project = $request->project_id;

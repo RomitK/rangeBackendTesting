@@ -615,23 +615,29 @@
                     if (response.status == 500) {
                         toastr.error(response.responseJSON.message);
                     } else if (response.status == 422) {
-                        // toastr.error('Fill the Mandatory fields');
-                        $.each(response.responseJSON.errors, function(field_name, error) {
-                            if (field_name.includes(".")) {
-                                toastr.error(error);
-                                new_field_name = field_name.split(".")[0];
-                                console.log(new_field_name);
-                                $(document).find('[id=' + new_field_name + ']').addClass(
+
+                        if (typeof response.responseJSON.errors === 'object' && !Array.isArray(response
+                                .responseJSON.errors)) {
+                            $.each(response.responseJSON.errors, function(field_name, error) {
+                                if (field_name.includes(".")) {
+                                    toastr.error(error);
+                                    new_field_name = field_name.split(".")[0];
+                                    console.log(new_field_name);
+                                    $(document).find('[id=' + new_field_name + ']').addClass(
+                                        'is-invalid')
+                                    $(document).find('[id=' + new_field_name + ']').after(
+                                        '<span class="invalid-feedback" role="alert"><strong>' +
+                                        error + '</strong></span>')
+                                }
+                                $(document).find('[name=' + field_name + ']').addClass(
                                     'is-invalid')
-                                $(document).find('[id=' + new_field_name + ']').after(
+                                $(document).find('[name=' + field_name + ']').after(
                                     '<span class="invalid-feedback" role="alert"><strong>' +
                                     error + '</strong></span>')
-                            }
-                            $(document).find('[name=' + field_name + ']').addClass('is-invalid')
-                            $(document).find('[name=' + field_name + ']').after(
-                                '<span class="invalid-feedback" role="alert"><strong>' +
-                                error + '</strong></span>')
-                        })
+                            })
+                        }
+                    } else if (response.status == 420) {
+                        toastr.error(response.responseJSON.errors.message);
                     } else {
                         toastr.error(response);
                     }

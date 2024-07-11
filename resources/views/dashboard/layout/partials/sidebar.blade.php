@@ -359,7 +359,9 @@
 
                 <li class="nav-item {{ activeParentNavBar('reports', 'menu-open') }}">
                     <a href="#" class="nav-link {{ activeParentNavBar('reports', 'active') }}">
-                        <i class="nav-icon fa fa-cogs"></i>
+                       
+                        <i class="fas fa-clipboard-list nav-icon"></i>
+
                         <p>
                             Reports
                             <i class="right fas fa-angle-left"></i>

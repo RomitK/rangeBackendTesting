@@ -33,7 +33,7 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="form-group">
-                                    <label for="customFile">Upload Inventory File <small><a
+                                    <label for="customFile">Upload Primary Market Inventory File <small><a
                                                 href="{{ asset('dashboard/inventorySample.xlsx') }}"
                                                 download="">(Download
                                                 Sample

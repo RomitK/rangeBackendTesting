@@ -256,7 +256,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
 
     Route::resource('projects', ProjectController::class, ['as' => 'dashboard']);
     Route::get('projects/{project}/logs', 'ProjectController@logs')->name('dashboard.projects.logs');
-
+    Route::get('projects/{project}/inventory', 'ProjectController@inventory')->name('dashboard.projects.inventory');
 
 
     Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.projects.meta');

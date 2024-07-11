@@ -362,3 +362,72 @@ if (!function_exists('getActivity')) {
         }
     }
 }
+
+if (!function_exists('getUpdatedPropertiesForProperty')) {
+    function getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes)
+    {
+        Log::info('newPropertyOriginalAttributes', $newPropertyOriginalAttributes);
+        Log::info('originalAttributes', $originalAttributes);
+
+        // Convert specific attributes to integer arrays if they exist
+        $keysToConvert = ['developerIds', 'amenityIds', 'highlightIds'];
+
+        foreach ($keysToConvert as $key) {
+            if (isset($newPropertyOriginalAttributes[$key]) && is_array($newPropertyOriginalAttributes[$key])) {
+                $newPropertyOriginalAttributes[$key] = array_map('intval', $newPropertyOriginalAttributes[$key]);
+            }
+            if (isset($originalAttributes[$key]) && is_array($originalAttributes[$key])) {
+                $originalAttributes[$key] = array_map('intval', $originalAttributes[$key]);
+            }
+        }
+
+        // Determine the updated attributes
+        $updatedAttributes = [];
+
+        foreach ($newPropertyOriginalAttributes as $key => $value) {
+            if (!in_array($key, ['created_at', 'updated_at'])) {
+                // Ensure the original attribute exists and compare based on type
+                if (array_key_exists($key, $originalAttributes)) {
+                    if (is_string($value) && $originalAttributes[$key] != $value) {
+                        $updatedAttributes[$key] = $value;
+                    } elseif (is_array($value) && serialize($originalAttributes[$key]) !== serialize($value)) {
+                        $updatedAttributes[$key] = $value;
+                    }
+                } else {
+                    // Handle case where $originalAttributes[$key] does not exist
+                    $updatedAttributes[$key] = $value;
+                }
+            }
+        }
+
+        // Construct the updated attributes strings
+        $updatedAttributesString = implode(', ', array_map(
+            fn ($value, $key) => "$key: " . (is_array($value) ? json_encode($value) : $value),
+            $updatedAttributes,
+            array_keys($updatedAttributes)
+        ));
+
+        $updatedCoumnAttributesString = implode(', ', array_keys($updatedAttributes));
+
+        // Encode the properties to JSON
+        $properties = json_encode([
+            'old' => $originalAttributes,
+            'new' => $newPropertyOriginalAttributes,
+            'updateAttribute' => $updatedCoumnAttributesString,
+            'attribute' => $updatedAttributesString
+        ]);
+        Log::info('properties' . $properties);
+        return $properties;
+    }
+}
+
+if (!function_exists('generatePropertyUniqueCode')) {
+ function generatePropertyUniqueCode($prefix)
+    {
+
+        do {
+            $code = $prefix . random_int(1000000, 9999999);
+        } while (Property::where("reference_number", $code)->first());
+        return $code;
+    }
+}

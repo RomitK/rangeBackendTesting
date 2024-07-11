@@ -355,7 +355,7 @@ class PropertyRepository implements PropertyRepositoryInterface
             } else {
                 $prefix = 'R';
             }
-            $property->reference_number = $this->generateUniqueCode($prefix);
+            $property->reference_number = generatePropertyUniqueCode($prefix);
             $property->save();
 
             $originalAttributes = $property->getOriginal();
@@ -605,7 +605,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                 $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
             }
 
-            $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+            $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
 
             logActivity('Property has been updated', $property->id, Property::class, $properties);
 
@@ -652,7 +652,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                         $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
                     }
 
-                    $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+                    $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
 
                     logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
                 }
@@ -727,7 +727,7 @@ class PropertyRepository implements PropertyRepositoryInterface
             'updateAttribute' => $updatedCoumnAttributesString,
             'attribute' => $updatedAttributesString
         ]);
-        Log::info('properties'.$properties);
+        Log::info('properties' . $properties);
         return $properties;
     }
 
@@ -747,7 +747,7 @@ class PropertyRepository implements PropertyRepositoryInterface
             DB::commit();
             $newPropertyOriginalAttributes = $property->getOriginal();
 
-            $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+            $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
 
             logActivity('Property Meta Details has been updated', $property->id, Property::class, $properties);
             DB::commit();

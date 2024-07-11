@@ -8,6 +8,7 @@ use App\Http\Requests\InventoryRequest;
 use App\Repositories\Contracts\InventoryRepositoryInterface;
 use Carbon\Carbon;
 use App\Exceptions\InventoryException;
+use Illuminate\Support\Str;
 use App\Models\{
     Community,
     Developer,
@@ -18,6 +19,8 @@ use  App\Imports\{
     InventoryImport
 };
 use Excel;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class InventoryReport extends Controller
 {
@@ -85,14 +88,46 @@ class InventoryReport extends Controller
             'project',
         ));
     }
-    public function  inventoryUpdate(InventoryRequest $request, Project $project)
+    public function inventoryUpdate(InventoryRequest $request, Project $project)
     {
         try {
             if ($request->hasFile('inventoryFile')) {
                 $file = $request->file('inventoryFile');
-                Excel::import(new InventoryImport, $file);
+
+                // Check if the file is valid
+                if ($file->isValid()) {
+
+                    Excel::import(new InventoryImport($project), $file);
+
+                    $timestamp = Carbon::now()->format('Y-m-d_H-i-s');
+                    $ext = $file->getClientOriginalExtension();
+                    $imageName = $timestamp . '.' . $ext;
+
+                    // Log the file details
+                    Log::info('Uploading file', ['file_name' => $imageName, 'mime_type' => $file->getMimeType(), 'size' => $file->getSize()]);
+
+                    $project->addMedia($file)
+                        ->usingFileName($imageName)
+                        ->withCustomProperties(['uploaded_by' => Auth::user()->id])
+                        ->toMediaCollection('inventoryFiles', 'projectFiles');
+
+                    $project->save();
+
+                    // Perform the import
+
+
+                    return response()->json([
+                        'import' => true,
+                        'success' => true,
+                        'message' => 'File imported successfully',
+                        'redirect' => route('dashboard.projects.inventoryList', $project->id),
+                    ]);
+                } else {
+                    throw new \Exception('Uploaded file is not valid.');
+                }
+            } else {
+                throw new \Exception('No file was uploaded.');
             }
-            return response()->json(['message' => 'File imported successfully'], 200);
         } catch (InventoryException $e) {
             return response()->json([
                 'errors' => [
@@ -104,7 +139,7 @@ class InventoryReport extends Controller
             return response()->json([
                 'error' => [
                     'code' => 500,
-                    'message' => 'An unexpected error occurred',
+                    'message' => 'An unexpected error occurred: ' . $e->getMessage(),
                 ]
             ], 500);
         }

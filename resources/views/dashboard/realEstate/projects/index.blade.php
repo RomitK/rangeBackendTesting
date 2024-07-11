@@ -428,6 +428,12 @@
                                                             <i class="fas fa-pencil-alt"></i>
                                                             Edit
                                                         </a>
+
+                                                        <a class="btn btn-info btn-sm"
+                                                            href="{{ route('dashboard.projects.inventory', $project->id) }}">
+                                                            <i class="fas fa-store nav-icon"></i>
+                                                            Inventory File
+                                                        </a>
                                                     @endcan
                                                     @if (Auth::user()->role != 'user')
                                                         <a class="btn btn-dark btn-sm"
