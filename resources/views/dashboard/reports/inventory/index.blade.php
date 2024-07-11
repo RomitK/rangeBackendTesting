@@ -57,15 +57,7 @@
                 <div class="col-md-12">
                     <!-- LINE CHART -->
                     <div class="card">
-                        <div class="card-header">
-                            <div class="row">
 
-                                <div class="col-md-12 d-flex align-items-end justify-content-end">
-                                    <input type="hidden" value="" name="data_range_input" id="data_range_input">
-                                    <button class="btn btn-danger btn-md" id="download-button">Download</button>
-                                </div>
-                            </div>
-                        </div>
                         <div class="card-body table-responsive">
 
                             <div class="row">
