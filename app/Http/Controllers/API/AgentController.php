@@ -151,7 +151,22 @@ class AgentController extends Controller
             return $this->failure($exception->getMessage());
         }
     }
+    public function profileTeam($slug)
+    {
+        try {
 
+            if (Agent::where('slug', $slug)->exists()) {
+                $management = Agent::where('slug', $slug)->first();
+                $management = new SingleManagementResource($management);
+
+                return $this->success('Single Management', $management, 200);
+            } else {
+                return $this->success('Single Management', [], 200);
+            }
+        } catch (\Exception $exception) {
+            return $this->failure($exception->getMessage());
+        }
+    }
     public function agentLists(Request $request)
     {
         try {

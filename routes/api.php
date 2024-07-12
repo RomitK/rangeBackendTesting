@@ -58,6 +58,7 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/managements', 'AgentController@managements');
     Route::get('/managements/{slug}', 'AgentController@singleManagement');
     Route::get('/agents', 'AgentController@agents');
+    Route::get('/profile/{slug}', 'AgentController@profileTeam');
 
 
     Route::get('/managementLists', 'AgentController@managementLists');
