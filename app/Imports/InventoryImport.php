@@ -101,66 +101,83 @@ class InventoryImport implements ToCollection
                     $propertyArea = $data['bedrooms'];
                     $propertyBuildArea = $data['buildArea'];
                     $propertyPrice = $data['price'];
+                    $unitType = $data['unitType'];
+
+
+
 
 
 
                     $propertyExist = Property::where('project_id', $this->project->id)
                         ->where('bedrooms', $propertyBedrooms)
                         ->where('accommodation_id', $accommodationId)
+                        ->where('sub_project_id',)
                         ->exists();
+
+
                     Log::info('propertyExist-' . $propertyExist);
                     if ($propertyExist) {
 
-                        $property = Property::where('project_id', $this->project->id)
+
+                        $unityTypeExist = Project::where('parent_project_id', $this->project->id)
+                            ->where('is_parent_project', 0)
                             ->where('bedrooms', $propertyBedrooms)
                             ->where('accommodation_id', $accommodationId)
-                            ->first();
+                            ->Where('title', $unitType)
+                            ->exists();
 
-                        $originalAttributes = $property->getOriginal();
-                        $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
-                        $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                        if ($unityTypeExist) {
+                            $property = Property::where('project_id', $this->project->id)
+                                ->where('bedrooms', $propertyBedrooms)
+                                ->where('accommodation_id', $accommodationId)
+                                ->first();
 
-                        if ($property->amenities) {
-                            $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
-                        } else {
-                            $originalAttributes['amenityIds'] = [];
+                            $originalAttributes = $property->getOriginal();
+                            $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                            $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+
+                            if ($property->amenities) {
+                                $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                            } else {
+                                $originalAttributes['amenityIds'] = [];
+                            }
+
+                            $property->price = $propertyPrice;
+
+                            if ($propertyArea) {
+                                $property->area = $propertyArea;
+                            }
+                            if ($propertyBuildArea) {
+                                $property->builtup_area = $propertyArea;
+                            }
+                            $property->updated_by = Auth::user()->id;
+                            $property->save();
+
+
+                            array_push($this->updatedProperties, $property->id);
+
+
+                            $newPropertyOriginalAttributes = $property->getOriginal();
+
+                            if ($property->amenities) {
+                                $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                            } else {
+                                $newPropertyOriginalAttributes['amenityIds'] = [];
+                            }
+
+                            if (isset($property->description)) {
+                                $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                            }
+                            if (isset($property->short_description)) {
+                                $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                            }
+
+                            $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
+
+                            logActivity('Property has been updated through inventory file', $property->id, Property::class, $properties);
+
+                            Log::info('Property Exist true');
                         }
-
-                        $property->price = $propertyPrice;
-
-                        if ($propertyArea) {
-                            $property->area = $propertyArea;
-                        }
-                        if ($propertyBuildArea) {
-                            $property->builtup_area = $propertyArea;
-                        }
-                        $property->updated_by = Auth::user()->id;
-                        $property->save();
-
-
-                        array_push($this->updatedProperties, $property->id);
-
-
-                        $newPropertyOriginalAttributes = $property->getOriginal();
-
-                        if ($property->amenities) {
-                            $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
-                        } else {
-                            $newPropertyOriginalAttributes['amenityIds'] = [];
-                        }
-
-                        if (isset($property->description)) {
-                            $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
-                        }
-                        if (isset($property->short_description)) {
-                            $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
-                        }
-
-                        $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
-
-                        logActivity('Property has been updated through inventory file', $property->id, Property::class, $properties);
-
-                        Log::info('Property Exist true');
                     } else {
 
                         $unitType = $data['unitType'];
@@ -173,6 +190,7 @@ class InventoryImport implements ToCollection
                                 ->where('is_parent_project', 0)
                                 ->where('bedrooms', $propertyBedrooms)
                                 ->where('accommodation_id', $accommodationId)
+                                ->Where('title', $unitType)
                                 ->exists();
 
                             Log::info('unityTypeExist-' . $unityTypeExist);
@@ -182,6 +200,7 @@ class InventoryImport implements ToCollection
                                     ->where('is_parent_project', 0)
                                     ->where('bedrooms', $propertyBedrooms)
                                     ->where('accommodation_id', $accommodationId)
+                                    ->Where('title', $unitType)
                                     ->first();
                             } else {
 
