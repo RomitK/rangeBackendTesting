@@ -422,12 +422,19 @@ if (!function_exists('getUpdatedPropertiesForProperty')) {
 }
 
 if (!function_exists('generatePropertyUniqueCode')) {
- function generatePropertyUniqueCode($prefix)
+    function generatePropertyUniqueCode($prefix)
     {
 
         do {
             $code = $prefix . random_int(1000000, 9999999);
         } while (Property::where("reference_number", $code)->first());
         return $code;
+    }
+}
+if (!function_exists('slugToOriginal')) {
+    function slugToOriginal($slug)
+    {
+        // Convert the slug back to the original string
+        return ucwords(str_replace('-', ' ', $slug));
     }
 }

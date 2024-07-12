@@ -15,6 +15,7 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class Agent extends Model implements HasMedia
 {
@@ -46,6 +47,7 @@ class Agent extends Model implements HasMedia
      * @var array
      */
     protected $appends = [
+        'designationUrl',
         'image',
         'additionalImage',
         'video',
@@ -75,6 +77,10 @@ class Agent extends Model implements HasMedia
     /**
      * GET Attributes
      */
+    public function getDesignationUrlAttribute()
+    {
+        return Str::slug($this->designation);
+    }
     public function getVideoAttribute()
     {
         return $this->getFirstMediaUrl('videos');

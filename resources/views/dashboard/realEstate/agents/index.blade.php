@@ -84,7 +84,7 @@
                                             <td class="project-actions text-right">
 
                                                 <a class="btn btn-warning btn-sm" target="_blanket"
-                                                    href="{{ config('app.frontend_url') . 'profile/' . $agent->slug }}">
+                                                    href="{{ config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug }}">
                                                     <i class="fas fa-eye"></i>
                                                     View
                                                 </a>
