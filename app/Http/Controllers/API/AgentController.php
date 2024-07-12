@@ -18,6 +18,7 @@ use App\Models\{
 use Auth;
 use App\Http\Resources\{
     SingleManagementResource,
+    SingleAgentResource,
     ManagementListResource,
     AgentListResource
 };
@@ -155,13 +156,13 @@ class AgentController extends Controller
     {
         try {
 
-            if (Agent::where('slug', $slug)->exists()) {
-                $management = Agent::where('slug', $slug)->first();
-                $management = new SingleManagementResource($management);
+            if (Agent::where('slug', $slug)->active()->exists()) {
+                $management = Agent::where('slug', $slug)->active()->first();
+                $management = new SingleAgentResource($management);
 
-                return $this->success('Single Management', $management, 200);
+                return $this->success('Single Team', $management, 200);
             } else {
-                return $this->success('Single Management', [], 200);
+                return $this->success('Single Team', [], 200);
             }
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
