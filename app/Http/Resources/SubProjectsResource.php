@@ -20,7 +20,7 @@ class SubProjectsResource extends JsonResource
     public function toArray($request)
     {
         if (Property::where('sub_project_id', $this->id)->active()->exists()) {
-            $property =  Property::where('sub_project_id', $this->id)->websiteStatus(config('constants.available'))->active()->first()->slug;
+            $property =  Property::where('sub_project_id', $this->id)->active()->first()->slug;
         } else {
             $property = null;
         }
