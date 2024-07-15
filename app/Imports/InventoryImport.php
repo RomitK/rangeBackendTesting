@@ -45,34 +45,23 @@ class InventoryImport implements ToCollection
                     $price = $data[5];
                     $unitType = $data[6];
 
+                    if ($accommodationName && $bedrooms && $unitType) {
 
-                    if (!Accommodation::where('name', $accommodationName)->exists()) {
-                        throw new InventoryException("Property Type is not found", 0, 420);
-                    }
-                    if (!isset($bedrooms) || (!filter_var($bedrooms, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]) && strtolower($bedrooms) !== 'studio')) {
-                        throw new InventoryException("Bedroom is not found or maybe not a positive number or 'Studio'", 0, 420);
-                    }
-                    if (!isset($price) || !filter_var($price, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
-                        throw new InventoryException("Price is not found or maybe not a positive number", 0, 420);
-                    }
+                        if (!Accommodation::where('name', $accommodationName)->exists()) {
+                            throw new InventoryException("Property Type is not found", 0, 420);
+                        }
+                        if (!isset($bedrooms) || (!filter_var($bedrooms, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]) && strtolower($bedrooms) !== 'studio')) {
+                            throw new InventoryException("Bedroom is not found or maybe not a positive number or 'Studio'", 0, 420);
+                        }
+                        if (!isset($price) || !filter_var($price, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
+                            throw new InventoryException("Price is not found or maybe not a positive number", 0, 420);
+                        }
 
-                    // Check if the accommodation and bedroom already exist in the array
-                    if (!isset($groupedAccommodationData[$accommodationName])) {
-                        $groupedAccommodationData[$accommodationName] = [];
-                    }
-                    if (!isset($groupedAccommodationData[$accommodationName][$bedrooms])) {
-                        $groupedAccommodationData[$accommodationName][$bedrooms] = [
-                            'srNo' => $srNo,
-                            'accommodationName' => $accommodationName,
-                            'bedrooms' => $bedrooms,
-                            'area' => $area,
-                            'buildArea' => $buildArea,
-                            'price' => $price,
-                            'unitType' => $unitType,
-                        ];
-                    } else {
-                        // If the accommodation and bedroom exist, update only if the new price is lower
-                        if ($price < $groupedAccommodationData[$accommodationName][$bedrooms]['price']) {
+                        // Check if the accommodation and bedroom already exist in the array
+                        if (!isset($groupedAccommodationData[$accommodationName])) {
+                            $groupedAccommodationData[$accommodationName] = [];
+                        }
+                        if (!isset($groupedAccommodationData[$accommodationName][$bedrooms])) {
                             $groupedAccommodationData[$accommodationName][$bedrooms] = [
                                 'srNo' => $srNo,
                                 'accommodationName' => $accommodationName,
@@ -82,6 +71,19 @@ class InventoryImport implements ToCollection
                                 'price' => $price,
                                 'unitType' => $unitType,
                             ];
+                        } else {
+                            // If the accommodation and bedroom exist, update only if the new price is lower
+                            if ($price < $groupedAccommodationData[$accommodationName][$bedrooms]['price']) {
+                                $groupedAccommodationData[$accommodationName][$bedrooms] = [
+                                    'srNo' => $srNo,
+                                    'accommodationName' => $accommodationName,
+                                    'bedrooms' => $bedrooms,
+                                    'area' => $area,
+                                    'buildArea' => $buildArea,
+                                    'price' => $price,
+                                    'unitType' => $unitType,
+                                ];
+                            }
                         }
                     }
                 }
