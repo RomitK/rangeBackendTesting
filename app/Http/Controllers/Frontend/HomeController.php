@@ -16,11 +16,49 @@ use App\Models\{
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
-use PDF;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Http;
+use App\Exports\DLDTransaction;
+use Exception;
+use PDF;
 
 class HomeController extends Controller
 {
+    public function DLDTransaction()
+    {
+        try {
+            // Step 1: Get the access token
+            $tokenResponse = Http::asForm()->post('https://api.dubaipulse.gov.ae/oauth/client_credential/accesstoken?grant_type=client_credentials', [
+                'client_id' => 'ai36DZyLswf3TmoefXo0GDZQVJWeLfbR',
+                'client_secret' => 'TMdKmU5jP3zkrybR',
+            ]);
+
+
+            if ($tokenResponse->failed()) {
+
+                throw new Exception('Failed to get access token');
+            }
+
+            $accessToken = $tokenResponse->json()['access_token'];
+
+            // Step 2: Call the main API with the access token
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+            ])->get('https://api.dubaipulse.gov.ae/open/dld/dld_transactions-open-api');
+
+            if ($response->failed()) {
+                throw new Exception('Failed to get data from API');
+            }
+
+            $data = $response->json();
+
+            // Step 3: Export to Excel
+            return Excel::download(new DLDTransaction($data), 'api_response.xlsx');
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     public function showLoginPage()
     {
         if (Auth::check()) {

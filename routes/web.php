@@ -113,6 +113,9 @@ Route::get('cronjob/property/addxml', 'App\Http\Controllers\CronController@prope
 
 
 Route::namespace('App\Http\Controllers\Frontend')->group(function () {
+
+    Route::get('/export-api-response', 'HomeController@DLDTransaction');
+
     Route::any('/', 'HomeController@showLoginPage')->name('home');
     Route::any('communities', 'HomeController@communities')->name('communities');
     Route::any('off-plan', 'HomeController@offPlan')->name('off-plan');
