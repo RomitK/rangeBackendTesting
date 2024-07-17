@@ -14,7 +14,10 @@ use App\Models\{
     Community,
     Project
 };
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AgentController extends Controller
 {
@@ -203,6 +206,9 @@ class AgentController extends Controller
             $agent->meta_title = $request->meta_title;
             $agent->meta_keywords = $request->meta_keywords;
             $agent->meta_description = $request->meta_description;
+
+
+
             //$agent->user_id = Auth::user()->id;
             if ($request->hasFile('image')) {
                 $agent->clearMediaCollection('images');
@@ -244,6 +250,19 @@ class AgentController extends Controller
             $agent->updated_by = Auth::user()->id;
 
             $agent->save();
+
+            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->designationUrl) . '/' . $agent->slug;
+            $qrCode = QrCode::format('png')->size(300)->generate($url);
+
+
+            // Define the file and folder names
+            $imageName = $agent->slug . '.png';
+            Storage::disk('agentQRFiles')->put($imageName, $qrCode);
+            $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
+
+            $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentQRFiles');
+
+
             if ($request->has('languageIds')) {
                 $agent->languages()->detach();
                 $agent->languages()->attach($request->languageIds);

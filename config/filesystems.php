@@ -123,6 +123,13 @@ return [
             'root' => 'banners'
 
         ],
+        'agentQRFiles' => [
+            'driver' => 'local',
+            'root'   => public_path('uploads/QRs'),
+            'url'        => env('APP_URL') . '/uploads/QRs',
+            'throw' => false,
+            'visibility' => 'public',
+        ],
         'agentFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/agents'),

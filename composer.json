@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "aws/aws-sdk-php": "^3.316",
         "barryvdh/laravel-dompdf": "^2.0",
         "doctrine/dbal": "^3.6",
         "guzzlehttp/guzzle": "^7.2",
@@ -16,6 +17,7 @@
         "laravelcollective/html": "^6.4",
         "league/flysystem-aws-s3-v3": "^3.22",
         "maatwebsite/excel": "^3.1",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.8",
         "spatie/laravel-backup": "^8.2",
         "spatie/laravel-medialibrary": "^10.0.0",

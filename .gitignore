@@ -2,7 +2,7 @@
 /public/build
 /public/hot
 /public/frontend/media
-/public/storage
+/public/uploads/QRs
 /storage/media-library/
 /resources/pdf_fonts/
 /storage/*.key
