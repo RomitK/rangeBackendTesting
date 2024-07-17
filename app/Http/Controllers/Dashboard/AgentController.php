@@ -260,7 +260,7 @@ class AgentController extends Controller
             Storage::disk('agentQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
 
-            $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentQRFiles');
+            $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
 
 
             if ($request->has('languageIds')) {

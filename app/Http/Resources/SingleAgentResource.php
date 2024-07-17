@@ -20,6 +20,7 @@ class SingleAgentResource extends JsonResource
             'slug' => $this->slug,
             'email' => $this->email,
             'contact' => $this->contact_number,
+            'qr' => $this->qr,
             'whatsapp' => $this->whatsapp_number,
             'image' => $this->image,
             'designation' => $this->designation,

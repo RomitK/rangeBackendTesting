@@ -47,6 +47,7 @@ class Agent extends Model implements HasMedia
      * @var array
      */
     protected $appends = [
+        'qr',
         'designationUrl',
         'image',
         'additionalImage',
@@ -84,6 +85,10 @@ class Agent extends Model implements HasMedia
     public function getVideoAttribute()
     {
         return $this->getFirstMediaUrl('videos');
+    }
+    public function getQrAttribute()
+    {
+        return $this->getFirstMediaUrl('QRs');
     }
     public function getImageAttribute()
     {
