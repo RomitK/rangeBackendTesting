@@ -254,12 +254,10 @@ class AgentController extends Controller
             $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->designationUrl) . '/' . $agent->slug;
             $qrCode = QrCode::format('png')->size(300)->generate($url);
 
-
-            // Define the file and folder names
             $imageName = $agent->slug . '.png';
             Storage::disk('agentQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
-
+            $agent->clearMediaCollection('QRs');
             $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
 
 
