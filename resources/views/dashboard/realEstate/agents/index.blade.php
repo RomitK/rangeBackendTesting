@@ -39,8 +39,8 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Status</th>
-                                        <th>Approval Status</th>
-                                        <th>Approval By</th>
+                                        {{-- <th>Approval Status</th>
+                                        <th>Approval By</th> --}}
                                         <th>Added By</th>
                                         <th>Last Updated By</th>
                                         <th>Added At</th>
@@ -60,7 +60,7 @@
                                                 </span>
                                             </td>
 
-                                            <td>
+                                            {{-- <td>
                                                 <span
                                                     class="badge 
                                                         @if ($agent->is_approved === config('constants.requested')) bg-info 
@@ -76,19 +76,14 @@
                                                     @endif
                                                 </span>
                                             </td>
-                                            <td>{{ $agent->approval ? $agent->approval->name : '' }}</td>
+                                            <td>{{ $agent->approval ? $agent->approval->name : '' }}</td> --}}
                                             <td>{{ $agent->user->name }}</td>
                                             <td>{{ $agent->updatedBy ? $agent->updatedBy->name : '' }}</td>
 
                                             <td>{{ $agent->formattedCreatedAt }}</td>
                                             <td class="project-actions text-right">
 
-                                                <a class="btn btn-warning btn-sm" target="_blanket"
-                                                    href="{{ config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug }}">
-                                                    <i class="fas fa-eye"></i>
-                                                    View
-                                                </a>
-
+                                               
                                                 <form method="POST"
                                                     action="{{ route('dashboard.agents.destroy', $agent->id) }}">
                                                     @csrf
@@ -104,6 +99,12 @@
                                                             Delete
                                                         </button>
                                                     @endif
+                                                    <a class="btn btn-warning btn-sm" target="_blanket"
+                                                    href="{{ config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug }}">
+                                                    <i class="fas fa-eye"></i>
+                                                    View
+                                                </a>
+
                                                 </form>
                                             </td>
                                         </tr>
