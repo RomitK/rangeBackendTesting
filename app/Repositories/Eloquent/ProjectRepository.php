@@ -625,7 +625,7 @@ class ProjectRepository implements ProjectRepositoryInterface
 
             logActivity('Project has been updated', $project->id, Project::class, $properties);
 
-            if (!empty($project->qr_link) && $project->permit_number !== null) {
+            if ($project->is_valid) {
                 $this->makePropertiesAvailable($project);
             }
 
@@ -650,7 +650,7 @@ class ProjectRepository implements ProjectRepositoryInterface
         try {
             $properties = Property::where('project_id', $project->id)
                 ->where('status', config('constants.inactive'))
-                ->where('out_of_inventory', 0)
+                //->where('out_of_inventory', 0)
                 ->where('is_approved', config('constants.approved'))
                 ->where('website_status', config('constants.NA'))->latest()->get();
 
