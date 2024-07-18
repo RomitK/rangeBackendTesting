@@ -217,6 +217,7 @@ return [
     ],
 
     'newStatusesWithAllOutOfInventory' =>  [
+        '' => 'All',
         'available' => 'Available',
         'NA2' => 'NA (Out of Inventory)',
         'NA' => 'NA (Missing of QR & Permit Number)',
