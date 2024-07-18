@@ -625,7 +625,7 @@ class ProjectRepository implements ProjectRepositoryInterface
 
             logActivity('Project has been updated', $project->id, Project::class, $properties);
 
-            if ($project->is_valid) {
+            if ($project->is_valid == 1) {
                 $this->makePropertiesAvailable($project);
             }
 
@@ -650,9 +650,10 @@ class ProjectRepository implements ProjectRepositoryInterface
         try {
             $properties = Property::where('project_id', $project->id)
                 ->where('status', config('constants.inactive'))
-                //->where('out_of_inventory', 0)
+                ->where('out_of_inventory', 0)
                 ->where('is_approved', config('constants.approved'))
-                ->where('website_status', config('constants.NA'))->latest()->get();
+                ->where('website_status', config('constants.NA'))
+                ->latest()->get();
 
             foreach ($properties as $property) {
 
@@ -671,7 +672,7 @@ class ProjectRepository implements ProjectRepositoryInterface
                 $property->status = config('constants.active');
                 $property->website_status = config('constants.available');
                 $property->save();
-
+                $newPropertyOriginalAttributes = $property->getOriginal();
                 if ($property->amenities) {
                     $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
                 } else {

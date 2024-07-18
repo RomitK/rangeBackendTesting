@@ -208,6 +208,22 @@ return [
         'requested' => 'Requested',
         'rejected' => 'Rejected',
     ],
+
+    'newStatusesWithoutAllOutOfInventory' =>  [
+        'available' => 'Available',
+        'NA' => 'NA (Out of Inventory)',
+        'requested' => 'Requested',
+        'rejected' => 'Rejected',
+    ],
+
+    'newStatusesWithAllOutOfInventory' =>  [
+        'available' => 'Available',
+        'NA2' => 'NA (Out of Inventory)',
+        'NA' => 'NA (Missing of QR & Permit Number)',
+        'requested' => 'Requested',
+        'rejected' => 'Rejected',
+    ],
+
     'statusesOption' => [
         '' => 'All',
         'active' => 'Active',

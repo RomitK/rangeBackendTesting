@@ -126,7 +126,7 @@
                                         <div class="form-group">
                                             <label for="type"> Website Status</label>
                                             <select class="form-control" id="website_status" name="website_status">
-                                                @foreach (config('constants.newStatuses') as $key => $value)
+                                                @foreach (config('constants.newStatusesWithAllOutOfInventory') as $key => $value)
                                                     <option value="{{ $key }}"
                                                         @if (request()->website_status == $key) selected @endif>
                                                         {{ $value }}</option>

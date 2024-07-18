@@ -136,7 +136,7 @@
                                             @if (in_array(Auth::user()->role, config('constants.isAdmin')))
                                                 <select class="form-control @error('website_status') is-invalid @enderror"
                                                     id="website_status" name="website_status">
-                                                    @foreach (config('constants.newStatusesWithoutAll') as $key => $value)
+                                                    @foreach (config('constants.newStatusesWithoutAllOutOfInventory') as $key => $value)
                                                         <option value="{{ $key }}">{{ $value }}</option>
                                                     @endforeach
                                                 </select>
@@ -265,7 +265,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
 
                                     <div class="col-sm-2">
                                         <div class="form-group">
@@ -384,7 +384,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="is_furniture">Is Furnitue?</label>
@@ -402,7 +402,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-12">
                                         <div class="form-group">
                                             <label for="description">Short Description</label>
@@ -510,7 +510,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    
+
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="mainImage">Main Image <small class="text-danger">(Prefer Dimension
@@ -546,7 +546,7 @@
 
                                         </div>
                                     </div>
-                                    
+
 
                                     <div class="col-sm-12">
                                         <div class="table-responsive">

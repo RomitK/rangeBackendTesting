@@ -34,7 +34,16 @@ class PropertyRepository implements PropertyRepositoryInterface
         $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
 
         if (isset($request->website_status)) {
-            $collection->where('website_status', $request->website_status);
+
+
+
+            if ($request->website_status == 'NA2') {
+                $collection->where('out_of_inventory', 1)->where('website_status', 'NA');
+            } elseif ($request->website_status == 'NA') {
+                $collection->where('out_of_inventory', 0)->where('website_status', 'NA');
+            } else {
+                $collection->where('website_status', $request->website_status);
+            }
         }
 
         if (isset($request->is_valid)) {
@@ -224,6 +233,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                         $property->is_approved = config('constants.approved');
                         $property->status = config('constants.Inactive');
                         $property->approval_id = Auth::user()->id;
+                        $property->out_of_inventory = 1;
                         break;
                     case config('constants.rejected'):
                         $property->is_approved = config('constants.rejected');
@@ -378,6 +388,42 @@ class PropertyRepository implements PropertyRepositoryInterface
                 'attribute' => []
             ]);
             logActivity('New Property has been created', $property->id, Property::class, $properties);
+
+
+            if ($property->website_status == config('constants.available')) {
+                $notValidProject = $property->project()
+                    ->where('is_valid', '!=', 1)
+                    ->exists();
+
+                if ($notValidProject) {
+
+                    $property->status = config('constants.inactive');
+                    $property->website_status = config('constants.NA');
+                    $property->save();
+
+
+                    $newPropertyOriginalAttributes = $property->getOriginal();
+
+                    if ($request->has('amenityIds')) {
+                        $newPropertyOriginalAttributes['amenityIds'] = $request->amenityId;
+                    } else {
+                        $newPropertyOriginalAttributes['amenityIds'] = [];
+                    }
+
+
+                    if (isset($property->description)) {
+                        $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                    }
+                    if (isset($property->short_description)) {
+                        $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                    }
+
+                    $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
+
+                    logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
+                }
+            }
+
 
             // Return success response
             return [
@@ -550,6 +596,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                     case config('constants.NA'):
                         $property->is_approved = config('constants.approved');
                         $property->status = config('constants.inactive');
+                        $property->out_of_inventory = 1;
                         $property->approval_id = Auth::user()->id;
                         $property->website_status = $request->website_status;
                         break;
@@ -609,7 +656,6 @@ class PropertyRepository implements PropertyRepositoryInterface
 
             logActivity('Property has been updated', $property->id, Property::class, $properties);
 
-
             if ($property->website_status == config('constants.available')) {
 
 
@@ -623,38 +669,38 @@ class PropertyRepository implements PropertyRepositoryInterface
                     $originalAttributes['amenityIds'] = [];
                 }
 
+                if ($property->website_status == config('constants.available')) {
+                    $notValidProject = $property->project()
+                        ->where('is_valid', '!=', 1)
+                        ->exists();
 
-                $notValidProject = $property->project()
-                    ->where('qr_link', '=', '')
-                    ->whereNull('permit_number')
-                    ->exists();
+                    if ($notValidProject) {
 
-                if ($notValidProject) {
-
-                    $property->status = config('constants.inactive');
-                    $property->website_status = config('constants.NA');
-                    $property->save();
+                        $property->status = config('constants.inactive');
+                        $property->website_status = config('constants.NA');
+                        $property->save();
 
 
-                    $newPropertyOriginalAttributes = $property->getOriginal();
+                        $newPropertyOriginalAttributes = $property->getOriginal();
 
-                    if ($request->has('amenityIds')) {
-                        $newPropertyOriginalAttributes['amenityIds'] = $amenityIds;
-                    } else {
-                        $newPropertyOriginalAttributes['amenityIds'] = [];
+                        if ($request->has('amenityIds')) {
+                            $newPropertyOriginalAttributes['amenityIds'] = $amenityIds;
+                        } else {
+                            $newPropertyOriginalAttributes['amenityIds'] = [];
+                        }
+
+
+                        if (isset($property->description)) {
+                            $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                        }
+                        if (isset($property->short_description)) {
+                            $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                        }
+
+                        $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
+
+                        logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
                     }
-
-
-                    if (isset($property->description)) {
-                        $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
-                    }
-                    if (isset($property->short_description)) {
-                        $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
-                    }
-
-                    $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
-
-                    logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
                 }
             }
 

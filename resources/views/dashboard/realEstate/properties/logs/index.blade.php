@@ -51,9 +51,14 @@
                                         @php
                                             $properties = json_decode($value->properties, true);
 
-                                            $website_status = isset($properties['new'])
-                                                ? $properties['new']['website_status']
-                                                : null;
+                                            $website_status = null;
+
+                                            if (
+                                                isset($properties['new']) &&
+                                                array_key_exists('website_status', $properties['new'])
+                                            ) {
+                                                $website_status = $properties['new']['website_status'];
+                                            }
                                             $attribute = isset($properties['updateAttribute'])
                                                 ? $properties['updateAttribute']
                                                 : null;
@@ -64,14 +69,16 @@
                                             <td>{{ $value->formattedCreatedAt }}</td>
                                             <td>{{ $value->user->name }}</td>
                                             <td>
-                                                <span
-                                                    class="badge 
+                                                @if ($website_status)
+                                                    <span
+                                                        class="badge 
                                                     @if ($website_status === config('constants.NA')) bg-info 
                                                     @elseif($website_status === config('constants.available')) bg-success 
                                                     @elseif($website_status === config('constants.rejected'))  bg-danger 
                                                     @elseif($website_status === config('constants.requested'))  bg-warning @endif">
-                                                    {{ ucfirst($website_status) }}
-                                                </span>
+                                                        {{ ucfirst($website_status) }}
+                                                    </span>
+                                                @endif
                                             </td>
                                             <td>{{ $value->description }}
                                                 @if ($attribute)
