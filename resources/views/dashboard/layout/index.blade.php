@@ -369,6 +369,27 @@
                     }
                 });
             });
+
+
+            $('#exportAgent').click(function(e) {
+                e.preventDefault(); // Prevent default link behavior
+                var url = $(this).attr('href'); // Get the URL of the link
+                var queryParams = new URLSearchParams(window.location.search); // Get query parameters
+                queryParams.set('export', '1');
+                var finalUrl = queryParams.toString();
+                $.ajax({
+                    url: '/dashboard/agents',
+                    type: 'GET',
+                    data: finalUrl,
+                    success: function(response) {
+                        toastr.success(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ajax request error:', error);
+                    }
+                });
+            });
+
         });
 
         $(function() {

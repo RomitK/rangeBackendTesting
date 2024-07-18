@@ -25,7 +25,7 @@ class AwardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $page_size = 25;
         $current_page = isset($request->item) ? $request->item : $page_size;

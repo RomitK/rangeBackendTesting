@@ -17,6 +17,12 @@
     </div>
 @endsection
 @section('content')
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+    }
+</style>    
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -24,6 +30,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="row float-right">
+
                                 <a href="{{ route('dashboard.agents.create') }}" class="btn btn-block btn-primary">
                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                     New Team
@@ -31,8 +38,82 @@
                             </div>
                         </div>
                         <!-- /.card-header -->
-                        <div class="card-body">
-                            <table class="table table-hover text-nowrap table-striped datatable">
+                        <div class="card-body table-responsive">
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <div class="d-flex"><br />
+                                        <span>Total Record(s): {{ $agents->total() }} </span>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 justify-content-end">
+                                    {{ Form::select('pagination', get_pagination(), $current_page, ['class' => 'custom-select w-auto float-right', 'id' => 'showItems']) }}
+                                </div>
+                            </div>
+
+                            <form method="GET">
+                                @php
+                                    $seletectAgents = request()->agent_ids ? request()->agent_ids : [];
+                                    $seletectProjects = request()->project_ids ? request()->project_ids : [];
+                                    $seletectAccommodations = request()->accommodation_ids
+                                        ? request()->accommodation_ids
+                                        : [];
+                                    $seletectUpdatedUsers = request()->updated_user_ids
+                                        ? request()->updated_user_ids
+                                        : [];
+                                    $seletectAddedUsers = request()->added_user_ids ? request()->added_user_ids : [];
+                                @endphp
+                                <div class="row mb-2">
+
+
+
+
+
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="status">Status</label>
+                                            <select class="form-control" id="status" name="status">
+                                                @foreach (config('constants.statusesOption') as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                        @if (request()->status == $key) selected @endif>
+                                                        {{ $value }}</option>
+                                                @endforeach
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label for="keyword"> Keyword</label>
+                                        <input type="text" value="{{ request()->keyword }}" class="form-control"
+                                            id="keyword" placeholder="Enter Name, Reference Number" name="keyword">
+                                    </div>
+
+                                </div>
+                                <br>
+                                <div class="row">
+
+                                    <div class="col-xl-3">
+                                        <button type="submit" class="btn btn-block btn-primary search_clear_btn"
+                                            name="submit_filter" value="1">Search</button>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <a class="btn btn-block btn-info search_clear_btn" id="exportAgent"
+                                            href="{{ url('dashboard/agents') }}">Download</a>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        @if (request()->submit_filter)
+                                            <a class="btn btn-block btn-warning search_clear_btn"
+                                                href="{{ url('dashboard/agents') }}">Clear Search</a>
+                                        @endif
+                                    </div>
+
+                                </div>
+
+                            </form>
+
+                            <table class="table table-hover text-nowrap table-striped propertyDatatable">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -50,7 +131,7 @@
                                 <tbody>
                                     @foreach ($agents as $key => $agent)
                                         <tr>
-                                            <td>{{ $key + 1 }}</td>
+                                            <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $agent->name }}</td>
                                             <td>{{ $agent->email }}</td>
                                             <td>
@@ -83,7 +164,7 @@
                                             <td>{{ $agent->formattedCreatedAt }}</td>
                                             <td class="project-actions text-right">
 
-                                               
+
                                                 <form method="POST"
                                                     action="{{ route('dashboard.agents.destroy', $agent->id) }}">
                                                     @csrf
@@ -100,10 +181,10 @@
                                                         </button>
                                                     @endif
                                                     <a class="btn btn-warning btn-sm" target="_blanket"
-                                                    href="{{ config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug }}">
-                                                    <i class="fas fa-eye"></i>
-                                                    View
-                                                </a>
+                                                        href="{{ config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug }}">
+                                                        <i class="fas fa-eye"></i>
+                                                        View
+                                                    </a>
 
                                                 </form>
                                             </td>
@@ -111,7 +192,12 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div class="row">
+                                <div class="col-12 pagination">
+                                    {!! $agents->appends(request()->query())->links() !!}
+                                </div>
 
+                            </div>
                         </div>
                         <!-- /.card-body -->
                     </div>

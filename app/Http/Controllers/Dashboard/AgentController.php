@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\AgentExportAndEmailData;
+
 
 class AgentController extends Controller
 {
@@ -32,12 +34,67 @@ class AgentController extends Controller
      */
     public function index(Request $request)
     {
-        $agents = Agent::with('user')
-            ->applyFilters($request->only(['status']))
-            ->orderBy('id', 'desc')
-            ->get();
 
-        return view('dashboard.realEstate.agents.index', compact('agents'));
+        $page_size = 25;
+        $current_page = isset($request->item) ? $request->item : $page_size;
+        if (isset($request->page)) {
+            $sr_no_start = ($request->page * $current_page) - $current_page + 1;
+        } else {
+            $sr_no_start = 1;
+        }
+
+        $collection = Agent::with('user');
+
+        if (isset($request->status)) {
+            $collection->where('status', $request->status);
+        }
+
+        if (isset($request->keyword)) {
+            $keyword = $request->keyword;
+            $collection->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', "%$keyword%");
+            });
+        }
+
+        if (isset($request->orderby)) {
+            $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
+            $direction = $request->input('direction', 'asc'); // Default sorting direction
+            $properties = $collection->orderBy($orderBy, $direction);
+
+
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                AgentExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+                $agents = $collection->paginate($current_page);
+            }
+        } else {
+            $collection = $collection->latest();
+            if (isset($request->export)) {
+                $request->merge(['email' => Auth::user()->email, 'userName' => Auth::user()->name]);
+
+                AgentExportAndEmailData::dispatch($request->all(), $collection->get());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Please Check Email, Report has been sent.',
+                ]);
+            } else {
+
+                $agents = $collection->paginate($current_page);
+            }
+        }
+
+
+        return view('dashboard.realEstate.agents.index', compact(
+            'agents',
+            'sr_no_start',
+            'current_page'
+        ));
     }
 
     /**
@@ -118,6 +175,17 @@ class AgentController extends Controller
             $agent->updated_by = Auth::user()->id;
 
             $agent->save();
+
+            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->designationUrl) . '/' . $agent->slug;
+            $qrCode = QrCode::format('png')->size(300)->generate($url);
+
+            $imageName = $agent->slug . '.png';
+            Storage::disk('agentQRFiles')->put($imageName, $qrCode);
+            $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
+            $agent->clearMediaCollection('QRs');
+            $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
+            $agent->save();
+
             if ($request->has('languageIds')) {
                 $agent->languages()->attach($request->languageIds);
             }
@@ -247,7 +315,7 @@ class AgentController extends Controller
                 $agent->is_approved = "requested";
                 $agent->approval_id = null;
             }
-            $agent->updated_by = Auth::user()->id;
+            //$agent->updated_by = Auth::user()->id;
 
             $agent->save();
 
