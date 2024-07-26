@@ -127,7 +127,25 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+				 <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="department">Department</label>
+                                            <select class="form-control @error('department') is-invalid @enderror"
+                                                id="department " name="department">
+                                                @foreach (config('constants.departments') as $key => $department)
+                                                    <option value="{{ $department }}"
+                                                        @if ($agent->department === $department) selected @endif>
+                                                        {{ $department }}</option>
+                                                @endforeach
+                                            </select>
+                                            @error('department')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="designation">Designation</label>
                                             <input type="designation" value="{{ $agent->designation }}"
@@ -141,7 +159,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="employeeId">Employer Id</label>
                                             <input type="employeeId" value="{{ $agent->employeeId }}"

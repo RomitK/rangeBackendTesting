@@ -81,7 +81,19 @@
 
                                         </div>
                                     </div>
+				 <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="deparmtent">Department</label>
+                                            <select class="form-control" id="department" name="department">
+                                                @foreach (config('constants.allDepartments') as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                        @if (request()->department == $key) selected @endif>
+                                                        {{ $value }}</option>
+                                                @endforeach
+                                            </select>
 
+                                        </div>
+                                    </div>
                                     <div class="col-sm-3">
                                         <label for="keyword"> Keyword</label>
                                         <input type="text" value="{{ request()->keyword }}" class="form-control"
@@ -119,6 +131,7 @@
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Email</th>
+<th>Department</th>
                                         <th>Status</th>
                                         {{-- <th>Approval Status</th>
                                         <th>Approval By</th> --}}
@@ -134,6 +147,7 @@
                                             <td>{{ $sr_no_start++ }}</td>
                                             <td>{{ $agent->name }}</td>
                                             <td>{{ $agent->email }}</td>
+					<td>{{ $agent->department }}</td>
                                             <td>
                                                 <span
                                                     class="badge @if ($agent->status === 'active') bg-success @else bg-danger @endif">
@@ -181,7 +195,7 @@
                                                         </button>
                                                     @endif
                                                     <a class="btn btn-warning btn-sm" target="_blanket"
-                                                        href="{{ config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug }}">
+                                                        href="{{ config('app.frontend_url') . 'profile/' . $agent->profileUrl . '/' . $agent->slug }}">
                                                         <i class="fas fa-eye"></i>
                                                         View
                                                     </a>

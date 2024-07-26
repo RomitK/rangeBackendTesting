@@ -49,6 +49,9 @@ class AgentController extends Controller
             $collection->where('status', $request->status);
         }
 
+	if (isset($request->department)) {
+            $collection->where('department', $request->department);
+        }
         if (isset($request->keyword)) {
             $keyword = $request->keyword;
             $collection->where(function ($q) use ($keyword) {
@@ -173,17 +176,43 @@ class AgentController extends Controller
                 $agent->is_approved = config('constants.requested');
             }
             $agent->updated_by = Auth::user()->id;
-
+		$agent->department = $request->department;
             $agent->save();
 
-            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->designationUrl) . '/' . $agent->slug;
-            $qrCode = QrCode::format('png')->size(300)->generate($url);
+            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
+            $qrCode = QrCode::format('png')->size(200)->generate($url);
 
             $imageName = $agent->slug . '.png';
             Storage::disk('agentQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
             $agent->clearMediaCollection('QRs');
             $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
+
+$contact = [
+                'version' => '3.0',
+                'fn' =>$agent->name,
+                'tel' => $agent->contact_number,
+                'email' => $agent->email,
+                'adr' => '1601, 16th Floor, Control Tower, Motor City, Dubai',
+            ];
+
+            $vcfContent = "BEGIN:VCARD\n";
+            $vcfContent .= "VERSION:{$contact['version']}\n";
+            $vcfContent .= "FN:{$contact['fn']}\n";
+            $vcfContent .= "TEL:{$contact['tel']}\n";
+            $vcfContent .= "EMAIL:{$contact['email']}\n";
+            $vcfContent .= "ADR:{$contact['adr']}\n";
+            $vcfContent .= "END:VCARD\n";
+
+            $fileName = $agent->slug.'-contact.vcf';
+
+            Storage::disk('agentCardFiles')->put($fileName, $vcfContent);
+
+
+            $cardCodeUrl = Storage::disk('agentCardFiles')->url($fileName);
+            
+            $agent->addMediaFromUrl($cardCodeUrl)->usingFileName($fileName)->toMediaCollection('cards', 'agentFiles');
+
             $agent->save();
 
             if ($request->has('languageIds')) {
@@ -316,17 +345,42 @@ class AgentController extends Controller
                 $agent->approval_id = null;
             }
             //$agent->updated_by = Auth::user()->id;
-
+		$agent->department = $request->department;
             $agent->save();
 
-            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->designationUrl) . '/' . $agent->slug;
-            $qrCode = QrCode::format('png')->size(300)->generate($url);
+            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
+            $qrCode = QrCode::format('png')->size(200)->generate($url);
 
             $imageName = $agent->slug . '.png';
             Storage::disk('agentQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
             $agent->clearMediaCollection('QRs');
             $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
+
+$contact = [
+                'version' => '3.0',
+                'fn' =>$agent->name,
+                'tel' => $agent->contact_number,
+                'email' => $agent->email,
+                'adr' => '1601, 16th Floor, Control Tower, Motor City, Dubai',
+            ];
+
+            $vcfContent = "BEGIN:VCARD\n";
+            $vcfContent .= "VERSION:{$contact['version']}\n";
+            $vcfContent .= "FN:{$contact['fn']}\n";
+            $vcfContent .= "TEL:{$contact['tel']}\n";
+            $vcfContent .= "EMAIL:{$contact['email']}\n";
+            $vcfContent .= "ADR:{$contact['adr']}\n";
+            $vcfContent .= "END:VCARD\n";
+
+            $fileName = $agent->slug.'-contact.vcf';
+
+            Storage::disk('agentCardFiles')->put($fileName, $vcfContent);
+
+
+            $cardCodeUrl = Storage::disk('agentCardFiles')->url($fileName);
+            $agent->clearMediaCollection('cards');
+            $agent->addMediaFromUrl($cardCodeUrl)->usingFileName($fileName)->toMediaCollection('cards', 'agentFiles');
 
 
             if ($request->has('languageIds')) {

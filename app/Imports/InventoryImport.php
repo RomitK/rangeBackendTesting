@@ -33,7 +33,6 @@ class InventoryImport implements ToCollection
 
         try {
 
-
             $groupedAccommodationData = [];
             foreach ($collection as $index => $data) {
                 if ($index > 0) {
@@ -44,6 +43,7 @@ class InventoryImport implements ToCollection
                     $buildArea = $data[4];
                     $price = $data[5];
                     $unitType = $data[6];
+		    $inventoryStatus = $data[7];
 
                     if ($accommodationName && $bedrooms && $unitType) {
 
@@ -56,13 +56,15 @@ class InventoryImport implements ToCollection
                         if (!isset($price) || !filter_var($price, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
                             throw new InventoryException("Price is not found or maybe not a positive number", 0, 420);
                         }
+			
+			if (!isset($inventoryStatus) || !in_array($inventoryStatus, [0, 1], true)) {
+    				throw new InventoryException("Inventory status is not found or is not a valid boolean value (0 or 1)", 0, 420);
+			}
 
                         // Check if the accommodation and bedroom already exist in the array
-                        if (!isset($groupedAccommodationData[$unitType][$accommodationName])) {
-                            $groupedAccommodationData[$unitType][$accommodationName] = [];
-                        }
-                        if (!isset($groupedAccommodationData[$unitType][$accommodationName][$bedrooms])) {
-                            $groupedAccommodationData[$unitType][$accommodationName][$bedrooms] = [
+                        
+                        if (!isset($groupedUnitnData[$unitType])) {
+                            $groupedUnitData[$unitType] = [
                                 'srNo' => $srNo,
                                 'accommodationName' => $accommodationName,
                                 'bedrooms' => $bedrooms,
@@ -70,11 +72,12 @@ class InventoryImport implements ToCollection
                                 'buildArea' => $buildArea,
                                 'price' => $price,
                                 'unitType' => $unitType,
+				'inventoryStatus' => $inventoryStatus
                             ];
                         } else {
                             // If the accommodation and bedroom exist, update only if the new price is lower
-                            if ($price < $groupedAccommodationData[$unitType][$accommodationName][$bedrooms]['price']) {
-                                $groupedAccommodationData[$unitType][$accommodationName][$bedrooms] = [
+                            if ($price < $groupedUnitData[$unitType]['price']) {
+                                $groupedUnitData[$unitType]= [
                                     'srNo' => $srNo,
                                     'accommodationName' => $accommodationName,
                                     'bedrooms' => $bedrooms,
@@ -82,38 +85,31 @@ class InventoryImport implements ToCollection
                                     'buildArea' => $buildArea,
                                     'price' => $price,
                                     'unitType' => $unitType,
+				    'inventoryStatus' => $inventoryStatus
                                 ];
                             }
                         }
                     }
                 }
             }
+		
+            Log::info($groupedUnitData);
 
-            Log::info($groupedAccommodationData);
+            foreach ($groupedUnitData as $unitIndex => $unitData) {
 
-            foreach ($groupedAccommodationData as $accommodationDatasIndex => $accommodationDatas) {
+                Log::info($unitData);
 
-                Log::info($accommodationDatas);
-
-                foreach ($accommodationDatas as $index => $accommodationData) {
-                    $accommodationId = Accommodation::where('name', $index)->first()->id;
-                    Log::info('accommodationId-' . $accommodationId);
-                    foreach ($accommodationData as $data) {
-                        Log::info('data-');
-                        Log::info($data);
-
-
-                        $propertyBedrooms = $data['bedrooms'];
-                        $propertyArea = $data['bedrooms'];
-                        $propertyBuildArea = $data['buildArea'];
-                        $propertyPrice = $data['price'];
-                        $unitType = $accommodationDatasIndex;
-
-
+			$propertyBedrooms = $unitData['bedrooms'];
+                        $propertyArea = $unitData['bedrooms'];
+                        $propertyBuildArea = $unitData['buildArea'];
+                        $propertyPrice = $unitData['price'];
+                        $unitType = $unitIndex;
+                        $inventoryStatus = $unitData['inventoryStatus'];
+                        $accommodationId = Accommodation::where('name', $unitData['accommodationName'])->first()->id;
+                       Log::info('accommodationId-' . $accommodationId);
+                   
                         $unityTypeExist = Project::where('parent_project_id', $this->project->id)
                             ->where('is_parent_project', 0)
-                            ->where('bedrooms', $propertyBedrooms)
-                            ->where('accommodation_id', $accommodationId)
                             ->Where('title', $unitType)
                             ->exists();
                         Log::info('unityTypeExist' . $unityTypeExist);
@@ -122,24 +118,15 @@ class InventoryImport implements ToCollection
 
                             $unityType = Project::where('parent_project_id', $this->project->id)
                                 ->where('is_parent_project', 0)
-                                ->where('bedrooms', $propertyBedrooms)
-                                ->where('accommodation_id', $accommodationId)
                                 ->Where('title', $unitType)
                                 ->first();
 
                             $unityTypeId = $unityType->id;
 
-                            $propertyExist = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)
-                                ->where('bedrooms', $propertyBedrooms)
-                                ->where('accommodation_id', $accommodationId)
-                                ->exists();
-
+                            $propertyExist = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)->exists();
 
                             if ($propertyExist) {
-                                $property = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)
-                                    ->where('bedrooms', $propertyBedrooms)
-                                    ->where('accommodation_id', $accommodationId)
-                                    ->first();
+                                $property = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)->first();
 
                                 $originalAttributes = $property->getOriginal();
                                 $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
@@ -160,6 +147,20 @@ class InventoryImport implements ToCollection
                                     $property->builtup_area = $propertyArea;
                                 }
                                 $property->updated_by = Auth::user()->id;
+				if($accommodationId){
+
+					$property->accommodation_id =  $accommodationId;
+				}
+				if($inventoryStatus == 0){
+					$property->website_status = config('constants.NA');
+					$property->is_approved = config('constants.approved');
+                        		$property->status = config('constants.Inactive');
+				}else{
+					$property->is_approved = config('constants.requested');
+                                        $property->status = config('constants.active');
+                                        $property->approval_id = Auth::user()->id;
+                                        $property->website_status = config('constants.requested');
+				}
                                 $property->save();
 
 
@@ -190,10 +191,18 @@ class InventoryImport implements ToCollection
 
                                 $property = new Property;
                                 $property->name = $unityType->title;
-                                $property->is_approved = config('constants.requested');
-                                $property->status = config('constants.active');
-                                $property->approval_id = Auth::user()->id;
-                                $property->website_status = config('constants.requested');
+				if($inventoryStatus == 0){
+                                        $property->website_status = config('constants.NA');
+                                        $property->is_approved = config('constants.approved');
+                                        $property->status = config('constants.Inactive');
+					$property->approval_id = Auth::user()->id;
+                                }else{
+
+                                	$property->is_approved = config('constants.requested');
+                                	$property->status = config('constants.active');
+                                	$property->approval_id = Auth::user()->id;
+                                	$property->website_status = config('constants.requested');
+				}
                                 $property->property_source = 'crm';
                                 $property->bathrooms = 0;
                                 $property->bedrooms = $propertyBedrooms;
@@ -265,10 +274,18 @@ class InventoryImport implements ToCollection
                             Log::info($subProject);
                             $property = new Property;
                             $property->name = $subProject->title;
+			    if($inventoryStatus == 0){
+                                        $property->website_status = config('constants.NA');
+                                        $property->is_approved = config('constants.approved');
+                                        $property->status = config('constants.Inactive');
+                                        $property->approval_id = Auth::user()->id;
+                                }else{
+
                             $property->is_approved = config('constants.requested');
                             $property->status = config('constants.active');
                             $property->approval_id = Auth::user()->id;
                             $property->website_status = config('constants.requested');
+				}
                             $property->property_source = 'crm';
                             $property->bathrooms = 0;
                             $property->bedrooms = $propertyBedrooms;
@@ -316,8 +333,7 @@ class InventoryImport implements ToCollection
                             logActivity('New Property has been created through inventory file', $property->id, Property::class, $properties);
 
                             Log::info("newPropertyId-" . $property);
-                        }
-                    }
+                        
                 }
             }
 

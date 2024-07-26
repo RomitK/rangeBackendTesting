@@ -39,6 +39,7 @@ class AgentDataExport implements FromCollection, WithHeadings, WithMapping, With
             'Email',
             'Contact Number',
             'Whatsapp Number',
+'Department',
             'Designation',
             'Status',
             'Added By',
@@ -57,11 +58,12 @@ class AgentDataExport implements FromCollection, WithHeadings, WithMapping, With
             $agent->email,
             $agent->contact_number,
             $agent->whatsapp_number,
+$agent->department,
             $agent->designation,
             $agent->status,
             $agent->user->name,
             $agent->formattedCreatedAt,
-            config('app.frontend_url') . 'profile/' . $agent->designationUrl . '/' . $agent->slug,
+            config('app.frontend_url') . 'profile/' . $agent->profileUrl . '/' . $agent->slug,
             $agent->qr
 
         ];

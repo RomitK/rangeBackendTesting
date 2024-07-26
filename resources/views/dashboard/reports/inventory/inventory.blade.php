@@ -33,6 +33,18 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="form-group">
+
+ <label for="customFile">Upload Primary Market Inventory File <small>
+                                        <!-- <a
+                                                href="{{ asset('dashboard/inventorySample.xlsx') }}"
+                                                download="">(Download
+                                                Sample
+                                                File)</a> -->
+                                            
+
+                                                <a 
+                                                href="{{ route('dashboard.projects.inventoryDownload', $project->id) }}"> Download Sample FIle</a>
+
                                     <label for="customFile">Upload Primary Market Inventory File <small><a
                                                 href="{{ asset('dashboard/inventorySample.xlsx') }}"
                                                 download="">(Download

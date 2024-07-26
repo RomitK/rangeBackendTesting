@@ -47,8 +47,9 @@ class Agent extends Model implements HasMedia
      * @var array
      */
     protected $appends = [
+'card',
         'qr',
-        'designationUrl',
+        'profileUrl',
         'image',
         'additionalImage',
         'video',
@@ -78,9 +79,9 @@ class Agent extends Model implements HasMedia
     /**
      * GET Attributes
      */
-    public function getDesignationUrlAttribute()
+    public function getProfileUrlAttribute()
     {
-        return Str::slug($this->designation);
+        return Str::slug($this->department);
     }
     public function getVideoAttribute()
     {
@@ -89,6 +90,10 @@ class Agent extends Model implements HasMedia
     public function getQrAttribute()
     {
         return $this->getFirstMediaUrl('QRs');
+    }
+public function getCardAttribute()
+    {
+        return $this->getFirstMediaUrl('cards');
     }
     public function getImageAttribute()
     {

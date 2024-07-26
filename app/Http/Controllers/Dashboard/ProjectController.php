@@ -45,6 +45,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Repositories\Contracts\ProjectRepositoryInterface;
 use PDF;
+use App\Exports\DLDTransaction;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProjectController extends Controller
 {
@@ -543,4 +545,21 @@ class ProjectController extends Controller
             'amenities' => $amenities
         ]);
     }
+
+
+    public function inventoryDownload(Request $request, Project $project)
+    {
+        DB::beginTransaction();
+        try {
+		$project =  Project::with(['subProjects', 'subProjects.accommodation', 'subProjects.properties'])->find($project->id);
+	        //dd($project->subProjects);
+ 		return  Excel::download(new DLDTransaction($project), 'projectInventory.xlsx');
+
+          //  dd('projectId'.$project->id);
+            DB::commit();
+        } catch (\Exception $error) {
+            return redirect()->back()->with('error', $error->getMessage());
+        }
+    }
+
 }

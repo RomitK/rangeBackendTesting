@@ -130,6 +130,15 @@ return [
             'throw' => false,
             'visibility' => 'public',
         ],
+
+
+	'agentCardFiles' => [
+            'driver' => 'local',
+            'root'   => public_path('uploads/Cards'),
+            'url'        => env('APP_URL') . '/uploads/Cards',
+            'throw' => false,
+            'visibility' => 'public',
+        ],
         'agentFiles' => [
             // 'driver' => 'local',
             // 'root'   => public_path('uploads/frontend/agents'),

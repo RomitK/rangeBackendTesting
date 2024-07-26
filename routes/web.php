@@ -246,6 +246,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::get('awards/{award}/media/{media}', 'AwardController@mediaDestroy')->name('dashboard.awards.media.delete');
     Route::get('awards/{award}/medias', 'AwardController@mediasDestroy')->name('dashboard.awards.medias.delete');
 
+    Route::get('projects/{project}/inventoryDownload', 'ProjectController@inventoryDownload')->name('dashboard.projects.inventoryDownload');
 
     Route::get('properties/{property}/updateBrochure', 'PropertyController@updateBrochure')->name('dashboard.properties.updateBrochure');
 
