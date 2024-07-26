@@ -34,33 +34,34 @@
                                 @method('PUT')
                                 <div class="form-group">
 
- <label for="customFile">Upload Primary Market Inventory File <small>
-                                        <!-- <a
-                                                href="{{ asset('dashboard/inventorySample.xlsx') }}"
-                                                download="">(Download
-                                                Sample
-                                                File)</a> -->
-                                            
+                                    <label for="customFile">Upload Primary Market Inventory File <small>
+                                            <!-- <a
+                                                    href="{{ asset('dashboard/inventorySample.xlsx') }}"
+                                                    download="">(Download
+                                                    Sample
+                                                    File)</a> -->
 
-                                                <a 
-                                                href="{{ route('dashboard.projects.inventoryDownload', $project->id) }}"> Download Sample FIle</a>
 
-                                    <label for="customFile">Upload Primary Market Inventory File <small><a
-                                                href="{{ asset('dashboard/inventorySample.xlsx') }}"
-                                                download="">(Download
-                                                Sample
-                                                File)</a></small></label>
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="customFile" name="inventoryFile"
-                                            accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-                                        <label class="custom-file-label" for="customFile">Choose file</label>
-                                    </div>
+                                            <a href="{{ route('dashboard.projects.inventoryDownload', $project->id) }}">
+                                                Download Sample FIle</a>
 
-                                    @error('inventoryFile')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
+                                            {{-- <label for="customFile">Upload Primary Market Inventory File <small><a
+                                                        href="{{ asset('dashboard/inventorySample.xlsx') }}"
+                                                        download="">(Download
+                                                        Sample
+                                                        File)</a></small></label> --}}
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="customFile"
+                                                    name="inventoryFile"
+                                                    accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                                                <label class="custom-file-label" for="customFile">Choose file</label>
+                                            </div>
+
+                                            @error('inventoryFile')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
 
                                 </div>
                                 <div class="card-footer">
