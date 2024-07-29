@@ -51,33 +51,34 @@ class PropertyRepository implements PropertyRepositoryInterface
             //     $collection->where('is_valid', $request->is_valid);
             // });
 
-            $collection->whereHas('project', function ($query) use ($request) {
-                $query->where('is_valid', $request->is_valid);
-            });
+            $query->where('is_valid', $request->is_valid);
+            // $collection->whereHas('project', function ($query) use ($request) {
+            //     $query->where('is_valid', $request->is_valid);
+            // });
         }
 
         if (isset($request->qr_link)) {
-
+            
             if ($request->qr_link == '1') {
-                $collection->whereHas('project', function ($query) {
+                //$collection->whereHas('project', function ($query) {
                     $query->where('qr_link', '!=', '')->orWhereNull('qr_link');
-                });
+                //});
             } elseif ($request->qr_link == '0') {
-                $collection->whereHas('project', function ($query) {
+                //$collection->whereHas('project', function ($query) {
                     $query->where('qr_link',  '');
-                });
+                //});
             }
         }
         if (isset($request->permit_number)) {
             if ($request->permit_number == '1') {
-                $collection->whereHas('project', function ($query) {
+               // $collection->whereHas('project', function ($query) {
                     $query->whereNotNull('permit_number');
-                });
+                //});
             } elseif ($request->permit_number == '0') {
 
-                $collection->whereHas('project', function ($query) {
+                //$collection->whereHas('project', function ($query) {
                     $query->whereNull('permit_number');
-                });
+                //});
             }
         }
 
@@ -156,7 +157,8 @@ class PropertyRepository implements PropertyRepositoryInterface
             $collection->where(function ($q) use ($keyword) {
                 $q->where('properties.id', 'like', "%$keyword%")
                     ->orWhere('properties.name', 'like', "%$keyword%")
-                    ->orWhere('properties.reference_number', 'like', "%$keyword%");
+                    ->orWhere('properties.reference_number', 'like', "%$keyword%")
+                    ->orWhere('properties.permit_number', 'like', "%$keyword%");
             });
         }
         if (isset($request->is_approved)) {
