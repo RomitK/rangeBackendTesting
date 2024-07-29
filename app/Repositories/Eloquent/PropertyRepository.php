@@ -30,7 +30,7 @@ class PropertyRepository implements PropertyRepositoryInterface
         $current_page = isset($request->item) ? $request->item : 25;
         $sr_no_start = isset($request->page) ? (($request->page * $current_page) - $current_page + 1) : 1;
 
-
+        
         $collection = Property::with('developer', 'agent', 'category', 'user', 'project');
 
         if (isset($request->website_status)) {
@@ -50,8 +50,8 @@ class PropertyRepository implements PropertyRepositoryInterface
             // $collection->whereHas('project', function ($query) use ($request, $collection) {
             //     $collection->where('is_valid', $request->is_valid);
             // });
-
-            $query->where('is_valid', $request->is_valid);
+            
+            $collection->where('is_valid', $request->is_valid);
             // $collection->whereHas('project', function ($query) use ($request) {
             //     $query->where('is_valid', $request->is_valid);
             // });
@@ -60,25 +60,25 @@ class PropertyRepository implements PropertyRepositoryInterface
         if (isset($request->qr_link)) {
             
             if ($request->qr_link == '1') {
-                //$collection->whereHas('project', function ($query) {
-                    $query->where('qr_link', '!=', '')->orWhereNull('qr_link');
-                //});
+                $collection->whereHas('project', function ($query) {
+                    $collection->where('qr_link', '!=', '')->orWhereNull('qr_link');
+                });
             } elseif ($request->qr_link == '0') {
-                //$collection->whereHas('project', function ($query) {
-                    $query->where('qr_link',  '');
-                //});
+                $collection->whereHas('project', function ($query) {
+                    $collection->where('qr_link',  '');
+                });
             }
         }
         if (isset($request->permit_number)) {
             if ($request->permit_number == '1') {
-               // $collection->whereHas('project', function ($query) {
-                    $query->whereNotNull('permit_number');
-                //});
+               $collection->whereHas('project', function ($query) {
+                    $collection->whereNotNull('permit_number');
+                });
             } elseif ($request->permit_number == '0') {
 
-                //$collection->whereHas('project', function ($query) {
-                    $query->whereNull('permit_number');
-                //});
+                $collection->whereHas('project', function ($query) {
+                    $collection->whereNull('permit_number');
+                });
             }
         }
 
