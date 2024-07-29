@@ -39,12 +39,14 @@ class CronController extends Controller
     {
         DB::beginTransaction();
         try {
-            $projects = Project::skip(60)->take(40)->orderBy('id', 'asc')->get();
-            // dd($projects);
+            $projects = Project::skip(100)->take(40)->orderBy('id', 'asc')->get();
+           
             foreach($projects as $project){
                 $properties = Property::whereIn('project_id', [$project->id])->get();
+                
                 foreach($properties as $property){
                     Log::info("projectID-".$project->id."propertyID-".$property->id);
+                    echo "projectID-".$project->id."propertyID-".$property->id;
                     Property::getModel()->timestamps = false;
                     $property->permit_number = $project->permit_number;
                     $property->save();
