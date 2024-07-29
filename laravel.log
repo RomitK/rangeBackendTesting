@@ -1,0 +1,26 @@
+SFTP cms.range.ae
+IP = 65.0.174.71
+Port = 22
+User = cmsrange
+PW = JFmcCgzzvyAn8XGhEQ2b
+
+ssh 
+
+MySQL
+DB = cmsrange_db
+User = cmsrange_db
+PW = FGu55c856pnQs6j63m86
+
+phpMyAdmin
+http://65.0.174.71:7777
+User = admin
+PW = 56pnQs6j6FGu55c83m86
+
+cmsrange@65.0.174.71
+
+
+
+Please find below XML Feed and Access code.
+XML Link: http://webapi.goyzer.com/Company.asmx
+Access Code: $R@nGe!NteRn@t!on@l
+Group Code: 5084
