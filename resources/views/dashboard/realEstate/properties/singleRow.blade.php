@@ -37,7 +37,7 @@
                             <td>{{ $property->reference_number }}</td>
                             <td>
                                 @if ($property->project)
-                                    {{ $property->project->permit_number }}
+                                    {{ $property->permit_number }}
                                 @endif
                             </td>
                             <td>

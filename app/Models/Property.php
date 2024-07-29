@@ -151,7 +151,7 @@ class Property extends Model implements HasMedia
 
     public function getQrAttribute()
     {
-        return $this->getFirstMediaUrl('qrs', 'resize_qr_images');
+        return $this->getFirstMediaUrl('qrs', 'resize');
     }
 
 
@@ -427,6 +427,14 @@ class Property extends Model implements HasMedia
     public function scopeActive($query)
     {
         return $query->where('status', config('constants.active'));
+    }
+    public function CrmProperties($query)
+    {
+        return $query->where('property_source', 'crm');
+    }
+    public function XmlProperties($query)
+    {
+        return $query->where('property_source', 'xml');
     }
     public function scopeAvailable($query)
     {

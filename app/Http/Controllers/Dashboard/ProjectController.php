@@ -133,7 +133,7 @@ class ProjectController extends Controller
 
     public function generateBrochure($project)
     {
-        try {
+        try {           
             //$project = Project::with('developer', 'mainCommunity', 'subProjects')->where('slug', $slug)->first();
             $minBed = $project->subProjects->min('bedrooms');
             $maxBed = $project->subProjects->max('bedrooms');
@@ -321,7 +321,7 @@ class ProjectController extends Controller
                 'success' => $result['success'],
                 'message' => $result['message'],
                 'redirect' => route('dashboard.projects.index'),
-                'project_id' => $result['project_id'], // If returned from repository
+                //'project_id' => $result['project_id'], // If returned from repository
             ]);
         } catch (\Exception $error) {
 

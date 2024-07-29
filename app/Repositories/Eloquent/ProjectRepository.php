@@ -362,6 +362,8 @@ class ProjectRepository implements ProjectRepositoryInterface
             ];
         }
     }
+
+    
     public function updateData($request, $project)
     {
         DB::beginTransaction();
@@ -625,9 +627,9 @@ class ProjectRepository implements ProjectRepositoryInterface
 
             logActivity('Project has been updated', $project->id, Project::class, $properties);
 
-            if ($project->is_valid == 1) {
-                $this->makePropertiesAvailable($project);
-            }
+            // if ($project->is_valid == 1) {
+                $this->makePropertiesUpdated($project);
+            //}
 
             DB::commit();
 
@@ -645,16 +647,15 @@ class ProjectRepository implements ProjectRepositoryInterface
             ];
         }
     }
-    public function makePropertiesAvailable($project)
+    public function makePropertiesUpdated($project)
     {
+        
         try {
             $properties = Property::where('project_id', $project->id)
-                ->where('status', config('constants.inactive'))
-                ->where('out_of_inventory', 0)
-                ->where('is_approved', config('constants.approved'))
-                ->where('website_status', config('constants.NA'))
-                ->latest()->get();
-
+            ->where('out_of_inventory', 0)
+            ->where('property_source', 'crm')
+            ->latest()->get();
+            //dd($properties);
             foreach ($properties as $property) {
 
 
@@ -668,10 +669,40 @@ class ProjectRepository implements ProjectRepositoryInterface
                     $originalAttributes['amenityIds'] = [];
                 }
 
+                $property->permit_number = $project->permit_number;
 
-                $property->status = config('constants.active');
-                $property->website_status = config('constants.available');
+                if(!empty($project->qr_link)){
+                    $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
+                }
+
                 $property->save();
+                if($property->qr){
+                    $property->qr_link = $property->qr;
+                }
+                $property->save();
+
+               
+                if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                    if($property->qr_link){
+                        $property->is_valid = 1;
+                    }else{
+                        $property->is_valid = 0; // Optionally set to false if not valid
+                    }
+                   
+                } else {
+                    $property->is_valid = 0; // Optionally set to false if not valid
+                }
+                $property->save();
+                if($property->is_valid == 1 && $property->website_status == config('constants.NA')){
+                    $property->status = config('constants.active');
+                    $property->website_status = config('constants.available');
+                }elseif($property->is_valid == 0 && $property->website_status == config('constants.available')){
+                    $property->status = config('constants.Inactive');
+                    $property->website_status = config('constants.NA');
+                }
+                
+                $property->save();
+
                 $newPropertyOriginalAttributes = $property->getOriginal();
                 if ($property->amenities) {
                     $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
@@ -688,7 +719,13 @@ class ProjectRepository implements ProjectRepositoryInterface
 
                 $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
 
-                logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
+                if($property->website_status == config('constants.available')){
+
+                    logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
+                }else{
+                    logActivity('Property Update as project updated', $property->id, Property::class, $properties);
+                }
+                
             }
         } catch (\Exception $error) {
             // Return error response

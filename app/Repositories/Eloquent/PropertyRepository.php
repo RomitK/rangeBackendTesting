@@ -220,7 +220,9 @@ class PropertyRepository implements PropertyRepositoryInterface
     {
         try {
             $property = new Property;
-
+            if ($request->has('project_id')) {
+                $project = Project::find($request->project_id);
+            }
             // Set status, approval, and website status based on user role and request
             if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
                 switch ($request->website_status) {
@@ -357,16 +359,32 @@ class PropertyRepository implements PropertyRepositoryInterface
 
             $property->updated_by = Auth::user()->id;
             $property->save();
-
-            $property->property_banner = $property->mainImage;
-            $property->save();
             if ($property->category_id = 8) {
                 $prefix = 'S';
             } else {
                 $prefix = 'R';
             }
             $property->reference_number = generatePropertyUniqueCode($prefix);
+
+            if($project){
+                $property->permit_number = $project->permit_number;
+                if(!empty($project->qr_link)){
+                    $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
+                }
+            }
+            
             $property->save();
+            $property->property_banner = $property->mainImage;
+            $property->qr_link = $property->qr;
+            $property->save();
+
+            if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                $property->is_valid = 1;
+            } else {
+                $property->is_valid = 0; // Optionally set to false if not valid
+            }
+            $property->save();
+
 
             $originalAttributes = $property->getOriginal();
 
@@ -391,9 +409,7 @@ class PropertyRepository implements PropertyRepositoryInterface
 
 
             if ($property->website_status == config('constants.available')) {
-                $notValidProject = $property->project()
-                    ->where('is_valid', '!=', 1)
-                    ->exists();
+                $notValidProject = $property->where('is_valid', '!=', 1)->exists();
 
                 if ($notValidProject) {
 
@@ -453,8 +469,6 @@ class PropertyRepository implements PropertyRepositoryInterface
             } else {
                 $originalAttributes['amenityIds'] = [];
             }
-
-
             $property->name = $request->name;
             $property->rental_period = $request->rental_period;
             $property->sub_title = $request->sub_title;

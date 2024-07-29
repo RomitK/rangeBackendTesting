@@ -35,10 +35,43 @@ use Illuminate\Support\Facades\Http;
 
 class CronController extends Controller
 {
+    public function propertiesPermitNumber()
+    {
+        DB::beginTransaction();
+        try {
+            $projects = Project::take(30)->orderBy('id', 'asc')->get();
+            // dd($projects);
+            foreach($projects as $project){
+                $properties = Property::whereIn('project_id', [$project->id])->get();
+                foreach($properties as $property){
+                    Log::info("projectID-".$project->id."propertyID-".$property->id);
+                    Property::getModel()->timestamps = false;
+                    $property->permit_number = $project->permit_number;
+                    $property->save();
+                    if($project->qr_link){
+                        $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
+                    }
+                    $property->save();
+
+                    if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                        $property->is_valid = 1;
+                    } else {
+                        $property->is_valid = 0; // Optionally set to false if not valid
+                    }
+                    $property->save();
+
+                    Property::getModel()->timestamps = true;
+                }
+            }
+            DB::commit();
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()]);
+        }
+    }
     public function getRentListings()
     {
 
-        $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode=$R@nGe!NteRn@t!on@l&GroupCode=5084&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
+        $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
         $xml_arr  = simplexml_load_file($feed,'SimpleXMLElement',LIBXML_NOCDATA);
         
         $xml_arr  = json_decode(json_encode($xml_arr,true),true);
@@ -71,7 +104,16 @@ class CronController extends Controller
         $response = Http::get($baseUrl . $endpoint, $queryParams);
 
         if ($response->successful()) {
-            dd($response);
+
+             // Raw response body
+    $body = $response->body();
+    // JSON decoded response
+    $data = $body->json();
+    // Response headers
+    $headers = $response->headers();
+    
+    dd( $data);
+          //  dd($response->body());
             return $response->json();
         } else {
             return response()->json(['error' => 'Unable to fetch data'], 500);
