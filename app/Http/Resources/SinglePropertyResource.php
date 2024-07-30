@@ -68,7 +68,7 @@ class SinglePropertyResource extends JsonResource
         } else {
             $gallery = $this->subImages;
         }
-
+        /*
         $nearbyProperties = $nearbyProperties = DB::select(DB::raw("
             SELECT 
                 properties.id,
@@ -103,6 +103,44 @@ class SinglePropertyResource extends JsonResource
             'accommodation_id' => $this->accommodation_id,
             'community_id' => $this->project->community_id,
             'project_id' => $this->project_id
+
+        ]);
+*/
+        $nearbyProperties = $nearbyProperties = DB::select(DB::raw("
+            SELECT 
+                properties.id,
+                properties.slug,
+                properties.price,
+                properties.name,
+                projects.id as projectID,
+                communities.id as communityID,
+                communities.name as communityName,
+                properties.area,
+                properties.property_banner,
+                properties.bedrooms,
+                properties.bathrooms,
+                accommodations.name as accommodationName
+            FROM properties 
+            JOIN projects ON projects.id = properties.project_id
+            JOIN communities ON communities.id = projects.community_id
+            JOIN accommodations ON accommodations.id = properties.accommodation_id
+            WHERE properties.slug != :slug
+            AND properties.category_id = :category_id
+            AND properties.accommodation_id = :accommodation_id
+            AND projects.community_id = :community_id
+            AND projects.id = :project_id
+            AND properties.website_status = :website_status
+            AND properties.is_valid = 1
+            AND properties.deleted_at IS NULL
+            ORDER BY properties.created_at DESC
+            LIMIT 0,12
+        "), [
+            'slug' => $this->slug,
+            'category_id' => $this->category_id,
+            'accommodation_id' => $this->accommodation_id,
+            'community_id' => $this->project->community_id,
+            'project_id' => $this->project_id,
+            'website_status'=> config('constants.available')
 
         ]);
 
