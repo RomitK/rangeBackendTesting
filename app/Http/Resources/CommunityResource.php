@@ -36,7 +36,7 @@ class CommunityResource extends JsonResource
         $completionStatusId = null;
         $developerId = null;
         $projectId = null;
-
+        $available = config('constants.available');
 
         if ($request->accommodation && $request->accommodation != 'All') {
             $accommodationId = Accommodation::where('name', $request->accommodation)->first()->id;
@@ -59,22 +59,34 @@ class CommunityResource extends JsonResource
         $nearbyCommunities = array();
         $properties = array();
         if ($latitude && $longitude) {
+            // $nearbyCommunities = DB::select(DB::raw("select id, slug, ( 6367 * acos( cos( radians($latitude) ) * cos( radians(address_latitude ) ) * cos( radians( address_longitude ) - radians($longitude) ) + sin( radians($latitude) ) * sin( radians( address_latitude ) ) ) ) AS distance from `communities` 
+            //             where `communities`.`deleted_at` is null  and  
+            //             `communities`.`slug` <> '$this->slug' and
+            //             `communities`.`status` = 'active' and `communities`.`is_approved` = 'approved'
+            //             having `distance` < 10 order by `distance` asc limit 0,12;"));
+
             $nearbyCommunities = DB::select(DB::raw("select id, slug, ( 6367 * acos( cos( radians($latitude) ) * cos( radians(address_latitude ) ) * cos( radians( address_longitude ) - radians($longitude) ) + sin( radians($latitude) ) * sin( radians( address_latitude ) ) ) ) AS distance from `communities` 
                         where `communities`.`deleted_at` is null  and  
                         `communities`.`slug` <> '$this->slug' and
-                        `communities`.`status` = 'active' and `communities`.`is_approved` = 'approved'
+                        `communities`.`website_status` = '$available'
                         having `distance` < 10 order by `distance` asc limit 0,12;"));
 
-
+                        
             $nearbyCommunities = NearByCommunitiesResource::collection(Community::active()->whereIn('id', Arr::pluck($nearbyCommunities, 'id'))->get());
         }
 
 
+        // $propertiesQuery = "SELECT properties.id, properties.propertyOrder, properties.property_banner, accommodations.name as accommodation, properties.name, properties.slug, properties.price, properties.bedrooms, properties.area, properties.bathrooms, properties.category_id, properties.property_banner FROM `properties` 
+        //         Join projects ON projects.id = properties.project_id
+        //         Join accommodations ON accommodations.id = properties.accommodation_id
+        //         Where properties.deleted_at is null AND properties.status = 'active' AND `properties`.`is_approved` = 'approved' AND projects.community_id = '$this->id' AND 
+        //         projects.deleted_at is null AND projects.status = 'active' AND projects.permit_number is not null AND projects.is_parent_project IS true AND  `projects`.`is_approved` = 'approved'";
+
         $propertiesQuery = "SELECT properties.id, properties.propertyOrder, properties.property_banner, accommodations.name as accommodation, properties.name, properties.slug, properties.price, properties.bedrooms, properties.area, properties.bathrooms, properties.category_id, properties.property_banner FROM `properties` 
-                Join projects ON projects.id = properties.project_id
-                Join accommodations ON accommodations.id = properties.accommodation_id
-                Where properties.deleted_at is null AND properties.status = 'active' AND `properties`.`is_approved` = 'approved' AND projects.community_id = '$this->id' AND 
-                projects.deleted_at is null AND projects.status = 'active' AND projects.permit_number is not null AND projects.is_parent_project IS true AND  `projects`.`is_approved` = 'approved'";
+                        Join projects ON projects.id = properties.project_id
+                        Join accommodations ON accommodations.id = properties.accommodation_id
+                        Where properties.deleted_at is null AND properties.website_status = '$available' AND `properties`.`is_valid` = 1 AND projects.community_id = '$this->id' AND 
+                        projects.deleted_at is null AND projects.website_status = '$available' AND projects.is_parent_project IS true AND  `projects`.`is_approved` = 'approved'";
 
 
         if ($accommodationId) {
