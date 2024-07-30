@@ -38,6 +38,7 @@ class SingleDeveloperResource extends JsonResource
         $accommodationId = null;
         $completionStatusId = null;
         $communityId = null;
+        $available = config('constants.available');
 
         if ($request->accommodation && $request->accommodation != 'All') {
             $accommodationId = Accommodation::where('name', $request->accommodation)->first()->id;
@@ -81,11 +82,10 @@ class SingleDeveloperResource extends JsonResource
                 Join developers ON developers.id = projects.developer_id
                 Join accommodations ON accommodations.id = properties.accommodation_id
                 Join communities ON communities.id = projects.community_id
-                Where properties.deleted_at is null AND properties.status = 'active' AND
+                Where properties.deleted_at is null AND properties.website_status = '$available' AND properties.is_valid = 1 AND
                 
                 projects.deleted_at is null AND 
-                projects.status = 'active' AND 
-                projects.is_approved = 'approved' AND
+                projects.website_status = '$available' AND 
                 projects.is_parent_project IS true AND
                 developers.id = $this->id";
 
@@ -131,7 +131,7 @@ class SingleDeveloperResource extends JsonResource
 
 
 
-        $developerProjects = Project::mainProject()->where('developer_id', $this->id)->approved()->active();
+        $developerProjects = Project::mainProject()->where('developer_id', $this->id)->where('website_status', config('constants.available'));
         if ($accommodationId) {
             $developerProjects = $developerProjects->where('accommodation_id', $accommodationId);
         }
