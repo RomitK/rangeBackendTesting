@@ -146,12 +146,12 @@ class SingleProjectResource extends JsonResource
                                 JOIN accommodations ON accommodations.id = properties.accommodation_id
                                 WHERE properties.project_id = ?
                                   AND properties.category_id = ?
-                                  AND properties.status = ?
-                                  AND properties.is_approved = ?
+                                  AND properties.website_status = ?
+                                  AND properties.is_valid = 1
                                   AND properties.deleted_at is null
                                 ORDER BY properties.created_at DESC
                                 LIMIT 8",
-                [$this->id, config('constants.rentId'), 'active', 'approved']
+                [$this->id, config('constants.rentId'), config('constants.available')]
             );
 
             $buyProperties =  DB::select(
@@ -161,12 +161,12 @@ class SingleProjectResource extends JsonResource
                                 JOIN accommodations ON accommodations.id = properties.accommodation_id
                                 WHERE properties.project_id = ?
                                   AND properties.category_id = ?
-                                  AND properties.status = ?
-                                  AND properties.is_approved = ?
+                                  AND properties.website_status = ?
+                                  AND properties.is_valid = 1
                                   AND properties.deleted_at is null
                                 ORDER BY properties.created_at DESC
                                 LIMIT 8",
-                [$this->id, config('constants.buyId'), 'active', 'approved']
+                [$this->id, config('constants.buyId'), config('constants.available')]
             );
         } else {
             $rentProperties = [];
