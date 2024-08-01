@@ -227,7 +227,7 @@
                                             <select data-placeholder="Select Bedrooms" style="width: 100%;"
                                                 class="form-control select1 @error('bedrooms') is-invalid @enderror"
                                                 id="bedrodoms" name="bedrooms">
-                                                @foreach ($bedrooms as $value)
+                                                @foreach (config('constants.bedrooms') as $value)
                                                     <option value="{{ $value }}"
                                                         @if ($property->bedrooms == $value) selected @endif>
                                                         {{ $value }}</option>

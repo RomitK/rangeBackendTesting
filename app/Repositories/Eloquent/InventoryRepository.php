@@ -46,7 +46,8 @@ class InventoryRepository implements InventoryRepositoryInterface
                     $query->where('website_status', config('constants.rejected'));
                 }
             ])
-            ->has('properties')->with('user');
+            ->has('properties')
+            ->with('user');
 
         if (isset($request->website_status)) {
             $collection->where('website_status', $request->website_status);
@@ -122,7 +123,8 @@ class InventoryRepository implements InventoryRepositoryInterface
             $collection->where('updated_brochure', $request->updated_brochure);
         }
 
-        $collection = $collection->selectRaw('projects.*, DATEDIFF(?, (SELECT MAX(updated_at) FROM properties WHERE properties.project_id = projects.id)) as date_diff', [$today])->orderBy('date_diff', 'desc');
+        $collection = $collection->selectRaw('projects.*, DATEDIFF(?, inventory_update) as date_diff', [$today])
+                        ->orderBy('date_diff', 'desc');
 
         $projects = $collection->paginate($current_page);
 

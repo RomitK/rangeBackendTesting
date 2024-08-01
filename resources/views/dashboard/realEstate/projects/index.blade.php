@@ -80,6 +80,18 @@
                                     $seletectAddedUsers = request()->added_user_ids ? request()->added_user_ids : [];
                                 @endphp
                                 <div class="row mb-2">
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="project_source">Project Source</label>
+                                            <select class="form-control" id="project_source" name="project_source">
+                                                @foreach (config('constants.propertySourcesWithAll') as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                        @if (request()->project_source == $key) selected @endif>
+                                                        {{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="community_ids">Communities</label>
@@ -203,6 +215,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    
                                     {{-- <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="qr_link">QR Code </label>

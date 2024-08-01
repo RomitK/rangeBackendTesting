@@ -87,7 +87,7 @@ Route::get('/clear-cache', function () {
 
 
 Route::get('/propertiesPermitNumber', 'App\Http\Controllers\CronController@propertiesPermitNumber');
-Route::get('/rent-listings', 'App\Http\Controllers\CronController@getRentListings');
+Route::get('/getRentListings', 'App\Http\Controllers\CronController@getRentListings');
 
 
 Route::get('cronJobmakeInctiveProperties',  'App\Http\Controllers\CronController@cronJobmakeInctiveProperties');

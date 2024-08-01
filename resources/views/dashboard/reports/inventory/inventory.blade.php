@@ -112,7 +112,11 @@
                                                 </span>
                                             </td>
                                             <td>{{ $property->accommodations ? $property->accommodations->name : '' }}</td>
-                                            <td>{{ $property->formattedUpdatedAt }}</td>
+                                            <td>
+                                               
+                                                {{ $property->formattedUpdatedAt }}
+
+                                            </td>
 
                                         </tr>
                                     @endforeach

@@ -32,7 +32,7 @@ class InventoryImport implements ToCollection
         DB::beginTransaction();
 
         try {
-
+            $allowedBedrooms = ['Studio','studio', 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 10, 11, 12];
             $groupedAccommodationData = [];
             foreach ($collection as $index => $data) {
                 if ($index > 0) {
@@ -43,23 +43,30 @@ class InventoryImport implements ToCollection
                     $buildArea = $data[4];
                     $price = $data[5];
                     $unitType = $data[6];
-		    $inventoryStatus = $data[7];
+		            $inventoryStatus = $data[7];
 
                     if ($accommodationName && $bedrooms && $unitType) {
 
                         if (!Accommodation::where('name', $accommodationName)->exists()) {
                             throw new InventoryException("Property Type is not found", 0, 420);
                         }
-                        if (!isset($bedrooms) || (!filter_var($bedrooms, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]]) && strtolower($bedrooms) !== 'studio')) {
-                            throw new InventoryException("Bedroom is not found or maybe not a positive number or 'Studio'", 0, 420);
+                        // Define allowed bedroom values
+
+
+                        // Check if $bedrooms is not set or is not in the allowed values
+                        $normalizedBedrooms = $bedrooms;
+                       
+                        if ( !in_array($normalizedBedrooms, $allowedBedrooms, true)) {
+                           
+                            throw new InventoryException("Bedroom is not found or not an allowed value", 0, 420);
                         }
                         if (!isset($price) || !filter_var($price, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1]])) {
                             throw new InventoryException("Price is not found or maybe not a positive number", 0, 420);
                         }
 			
-			if (!isset($inventoryStatus) || !in_array($inventoryStatus, [0, 1], true)) {
-    				throw new InventoryException("Inventory status is not found or is not a valid boolean value (0 or 1)", 0, 420);
-			}
+                        if (!isset($inventoryStatus) || !in_array($inventoryStatus, [0, 1], true)) {
+                                throw new InventoryException("Inventory status is not found or is not a valid boolean value (0 or 1)", 0, 420);
+                        }
 
                         // Check if the accommodation and bedroom already exist in the array
                         
@@ -72,7 +79,7 @@ class InventoryImport implements ToCollection
                                 'buildArea' => $buildArea,
                                 'price' => $price,
                                 'unitType' => $unitType,
-				'inventoryStatus' => $inventoryStatus
+				                'inventoryStatus' => $inventoryStatus
                             ];
                         } else {
                             // If the accommodation and bedroom exist, update only if the new price is lower
@@ -99,7 +106,7 @@ class InventoryImport implements ToCollection
 
                 Log::info($unitData);
 
-			$propertyBedrooms = $unitData['bedrooms'];
+			            $propertyBedrooms = $unitData['bedrooms'];
                         $propertyArea = $unitData['bedrooms'];
                         $propertyBuildArea = $unitData['buildArea'];
                         $propertyPrice = $unitData['price'];
@@ -147,22 +154,26 @@ class InventoryImport implements ToCollection
                                     $property->builtup_area = $propertyArea;
                                 }
                                 $property->updated_by = Auth::user()->id;
-				if($accommodationId){
+                                if($accommodationId){
 
-					$property->accommodation_id =  $accommodationId;
-				}
-				if($inventoryStatus == 0){
-					$property->website_status = config('constants.NA');
-					$property->is_approved = config('constants.approved');
-                        		$property->status = config('constants.Inactive');
-				}else{
-					$property->is_approved = config('constants.requested');
-                                        $property->status = config('constants.active');
-                                        $property->approval_id = Auth::user()->id;
-                                        $property->website_status = config('constants.requested');
-				}
+                                    $property->accommodation_id =  $accommodationId;
+                                }
+                                if($inventoryStatus == 0){
+                                    $property->website_status = config('constants.NA');
+                                    $property->is_approved = config('constants.approved');
+                                    $property->status = config('constants.Inactive');
+                                }else{
+                                    // $property->is_approved = config('constants.requested');
+                                    // $property->status = config('constants.active');
+                                    // $property->approval_id = Auth::user()->id;
+                                    // $property->website_status = config('constants.requested');
+                                }
                                 $property->save();
 
+                                $project = Project::find($this->project->id);
+                                $project->timestamps = false;
+                                $project->inventory_update = Carbon::now();
+                                $project->save();
 
                                 array_push($this->updatedProperties, $property->id);
 
@@ -191,18 +202,18 @@ class InventoryImport implements ToCollection
 
                                 $property = new Property;
                                 $property->name = $unityType->title;
-				if($inventoryStatus == 0){
+				                if($inventoryStatus == 0){
                                         $property->website_status = config('constants.NA');
                                         $property->is_approved = config('constants.approved');
                                         $property->status = config('constants.Inactive');
-					$property->approval_id = Auth::user()->id;
+					                    $property->approval_id = Auth::user()->id;
                                 }else{
 
                                 	$property->is_approved = config('constants.requested');
                                 	$property->status = config('constants.active');
                                 	$property->approval_id = Auth::user()->id;
                                 	$property->website_status = config('constants.requested');
-				}
+				                }
                                 $property->property_source = 'crm';
                                 $property->bathrooms = 0;
                                 $property->bedrooms = $propertyBedrooms;
@@ -226,6 +237,12 @@ class InventoryImport implements ToCollection
                                 $property->address = $this->project->address;
                                 $property->user_id = Auth::user()->id;
                                 $property->save();
+
+                                $project = Project::find($this->project->id);
+                                $project->timestamps = false;
+                                $project->inventory_update = Carbon::now();
+                                $project->save();
+
 
                                 array_push($this->updatedProperties, $property->id);
 
@@ -274,18 +291,24 @@ class InventoryImport implements ToCollection
                             Log::info($subProject);
                             $property = new Property;
                             $property->name = $subProject->title;
-			    if($inventoryStatus == 0){
-                                        $property->website_status = config('constants.NA');
-                                        $property->is_approved = config('constants.approved');
-                                        $property->status = config('constants.Inactive');
-                                        $property->approval_id = Auth::user()->id;
-                                }else{
+			                if($inventoryStatus == 0){
+                                $property->website_status = config('constants.NA');
+                                $property->is_approved = config('constants.approved');
+                                $property->status = config('constants.Inactive');
+                                $property->approval_id = Auth::user()->id;
+                            }else{
 
-                            $property->is_approved = config('constants.requested');
-                            $property->status = config('constants.active');
-                            $property->approval_id = Auth::user()->id;
-                            $property->website_status = config('constants.requested');
-				}
+                                $property->is_approved = config('constants.requested');
+                                $property->status = config('constants.active');
+                                $property->approval_id = Auth::user()->id;
+                                $property->website_status = config('constants.requested');
+				            }
+
+                            $project = Project::find($this->project->id);
+                            $project->timestamps = false;
+                            $project->inventory_update = Carbon::now();
+                            $project->save();
+
                             $property->property_source = 'crm';
                             $property->bathrooms = 0;
                             $property->bedrooms = $propertyBedrooms;

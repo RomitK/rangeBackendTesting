@@ -35,8 +35,6 @@ class PropertyRepository implements PropertyRepositoryInterface
 
         if (isset($request->website_status)) {
 
-
-
             if ($request->website_status == 'NA2') {
                 $collection->where('out_of_inventory', 1)->where('website_status', 'NA');
             } elseif ($request->website_status == 'NA') {
@@ -223,7 +221,12 @@ class PropertyRepository implements PropertyRepositoryInterface
         try {
             $property = new Property;
             if ($request->has('project_id')) {
+
                 $project = Project::find($request->project_id);
+                $project->timestamps = false;
+                $project->inventory_update = Carbon::now();
+                $project->save();
+                
             }
             // Set status, approval, and website status based on user role and request
             if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
@@ -361,6 +364,7 @@ class PropertyRepository implements PropertyRepositoryInterface
 
             $property->updated_by = Auth::user()->id;
             $property->save();
+           
             if ($property->category_id = 8) {
                 $prefix = 'S';
             } else {
@@ -373,6 +377,8 @@ class PropertyRepository implements PropertyRepositoryInterface
                 if(!empty($project->qr_link)){
                     $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
                 }
+                $project->inventory_update = Carbon::now();
+                $project->save();
             }
             
             $property->save();
@@ -615,6 +621,13 @@ class PropertyRepository implements PropertyRepositoryInterface
                         $property->out_of_inventory = 1;
                         $property->approval_id = Auth::user()->id;
                         $property->website_status = $request->website_status;
+
+                        $project = Project::find($request->project_id);
+                        $project->timestamps = false;
+                        $project->inventory_update = Carbon::now();
+                        $project->save();
+
+
                         break;
                     case config('constants.rejected'):
                         $property->is_approved = config('constants.rejected');

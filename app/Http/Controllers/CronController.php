@@ -18,7 +18,8 @@ use App\Models\{
     PropertyAmenity,
     PropertyGallery,
     Subcommunity,
-    Project
+    Project,
+    User
 };
 use Illuminate\Http\File;
 use App\Jobs\XMLSubImageJob;
@@ -32,6 +33,9 @@ use Illuminate\Support\Facades\DB;
 use PDF;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
+use App\Jobs\{
+    GoyzerRentalProperties
+};
 
 class CronController extends Controller
 {
@@ -101,54 +105,51 @@ class CronController extends Controller
     }
     public function getRentListings()
     {
-
-        $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
-        $xml_arr  = simplexml_load_file($feed,'SimpleXMLElement',LIBXML_NOCDATA);
         
-        $xml_arr  = json_decode(json_encode($xml_arr,true),true);
-        dd($xml_arr);
+        GoyzerRentalProperties::dispatch();
+        return "hello";
+        
+        //     $baseUrl = 'https://webapi.goyzer.com';
+        //     $endpoint = '/Company.asmx/RentListings';
 
-        $baseUrl = 'https://webapi.goyzer.com';
-        $endpoint = '/Company.asmx/RentListings';
+        //     $queryParams = [
+        //         'AccessCode' => env('API_ACCESS_CODE'),
+        //         'GroupCode' => env('API_GROUP_CODE'),
+        //         'PropertyType' => '',
+        //         'Bedrooms' => '',
+        //         'StartPriceRange' => '',
+        //         'EndPriceRange' => '',
+        //         'categoryID' => '',
+        //         'CountryID' => '',
+        //         'StateID' => '',
+        //         'CommunityID' => '',
+        //         'FloorAreaMin' => '',
+        //         'FloorAreaMax' => '',
+        //         'UnitCategory' => '',
+        //         'UnitID' => '',
+        //         'BedroomsMax' => '',
+        //         'PropertyID' => '',
+        //         'ReadyNow' => '',
+        //         'PageIndex' => '',
+        //     ];
 
-        $queryParams = [
-            'AccessCode' => env('API_ACCESS_CODE'),
-            'GroupCode' => env('API_GROUP_CODE'),
-            'PropertyType' => '',
-            'Bedrooms' => '',
-            'StartPriceRange' => '',
-            'EndPriceRange' => '',
-            'categoryID' => '',
-            'CountryID' => '',
-            'StateID' => '',
-            'CommunityID' => '',
-            'FloorAreaMin' => '',
-            'FloorAreaMax' => '',
-            'UnitCategory' => '',
-            'UnitID' => '',
-            'BedroomsMax' => '',
-            'PropertyID' => '',
-            'ReadyNow' => '',
-            'PageIndex' => '',
-        ];
+        //     $response = Http::get($baseUrl . $endpoint, $queryParams);
 
-        $response = Http::get($baseUrl . $endpoint, $queryParams);
+        //     if ($response->successful()) {
 
-        if ($response->successful()) {
-
-             // Raw response body
-    $body = $response->body();
-    // JSON decoded response
-    $data = $body->json();
-    // Response headers
-    $headers = $response->headers();
-    
-    dd( $data);
-          //  dd($response->body());
-            return $response->json();
-        } else {
-            return response()->json(['error' => 'Unable to fetch data'], 500);
-        }
+        //          // Raw response body
+        // $body = $response->body();
+        // // JSON decoded response
+        // $data = $body->json();
+        // // Response headers
+        // $headers = $response->headers();
+        
+        // dd( $data);
+        //       //  dd($response->body());
+        //         return $response->json();
+        //     } else {
+        //         return response()->json(['error' => 'Unable to fetch data'], 500);
+        //     }
     }
     public function deleteNAProperties()
     {

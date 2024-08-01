@@ -32,9 +32,9 @@ class CareerController extends Controller
     {
         try{
             
-            $counters =  Counter::where('page_name',config('constants.career'))->active()->get();
+            $counters =  Counter::where('page_name',config('constants.career'))->active()->latest()->get();
            
-            $careers = Career::active()->get();
+            $careers = Career::active()->latest()->get();
             $data = [
                 'counters'=>CareerCounterResource::collection($counters),
                 'careers'=>CareerListResource::collection($careers)

@@ -65,6 +65,9 @@ class CommunityRepository implements CommunityRepositoryInterface
         if (isset($request->is_approved)) {
             $collection->where('is_approved', $request->is_approved);
         }
+        if(isset($request->community_source)){
+            $collection->where('community_source', $request->community_source);
+        }
 
         if (isset($request->keyword)) {
             $keyword = $request->keyword;

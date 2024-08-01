@@ -414,7 +414,10 @@
                                             </td>
                                             <td>
                                                 @if ($property->project)
-                                                    {{ $property->project->title }} ({{ $property->subProject->title }})
+                                                    {{ $property->project->title }} 
+                                                    @if( $property->subProject)
+                                                    ({{ $property->subProject ? $property->subProject->title:'' }})
+                                                    @endif
                                                 @endif
                                             </td>
                                             {{-- <td>{{ $property->is_duplicate }}</td> --}}
@@ -516,7 +519,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @can(config('constants.Permissions.real_estate'))
+                                                    @can(config('constants.Permissions.real_estate') && $property->property_source == 'crm')
                                                         <a class="btn btn-primary btn-sm"
                                                             href="{{ route('dashboard.properties.duplicate', $property->id) }}">
                                                             <i class="fas fa-file"></i>
@@ -530,7 +533,7 @@
                                                             Meta Details
                                                         </a>
                                                     @endcan
-                                                    @can(config('constants.Permissions.real_estate'))
+                                                    @can(config('constants.Permissions.real_estate') )
                                                         <a class="btn btn-info btn-sm"
                                                             href="{{ route('dashboard.properties.edit', $property->id) }}">
                                                             <i class="fas fa-pencil-alt"></i>
@@ -543,10 +546,12 @@
                                                             <i class="fas fa-database"></i>
                                                             History
                                                         </a>
+                                                        @if($property->property_source == 'crm')
                                                         <button type="submit" class="btn btn-danger btn-sm show_confirm">
                                                             <i class="fas fa-trash"></i>
                                                             Delete
                                                         </button>
+                                                        @endif
                                                     @endif
                                                 </form>
                                             </td>

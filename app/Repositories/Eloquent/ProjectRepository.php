@@ -106,6 +106,11 @@ class ProjectRepository implements ProjectRepositoryInterface
         if (isset($request->updated_brochure)) {
             $collection->where('updated_brochure', $request->updated_brochure);
         }
+
+        if(isset($request->project_source)){
+            $collection->where('project_source', $request->project_source);
+        }
+
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction
@@ -306,6 +311,7 @@ class ProjectRepository implements ProjectRepositoryInterface
             $reference_prefix = 'RIPI_' . strtoupper(substr(Str::slug($project->developer->name), 0, 3));
             $nextInvoiceNumber = Project::getNextReferenceNumber($reference_prefix);
             $project->reference_number = $reference_prefix . "_" . $nextInvoiceNumber;
+
             $project->save();
             $project->banner_image = $project->mainImage;
             if ($request->hasFile('qr')) {
@@ -569,6 +575,14 @@ class ProjectRepository implements ProjectRepositoryInterface
             }
 
             $project->save();
+            
+            if($project->project_source == 'xml' && empty($project->reference_number)){
+                $reference_prefix = 'RIPI_' . strtoupper(substr(Str::slug($project->developer->name), 0, 3));
+                $nextInvoiceNumber = Project::getNextReferenceNumber($reference_prefix);
+                $project->reference_number = $reference_prefix . "_" . $nextInvoiceNumber;
+            }
+            
+
             $project->banner_image = $project->mainImage;
             if ($request->hasFile('qr')) {
                 $project->qr_link = $project->qr;

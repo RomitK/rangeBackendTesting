@@ -27,6 +27,9 @@ class Project extends Model implements HasMedia
      *
      * @var array
      */
+    protected $casts = [
+        'inventory_update' => 'datetime',
+    ];
     protected $dates = [
         'created_at',
         'updated_at',

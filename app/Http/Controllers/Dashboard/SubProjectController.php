@@ -52,7 +52,7 @@ class SubProjectController extends Controller
     {
         $amenities = Amenity::active()->latest()->get();
         $accommodations = Accommodation::active()->latest()->get();
-        $bedrooms = ['Studio', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        $bedrooms = ['Studio', 1, 1.5, 2, 2.5, 3, 3.5,  4, 4.5, 5, 5.5, 6,6.5, 7,7.5, 8,8.5, 9, 10, 11];
         return view('dashboard.realEstate.projects.sub.create', compact('project', 'amenities', 'accommodations', 'bedrooms'));
     }
 

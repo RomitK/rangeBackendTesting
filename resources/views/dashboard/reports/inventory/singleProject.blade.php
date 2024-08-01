@@ -34,7 +34,10 @@
                 <span class="badge bg-danger"> {{ $project->rejected_count }}</span>
             </td>
             <td>
-                {{ $project->last_property_update ? $project->last_property_update->format('d m Y') : 'No properties' }}
+                {{
+                    $project->inventory_update ? $project->inventory_update->format('d m Y') : 'No Date'
+                }}
+                {{-- {{ $project->last_property_update ? $project->last_property_update->format('d m Y') : 'No properties' }} --}}
             </td>
 
         </tr>
