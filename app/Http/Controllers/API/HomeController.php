@@ -56,7 +56,7 @@ curl_close($ch);
 echo $curl_scraped_page;
 
 
-            $url ="https://mshastra.com/sendurl.aspx?user=rangeint&pwd=Range@23&senderid=rangeint&mobileno=586238697&msgtext=Hello&CountryCode=+971";
+            $url ="https://mshastra.com/sendurl.aspx?user=rangeint&pwd=Range@23&senderid=rangeint&mobileno=586238697&msgtext=HelloTR&CountryCode=+971";
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $curl_scraped_page = curl_exec($ch);
