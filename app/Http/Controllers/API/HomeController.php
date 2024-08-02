@@ -48,29 +48,39 @@ class HomeController extends Controller
     {
         try {
 
+            $url = "http://www.mshastra.com/sendurlcomma.aspx?user=rangeint&pwd=Range@23&senderid=Rangelnv&CountryCode=971&mobileno=586238697&msgtext=Hello";
+$ch = curl_init($url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$curl_scraped_page = curl_exec($ch);
+curl_close($ch);
+echo $curl_scraped_page;
+
+
             // $url ="https://mshastra.com/sendurl.aspx?user=rangeint&pwd=Range@23&senderid=rangeint&mobileno=586238697&msgtext=Hello&CountryCode=+971";
             // $ch = curl_init($url);
             // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             // $curl_scraped_page = curl_exec($ch);
             // curl_close($ch);
             // dd($curl_scraped_page);
-            $message = "Hello OTP" . mt_rand(1000, 9999);
-            $response = Http::get('https://www.mshastra.com/sendurl.aspx', [
-                'user' => 'rangeint',
-                'pwd' => 'Range@23',
-                'senderid' => 'rangeint',
-                'CountryCode' => '+971',
-                'mobileno' => '586238697',
-                'msgtext' =>  $message,
-                'smstype' => '0'
-            ]);
-            //dd( $response);
-            if ($response->successful()) {
-                $data = $response->json();
-                return $this->success('SMS Data', $response, 200);
-            } else {
-                // Handle the error
-            }
+
+            
+            // $message = "Hello OTP" . mt_rand(1000, 9999);
+            // $response = Http::get('https://www.mshastra.com/sendurl.aspx', [
+            //     'user' => 'rangeint',
+            //     'pwd' => 'Range@23',
+            //     'senderid' => 'rangeint',
+            //     'CountryCode' => '+971',
+            //     'mobileno' => '586238697',
+            //     'msgtext' =>  $message,
+            //     'smstype' => '0'
+            // ]);
+         
+            // if ($response->successful()) {
+            //     $data = $response->json();
+            //     return $this->success('SMS Data', $response, 200);
+            // } else {
+                
+            // }
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }

@@ -42,6 +42,9 @@ class GoyzerRentalProperties implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $timeout = 3600; // 1 hour
+    public $tries = 5; // Max attempts
+
     /**
      * Create a new job instance.
      *
@@ -406,16 +409,18 @@ class GoyzerRentalProperties implements ShouldQueue
                                     ->toMediaCollection('subImages', 'propertyFiles');
                         }
                     }
-                    if(isset($Documents) && is_array($Documents) && array_key_exists('Document', $Documents)){
-                        $Document = $Documents['Document'];
-                        foreach ($Document as $document) {
-
-                            if ((string)$document->Title === 'QR Code') {
+                    if (isset($Documents) && is_array($Documents) && array_key_exists('Document', $Documents)) {
+                        $DocumentArray = $Documents['Document'];
+                    
+                        foreach ($DocumentArray as $document) {
+                            // Ensure $document is an object before accessing its properties
+                            if (is_object($document) && isset($document->Title) && (string)$document->Title === 'QR Code') {
                                 $qrCodeURL = $document->URL;
                                 break; // Exit loop after finding the first QR Code document
                             }
                         }
                     }
+                    
 
                     if($qrCodeURL){
                         $property->addMediaFromUrl($qrCodeURL)->toMediaCollection('qrs', 'propertyFiles' );
@@ -437,11 +442,10 @@ class GoyzerRentalProperties implements ShouldQueue
             $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
             $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
 
-            if ($request->has('amenityIds')) {
-                $property->amenities()->attach($request->amenityIds);
-                $originalAttributes['amenityIds'] = $request->amenityIds;
+           if ($property->amenities) {
+                    $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
             } else {
-                $originalAttributes['amenityIds'] = [];
+                    $newPropertyOriginalAttributes['amenityIds'] = [];
             }
 
             // Log activity for developer creation
@@ -508,8 +512,8 @@ class GoyzerRentalProperties implements ShouldQueue
                 'error_file' => $errorFile,
                 'error_line' => $errorLine,
             ];
-
-            return response()->json($response, 500);
+            Log::info($response);
+            //return response()->json($response, 500);
         }
     }
 }
