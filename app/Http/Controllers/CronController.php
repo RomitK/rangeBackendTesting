@@ -72,7 +72,7 @@ class CronController extends Controller
 
         DB::beginTransaction();
         try {
-            $projects = Project::where('is_parent_project', 1)->whereIn('id', [279, 598, 782, 784])->orderBy('id', 'asc')->get();
+            $projects = Project::where('is_parent_project', 1)->whereIn('id', [790, 843])->orderBy('id', 'asc')->get();
            
             foreach($projects as $project){
                 $properties = Property::whereIn('project_id', [$project->id])->get();
