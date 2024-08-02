@@ -42,50 +42,16 @@ class CronController extends Controller
     public function propertiesPermitNumber()
     {
 
-        DB::beginTransaction();
-        try {
-           
-                $properties = Property::latest()->get();
-                
-                foreach($properties as $property){
-                    Log::info("propertyID-".$property->id);
-                    echo "propertyID-".$property->id;
-                    Property::getModel()->timestamps = false;
-                    $property->qr_link = $property->qr;
-                    $property->save();
-
-                    if (!empty($property->permit_number) && !empty($property->qr_link)) {
-                        $property->is_valid = 1;
-                    } else {
-                        $property->is_valid = 0; // Optionally set to false if not valid
-                    }
-                    $property->save();
-
-                    Property::getModel()->timestamps = true;
-                }
-           
-            DB::commit();
-        } catch (\Exception $error) {
-            return response()->json(['error' => $error->getMessage()]);
-        }
-
-
         // DB::beginTransaction();
         // try {
-        //     $projects = Project::where('is_parent_project', 1)->whereIn('id', [846, 830, 840, 849, 857, 872, 876, 939, 876, 995, 1001, 1006, 953, 868, 1065, 1069, 1083])->orderBy('id', 'asc')->get();
            
-        //     foreach($projects as $project){
-        //         $properties = Property::whereIn('project_id', [$project->id])->get();
+        //         $properties = Property::latest()->get();
                 
         //         foreach($properties as $property){
-        //             Log::info("projectID-".$project->id."propertyID-".$property->id);
-        //             echo "projectID-".$project->id."propertyID-".$property->id;
+        //             Log::info("propertyID-".$property->id);
+        //             echo "propertyID-".$property->id;
         //             Property::getModel()->timestamps = false;
-        //             $property->permit_number = $project->permit_number;
-        //             $property->save();
-        //             if($project->qr_link){
-        //                 $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
-        //             }
+        //             $property->qr_link = $property->qr;
         //             $property->save();
 
         //             if (!empty($property->permit_number) && !empty($property->qr_link)) {
@@ -97,11 +63,45 @@ class CronController extends Controller
 
         //             Property::getModel()->timestamps = true;
         //         }
-        //     }
+           
         //     DB::commit();
         // } catch (\Exception $error) {
         //     return response()->json(['error' => $error->getMessage()]);
         // }
+
+
+        DB::beginTransaction();
+        try {
+            $projects = Project::where('is_parent_project', 1)->whereIn('id', [279, 598, 782, 784])->orderBy('id', 'asc')->get();
+           
+            foreach($projects as $project){
+                $properties = Property::whereIn('project_id', [$project->id])->get();
+                
+                foreach($properties as $property){
+                    Log::info("projectID-".$project->id."propertyID-".$property->id);
+                    echo "projectID-".$project->id."propertyID-".$property->id;
+                    Property::getModel()->timestamps = false;
+                    $property->permit_number = $project->permit_number;
+                    $property->save();
+                    if($project->qr_link){
+                        $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
+                    }
+                    $property->save();
+
+                    if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                        $property->is_valid = 1;
+                    } else {
+                        $property->is_valid = 0; // Optionally set to false if not valid
+                    }
+                    $property->save();
+
+                    Property::getModel()->timestamps = true;
+                }
+            }
+            DB::commit();
+        } catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()]);
+        }
     }
     public function getRentListings()
     {
