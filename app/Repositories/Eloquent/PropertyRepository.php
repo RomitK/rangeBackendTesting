@@ -622,12 +622,6 @@ class PropertyRepository implements PropertyRepositoryInterface
                         $property->approval_id = Auth::user()->id;
                         $property->website_status = $request->website_status;
 
-                        $project = Project::find($request->project_id);
-                        $project->timestamps = false;
-                        $project->inventory_update = Carbon::now();
-                        $project->save();
-
-
                         break;
                     case config('constants.rejected'):
                         $property->is_approved = config('constants.rejected');
@@ -652,6 +646,7 @@ class PropertyRepository implements PropertyRepositoryInterface
             $property->updated_by = Auth::user()->id;
             $property->save();
 
+            
 
 
             if ($request->hasFile('mainImage')) {
@@ -731,6 +726,22 @@ class PropertyRepository implements PropertyRepositoryInterface
                         logActivity('Property marked as NA due to missing to Permit Number and QR ', $property->id, Property::class, $properties);
                     }
                 }
+            }
+
+            if (
+                ($originalAttributes['website_status'] == config('constants.NA')  && $property->website_status == config('constants.available') && $property->out_of_inventory = 1)
+                || 
+                ($originalAttributes['website_status'] == config('constants.available')  && $property->website_status == config('constants.NA') && $property->out_of_inventory = 1)
+                ||
+                ($originalAttributes['website_status'] == config('constants.requested')  && $property->website_status == config('constants.NA') && $property->out_of_inventory = 1)
+                ||
+                ($originalAttributes['website_status'] == config('constants.rejected')  && $property->website_status == config('constants.NA') && $property->out_of_inventory = 1)
+                ) 
+            {
+                $project = Project::find($request->project_id);
+                $project->timestamps = false;
+                $project->inventory_update = Carbon::now();
+                $project->save();
             }
 
 

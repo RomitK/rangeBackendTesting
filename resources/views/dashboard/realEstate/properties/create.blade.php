@@ -44,7 +44,7 @@
                                                 <option value="">Select Project</option>
                                                 @foreach ($projects as $value)
                                                     <option value="{{ $value->id }}">{{ $value->title }} (
-                                                        {{ $value->developer->name }})</option>
+                                                        {{ $value->developer? $value->developer->name: '' }})</option>
                                                 @endforeach
                                             </select>
                                             @error('project_id')

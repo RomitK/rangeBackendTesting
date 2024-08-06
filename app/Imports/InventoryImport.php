@@ -15,7 +15,7 @@ use App\Models\{
     Property,
     Project
 };
-
+use Carbon\Carbon;
 
 class InventoryImport implements ToCollection
 {
@@ -100,120 +100,233 @@ class InventoryImport implements ToCollection
                 }
             }
 		
-            Log::info($groupedUnitData);
+           
+            if(isset($groupedUnitData)){
+                Log::info($groupedUnitData);
+                foreach ($groupedUnitData as $unitIndex => $unitData) {
 
-            foreach ($groupedUnitData as $unitIndex => $unitData) {
-
-                Log::info($unitData);
-
-			            $propertyBedrooms = $unitData['bedrooms'];
-                        $propertyArea = $unitData['bedrooms'];
-                        $propertyBuildArea = $unitData['buildArea'];
-                        $propertyPrice = $unitData['price'];
-                        $unitType = $unitIndex;
-                        $inventoryStatus = $unitData['inventoryStatus'];
-                        $accommodationId = Accommodation::where('name', $unitData['accommodationName'])->first()->id;
-                       Log::info('accommodationId-' . $accommodationId);
-                   
-                        $unityTypeExist = Project::where('parent_project_id', $this->project->id)
-                            ->where('is_parent_project', 0)
-                            ->Where('title', $unitType)
-                            ->exists();
-                        Log::info('unityTypeExist' . $unityTypeExist);
-                        if ($unityTypeExist) {
-
-
-                            $unityType = Project::where('parent_project_id', $this->project->id)
+                    Log::info($unitData);
+    
+                            $propertyBedrooms = $unitData['bedrooms'];
+                            $propertyArea = $unitData['bedrooms'];
+                            $propertyBuildArea = $unitData['buildArea'];
+                            $propertyPrice = $unitData['price'];
+                            $unitType = $unitIndex;
+                            $inventoryStatus = $unitData['inventoryStatus'];
+                            $accommodationId = Accommodation::where('name', $unitData['accommodationName'])->first()->id;
+                           Log::info('accommodationId-' . $accommodationId);
+                       
+                            $unityTypeExist = Project::where('parent_project_id', $this->project->id)
                                 ->where('is_parent_project', 0)
                                 ->Where('title', $unitType)
-                                ->first();
+                                ->exists();
+                            Log::info('unityTypeExist' . $unityTypeExist);
+                            if ($unityTypeExist) {
+    
+    
+                                $unityType = Project::where('parent_project_id', $this->project->id)
+                                    ->where('is_parent_project', 0)
+                                    ->Where('title', $unitType)
+                                    ->first();
+    
+                                $unityTypeId = $unityType->id;
+    
+                                $propertyExist = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)->exists();
+    
+                                if ($propertyExist) {
+                                    $property = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)->first();
+    
+                                    $originalAttributes = $property->getOriginal();
+                                    $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                                    $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+    
+                                    if ($property->amenities) {
+                                        $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                                    } else {
+                                        $originalAttributes['amenityIds'] = [];
+                                    }
+    
+                                    $property->price = $propertyPrice;
+    
+                                    if ($propertyArea) {
+                                        $property->area = $propertyArea;
+                                    }
+                                    if ($propertyBuildArea) {
+                                        $property->builtup_area = $propertyArea;
+                                    }
+                                    $property->updated_by = Auth::user()->id;
+                                    if($accommodationId){
+    
+                                        $property->accommodation_id =  $accommodationId;
+                                    }
+                                    if($inventoryStatus == 0){
+                                        $property->website_status = config('constants.NA');
+                                        $property->is_approved = config('constants.approved');
+                                        $property->status = config('constants.Inactive');
+                                    }else{
+                                        // $property->is_approved = config('constants.requested');
+                                        // $property->status = config('constants.active');
+                                        // $property->approval_id = Auth::user()->id;
+                                        // $property->website_status = config('constants.requested');
+                                    }
+                                    $property->save();
+    
 
-                            $unityTypeId = $unityType->id;
+                                    if (
+                                        ($originalAttributes['website_status'] == config('constants.NA')  && $property->website_status == config('constants.available'))
+                                        || 
+                                        ($originalAttributes['website_status'] == config('constants.available')  && $property->website_status == config('constants.NA'))
+                                        ||
+                                        ($originalAttributes['website_status'] == config('constants.requested')  && $property->website_status == config('constants.NA'))
+                                        ||
+                                        ($originalAttributes['website_status'] == config('constants.rejected')  && $property->website_status == config('constants.NA'))
+                                        ) 
+                                    {
 
-                            $propertyExist = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)->exists();
-
-                            if ($propertyExist) {
-                                $property = Property::where('project_id', $this->project->id)->where('sub_project_id', $unityTypeId)->first();
-
-                                $originalAttributes = $property->getOriginal();
-                                $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
-                                $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
-
-                                if ($property->amenities) {
-                                    $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                                        $project = Project::find($this->project->id);
+                                        $project->timestamps = false;
+                                        $project->inventory_update = Carbon::now();
+                                        $project->save();
+                                    }
+    
+                                    array_push($this->updatedProperties, $property->id);
+    
+    
+                                    $newPropertyOriginalAttributes = $property->getOriginal();
+    
+                                    if ($property->amenities) {
+                                        $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                                    } else {
+                                        $newPropertyOriginalAttributes['amenityIds'] = [];
+                                    }
+    
+                                    if (isset($property->description)) {
+                                        $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                                    }
+                                    if (isset($property->short_description)) {
+                                        $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                                    }
+    
+                                    $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
+    
+                                    logActivity('Property has been updated through inventory file', $property->id, Property::class, $properties);
+    
+                                    Log::info('Property Exist true');
                                 } else {
-                                    $originalAttributes['amenityIds'] = [];
-                                }
-
-                                $property->price = $propertyPrice;
-
-                                if ($propertyArea) {
+    
+                                    $property = new Property;
+                                    $property->name = $unityType->title;
+                                    if($inventoryStatus == 0){
+                                            $property->website_status = config('constants.NA');
+                                            $property->is_approved = config('constants.approved');
+                                            $property->status = config('constants.Inactive');
+                                            $property->approval_id = Auth::user()->id;
+                                    }else{
+    
+                                        $property->is_approved = config('constants.requested');
+                                        $property->status = config('constants.active');
+                                        $property->approval_id = Auth::user()->id;
+                                        $property->website_status = config('constants.requested');
+                                    }
+                                    $property->property_source = 'crm';
+                                    $property->bathrooms = 0;
+                                    $property->bedrooms = $propertyBedrooms;
                                     $property->area = $propertyArea;
-                                }
-                                if ($propertyBuildArea) {
-                                    $property->builtup_area = $propertyArea;
-                                }
-                                $property->updated_by = Auth::user()->id;
-                                if($accommodationId){
+                                    $property->price = $propertyPrice;
+                                    $property->builtup_area = $propertyBuildArea;
+                                    $property->project_id = $this->project->id;
+                                    $property->sub_project_id = $unityType->id;
+                                    $property->accommodation_id = $accommodationId;
+                                    $property->category_id = 8;
+                                    $property->reference_number = generatePropertyUniqueCode('S');
+                                    if ($this->project->completion_status_id == 289) { // if the project is under-construction then its offplan else ready
+                                        $property->completion_status_id = 287;
+                                    } else {
+                                        $property->completion_status_id = 286;
+                                    }
+    
+    
+                                    $property->address_longitude = $this->project->address_longitude;
+                                    $property->address_latitude = $this->project->address_latitude;
+                                    $property->address = $this->project->address;
+                                    $property->user_id = Auth::user()->id;
+                                    $property->save();
+    
 
-                                    $property->accommodation_id =  $accommodationId;
+                                   
+
+                                    $project = Project::find($this->project->id);
+                                    $project->timestamps = false;
+                                    $project->inventory_update = Carbon::now();
+                                    $project->save();
+    
+    
+                                    array_push($this->updatedProperties, $property->id);
+    
+                                    $property->amenities()->attach($this->project->amenities->pluck('id')->toArray());
+    
+    
+                                    $originalAttributes = $property->getOriginal();
+    
+                                    $originalAttributes['short_description'] = null;
+                                    $originalAttributes['description'] = null;
+    
+                                    $originalAttributes['amenityIds'] = $this->project->amenities->pluck('id')->toArray();
+    
+    
+                                    // Log activity for developer creation
+                                    $properties = json_encode([
+                                        'old' => [],
+                                        'new' => $originalAttributes,
+                                        'updateAttribute' => [],
+                                        'attribute' => []
+                                    ]);
+                                    logActivity('New Property has been created through inventory file', $property->id, Property::class, $properties);
+    
+                                    Log::info("newPropertyId-" . $property);
                                 }
+                            } else {
+    
+                                $subProject = new Project;
+                                $subProject->title = $unitType;
+                                $subProject->is_parent_project = 0;
+                                $subProject->parent_project_id = $this->project->id;
+                                $subProject->bedrooms = $propertyBedrooms;
+                                $subProject->list_type = 'primary';
+                                $subProject->area = $propertyArea;
+                                $subProject->builtup_area = $propertyBuildArea;
+                                $subProject->user_id = Auth::user()->id;
+                                $subProject->accommodation_id = $accommodationId;
+                                $subProject->starting_price = $propertyPrice;
+                                $subProject->is_approved = config('constants.requested');
+                                $subProject->status = config('constants.active');
+                                $subProject->website_status = config('constants.requested');
+                                $subProject->save();
+    
+    
+                                Log::info('subProject-');
+                                Log::info($subProject);
+                                $property = new Property;
+
+                                $property->name = $subProject->title;
                                 if($inventoryStatus == 0){
                                     $property->website_status = config('constants.NA');
                                     $property->is_approved = config('constants.approved');
                                     $property->status = config('constants.Inactive');
+                                    $property->approval_id = Auth::user()->id;
                                 }else{
-                                    // $property->is_approved = config('constants.requested');
-                                    // $property->status = config('constants.active');
-                                    // $property->approval_id = Auth::user()->id;
-                                    // $property->website_status = config('constants.requested');
+    
+                                    $property->is_approved = config('constants.requested');
+                                    $property->status = config('constants.active');
+                                    $property->approval_id = Auth::user()->id;
+                                    $property->website_status = config('constants.requested');
                                 }
-                                $property->save();
-
+    
                                 $project = Project::find($this->project->id);
                                 $project->timestamps = false;
                                 $project->inventory_update = Carbon::now();
                                 $project->save();
-
-                                array_push($this->updatedProperties, $property->id);
-
-
-                                $newPropertyOriginalAttributes = $property->getOriginal();
-
-                                if ($property->amenities) {
-                                    $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
-                                } else {
-                                    $newPropertyOriginalAttributes['amenityIds'] = [];
-                                }
-
-                                if (isset($property->description)) {
-                                    $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
-                                }
-                                if (isset($property->short_description)) {
-                                    $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
-                                }
-
-                                $properties = getUpdatedPropertiesForProperty($newPropertyOriginalAttributes, $originalAttributes);
-
-                                logActivity('Property has been updated through inventory file', $property->id, Property::class, $properties);
-
-                                Log::info('Property Exist true');
-                            } else {
-
-                                $property = new Property;
-                                $property->name = $unityType->title;
-				                if($inventoryStatus == 0){
-                                        $property->website_status = config('constants.NA');
-                                        $property->is_approved = config('constants.approved');
-                                        $property->status = config('constants.Inactive');
-					                    $property->approval_id = Auth::user()->id;
-                                }else{
-
-                                	$property->is_approved = config('constants.requested');
-                                	$property->status = config('constants.active');
-                                	$property->approval_id = Auth::user()->id;
-                                	$property->website_status = config('constants.requested');
-				                }
+    
                                 $property->property_source = 'crm';
                                 $property->bathrooms = 0;
                                 $property->bedrooms = $propertyBedrooms;
@@ -221,7 +334,7 @@ class InventoryImport implements ToCollection
                                 $property->price = $propertyPrice;
                                 $property->builtup_area = $propertyBuildArea;
                                 $property->project_id = $this->project->id;
-                                $property->sub_project_id = $unityType->id;
+                                $property->sub_project_id = $subProject->id;
                                 $property->accommodation_id = $accommodationId;
                                 $property->category_id = 8;
                                 $property->reference_number = generatePropertyUniqueCode('S');
@@ -230,33 +343,27 @@ class InventoryImport implements ToCollection
                                 } else {
                                     $property->completion_status_id = 286;
                                 }
-
-
+    
+    
                                 $property->address_longitude = $this->project->address_longitude;
                                 $property->address_latitude = $this->project->address_latitude;
                                 $property->address = $this->project->address;
                                 $property->user_id = Auth::user()->id;
                                 $property->save();
-
-                                $project = Project::find($this->project->id);
-                                $project->timestamps = false;
-                                $project->inventory_update = Carbon::now();
-                                $project->save();
-
-
+    
                                 array_push($this->updatedProperties, $property->id);
-
+    
                                 $property->amenities()->attach($this->project->amenities->pluck('id')->toArray());
-
-
+    
+    
                                 $originalAttributes = $property->getOriginal();
-
+    
                                 $originalAttributes['short_description'] = null;
                                 $originalAttributes['description'] = null;
-
+    
                                 $originalAttributes['amenityIds'] = $this->project->amenities->pluck('id')->toArray();
-
-
+    
+    
                                 // Log activity for developer creation
                                 $properties = json_encode([
                                     'old' => [],
@@ -265,100 +372,13 @@ class InventoryImport implements ToCollection
                                     'attribute' => []
                                 ]);
                                 logActivity('New Property has been created through inventory file', $property->id, Property::class, $properties);
-
+    
                                 Log::info("newPropertyId-" . $property);
-                            }
-                        } else {
-
-                            $subProject = new Project;
-                            $subProject->title = $unitType;
-                            $subProject->is_parent_project = 0;
-                            $subProject->parent_project_id = $this->project->id;
-                            $subProject->bedrooms = $propertyBedrooms;
-                            $subProject->list_type = 'primary';
-                            $subProject->area = $propertyArea;
-                            $subProject->builtup_area = $propertyBuildArea;
-                            $subProject->user_id = Auth::user()->id;
-                            $subProject->accommodation_id = $accommodationId;
-                            $subProject->starting_price = $propertyPrice;
-                            $subProject->is_approved = config('constants.requested');
-                            $subProject->status = config('constants.active');
-                            $subProject->website_status = config('constants.requested');
-                            $subProject->save();
-
-
-                            Log::info('subProject-');
-                            Log::info($subProject);
-                            $property = new Property;
-                            $property->name = $subProject->title;
-			                if($inventoryStatus == 0){
-                                $property->website_status = config('constants.NA');
-                                $property->is_approved = config('constants.approved');
-                                $property->status = config('constants.Inactive');
-                                $property->approval_id = Auth::user()->id;
-                            }else{
-
-                                $property->is_approved = config('constants.requested');
-                                $property->status = config('constants.active');
-                                $property->approval_id = Auth::user()->id;
-                                $property->website_status = config('constants.requested');
-				            }
-
-                            $project = Project::find($this->project->id);
-                            $project->timestamps = false;
-                            $project->inventory_update = Carbon::now();
-                            $project->save();
-
-                            $property->property_source = 'crm';
-                            $property->bathrooms = 0;
-                            $property->bedrooms = $propertyBedrooms;
-                            $property->area = $propertyArea;
-                            $property->price = $propertyPrice;
-                            $property->builtup_area = $propertyBuildArea;
-                            $property->project_id = $this->project->id;
-                            $property->sub_project_id = $subProject->id;
-                            $property->accommodation_id = $accommodationId;
-                            $property->category_id = 8;
-                            $property->reference_number = generatePropertyUniqueCode('S');
-                            if ($this->project->completion_status_id == 289) { // if the project is under-construction then its offplan else ready
-                                $property->completion_status_id = 287;
-                            } else {
-                                $property->completion_status_id = 286;
-                            }
-
-
-                            $property->address_longitude = $this->project->address_longitude;
-                            $property->address_latitude = $this->project->address_latitude;
-                            $property->address = $this->project->address;
-                            $property->user_id = Auth::user()->id;
-                            $property->save();
-
-                            array_push($this->updatedProperties, $property->id);
-
-                            $property->amenities()->attach($this->project->amenities->pluck('id')->toArray());
-
-
-                            $originalAttributes = $property->getOriginal();
-
-                            $originalAttributes['short_description'] = null;
-                            $originalAttributes['description'] = null;
-
-                            $originalAttributes['amenityIds'] = $this->project->amenities->pluck('id')->toArray();
-
-
-                            // Log activity for developer creation
-                            $properties = json_encode([
-                                'old' => [],
-                                'new' => $originalAttributes,
-                                'updateAttribute' => [],
-                                'attribute' => []
-                            ]);
-                            logActivity('New Property has been created through inventory file', $property->id, Property::class, $properties);
-
-                            Log::info("newPropertyId-" . $property);
-                        
+                            
+                    }
                 }
             }
+            
 
             Log::info('group-DATA');
             Log::info($groupedAccommodationData);
@@ -376,9 +396,11 @@ class InventoryImport implements ToCollection
             Log::info('outOfInventoryProperties');
             Log::info($outOfInventoryProperties);
             foreach ($outOfInventoryProperties as $propertyId) {
-
+               
+                $property = Property::find($propertyId);
 
                 $originalAttributes = $property->getOriginal();
+               
                 $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
                 $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
 
@@ -389,7 +411,7 @@ class InventoryImport implements ToCollection
                 }
 
 
-                $property = Property::find($propertyId);
+                
                 $property->status = config('constants.Inactive');
                 $property->approval_id = Auth::user()->id;
                 $property->website_status = config('constants.NA');

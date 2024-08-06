@@ -95,7 +95,7 @@
                                             <td>{{ $property->name }}</td>
                                             <td>{{ $property->reference_number }}</td>
                                             <td>
-                                                @if ($property->project)
+                                                @if ($property->project && $property->subProject)
                                                     {{ $property->subProject->title }}
                                                 @endif
                                             </td>

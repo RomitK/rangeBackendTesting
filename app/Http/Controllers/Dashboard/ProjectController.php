@@ -552,8 +552,8 @@ class ProjectController extends Controller
         DB::beginTransaction();
         try {
 		$project =  Project::with(['subProjects', 'subProjects.accommodation', 'subProjects.properties'])->find($project->id);
-	        //dd($project->subProjects);
- 		return  Excel::download(new DLDTransaction($project), 'projectInventory.xlsx');
+	    $projectName = $project->title.'-Inventory.xlsx';
+ 		return  Excel::download(new DLDTransaction($project), $projectName);
 
           //  dd('projectId'.$project->id);
             DB::commit();
