@@ -352,6 +352,7 @@ return [
           'Sales and Leasing'=>'Sales and Leasing'
     ],
  'departments' => [
+        'Leadership',
         'Administration',
         'Human Resources',
         'Finance and Accounting',
