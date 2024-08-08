@@ -78,7 +78,7 @@
                                                 <td>{{ $applicant->formattedCreatedAt }}</td>
                                                 <td>@if ($applicant->cv)
                                                     <a class="btn btn-sm btn-info"
-                                                        href="{{ asset($applicant->cv) }}" download> 
+                                                        href="{{ asset($applicant->cv) }}" download target="_blanket"> 
                                                         CV</a>
                                                 @endif</td>
                                                 <td>

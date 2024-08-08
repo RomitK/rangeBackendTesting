@@ -53,7 +53,7 @@
                                     <tr>
                                         <th>CV</th>
                                         <td>@if($applicant->cv)
-                                            <a class="btn btn-sm btn-danger" href="{{ asset($applicant->cv) }}" download> Download CV</a>
+                                            <a class="btn btn-sm btn-danger" href="{{ asset($applicant->cv) }}" download target="_blanket"> Download CV</a>
                                             @endif
                                         </td>
                                     </tr>
