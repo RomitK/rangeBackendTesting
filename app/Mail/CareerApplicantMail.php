@@ -13,12 +13,10 @@ class CareerApplicantMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $excelFile, $data;
-
-
-    public function __construct($excelFile, $data)
+    public $data;
+    
+    public function __construct($data)
     {
-        $this->excelFile = $excelFile;
         $this->data = $data;
     }
 
