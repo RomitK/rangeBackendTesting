@@ -4,7 +4,7 @@ Port = 22
 User = cmsrange
 PW = JFmcCgzzvyAn8XGhEQ2b
 
-ssh 
+ssh cmsrange@65.0.174.71
 
 MySQL
 DB = cmsrange_db
@@ -16,7 +16,7 @@ http://65.0.174.71:7777
 User = admin
 PW = 56pnQs6j6FGu55c83m86
 
-cmsrange@65.0.174.71
+
 
 
 

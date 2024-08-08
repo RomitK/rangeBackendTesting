@@ -19,6 +19,10 @@ use App\Http\Resources\{
     CareerCounterResource,
     SingleCareerResource
 };
+use App\Mail\{
+    CareerApplicantMail
+};
+
 use Auth;
 use DB;
 class CareerController extends Controller
@@ -94,7 +98,16 @@ class CareerController extends Controller
     
             $career->submit_date = date('Y-m-d H:i:s');
             $career->save();
-        
+            
+            $data = [
+                'name'=> $career->name,
+                'email'=>$career->email,
+                'contact_number'=>$career->contact_number,
+                'position' => Career::find()->position,
+                'cv' => $career->cv,
+            ];
+            Mail::to('aqsa@xpertise.ae')->send(new CareerApplicantMail($data));
+
             return $this->success('Form Submit', [], 200);
             
             }catch (\Exception $exception) {
