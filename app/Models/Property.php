@@ -190,13 +190,13 @@ class Property extends Model implements HasMedia
     }
     public function getSubImagesAttribute()
     {
-        //     $subImages = array();
-        //     foreach($this->getMedia('subImages') as $image){
-        //         array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl('resize_images')]);
-        //     }
-        //   return $subImages;
+            $subImages = array();
+            foreach($this->getMedia('subImages') as $image){
+                array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl(), 'title' => $this->name, 'order' => null]);
+            }
+          return $subImages;
 
-        $gallery = array();
+        // $gallery = array();
         // foreach ($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {
         //     $order = $mediaItem->getCustomProperty('order');
         //     return $order ?? PHP_INT_MAX;
@@ -223,7 +223,7 @@ class Property extends Model implements HasMedia
         //         );
         //     }
         // }
-        return $gallery;
+        // return $gallery;
     }
     public function registerMediaConversions(Media $media = null): void
     {
