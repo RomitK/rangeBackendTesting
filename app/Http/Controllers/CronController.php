@@ -847,7 +847,7 @@ class CronController extends Controller
                 $properties = $xml_arr['UnitDTO'];
 
 
-                $CRMProperties = Property::where('property_source', 'xml')->get();
+                $CRMProperties = Property::where('property_source', 'xml')->where('category_id', 9)->get();
 
                 foreach ($CRMProperties as $prop) {
                     
@@ -866,11 +866,11 @@ class CronController extends Controller
                     }
                 }
 
-                $counter = 50;
-                $limitedProperties = array_slice($properties, 50, 80);
+                $counter = 0;
+                $limitedProperties = array_slice($properties, 0, 50);
 
                 foreach($properties as $index=>$rental){
-                    if ($counter >= 80) {
+                    if ($counter >= 50) {
                         break;  // Exit the loop after processing 26 elements
                     }
                     //if($rental['RefNo'] == 'AP7466'){
