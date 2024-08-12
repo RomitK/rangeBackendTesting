@@ -231,6 +231,7 @@ class GoyzerRentalProperties implements ShouldQueue
                     }else{
                         $propertyType = new Accommodation;
                         $propertyType->name = $accommodationName;
+                        $propertyType->user_id = $user->id;
                         $propertyType->save();
                     }
                     if(Community::where('name', 'like', "%$communityName%")->orWhere('name_1', 'like', "%$communityName%")->exists()){
@@ -582,7 +583,7 @@ class GoyzerRentalProperties implements ShouldQueue
                     if ($mainImage) {
                         $property->addMediaFromUrl($mainImage['ImageURL'])->toMediaCollection('mainImages', 'propertyFiles');
                     }
-                    /*
+                    
                     if ($galleryImages) {
                         $imageCount = 0; // Initialize the counter
 
@@ -633,7 +634,7 @@ class GoyzerRentalProperties implements ShouldQueue
                             }
                         }
                     }
-                        */
+                        
                     Log::info($Documents);
                     // Log the whole $Documents array for debugging
                     Log::info('Documents: ' . print_r($Documents, true));

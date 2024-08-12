@@ -67,7 +67,7 @@ class GoyzerSaleProperties implements ShouldQueue
         try{
             $today = Carbon::now();
             $user = User::where('email', 'goyzer@gmail.com')->first();
-            $userID = 16;
+            $userID = $user->id;
 
             //Log::info($userID);
 
@@ -587,7 +587,7 @@ class GoyzerSaleProperties implements ShouldQueue
                     if ($mainImage) {
                         $property->addMediaFromUrl($mainImage['ImageURL'])->toMediaCollection('mainImages', 'propertyFiles');
                     }
-                    /*
+                    
                     if ($galleryImages) {
                         $imageCount = 0; // Initialize the counter
 
@@ -638,7 +638,7 @@ class GoyzerSaleProperties implements ShouldQueue
                             }
                         }
                     }
-                        */
+                    
                     Log::info($Documents);
                     // Log the whole $Documents array for debugging
                     Log::info('Documents: ' . print_r($Documents, true));
