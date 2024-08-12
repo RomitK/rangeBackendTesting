@@ -82,7 +82,7 @@ class GoyzerSaleProperties implements ShouldQueue
                 $properties = $xml_arr['UnitDTO'];
 
 
-                $CRMProperties = Property::where('property_source', 'xml')->get();
+                $CRMProperties = Property::where('property_source', 'xml')->where('category_id', 8)->get();
 
                 foreach ($CRMProperties as $prop) {
                     
@@ -100,8 +100,14 @@ class GoyzerSaleProperties implements ShouldQueue
                         $propDel->delete();
                     }
                 }
+                $counter = 0;
+                $limitedProperties = array_slice($properties, 0, 50);
 
                 foreach($properties as $index=>$rental){
+                    if ($counter >= 50) {
+                        break;  // Exit the loop after processing 26 elements
+                    }
+                    
                     //if($rental['RefNo'] == 'AP7466'){
 
                     Log::info($index);
@@ -751,7 +757,7 @@ class GoyzerSaleProperties implements ShouldQueue
                     Log::info("projectId=".$project->id);
                     Log::info("propertyId=".$property->id);
                 //}
-
+                $counter++;
                 }
             }
             DB::commit();
