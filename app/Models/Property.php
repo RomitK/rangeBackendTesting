@@ -190,40 +190,40 @@ class Property extends Model implements HasMedia
     }
     public function getSubImagesAttribute()
     {
-            $subImages = array();
-            foreach($this->getMedia('subImages') as $image){
-                array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl(), 'title' => $this->name, 'order' => null]);
-            }
-          return $subImages;
-
-        // $gallery = array();
-        // foreach ($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {
-        //     $order = $mediaItem->getCustomProperty('order');
-        //     return $order ?? PHP_INT_MAX;
-        // }) as $image) {
-        //     if ($image->hasGeneratedConversion('resize_images')) {
-        //         array_push(
-        //             $gallery,
-        //             [
-        //                 'id' => $image->id,
-        //                 'path' => $image->getUrl('resize_images'),
-        //                 'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-        //                 'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-        //             ]
-        //         );
-        //     } else {
-        //         array_push(
-        //             $gallery,
-        //             [
-        //                 'id' => $image->id,
-        //                 'path' => $image->getUrl(),
-        //                 'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-        //                 'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-        //             ]
-        //         );
+        //     $subImages = array();
+        //     foreach($this->getMedia('subImages') as $image){
+        //         array_push($subImages, ['id'=> $image->id, 'path'=>$image->getUrl(), 'title' => $this->name, 'order' => null]);
         //     }
-        // }
-        // return $gallery;
+        //   return $subImages;
+
+        $gallery = array();
+        foreach ($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {
+            $order = $mediaItem->getCustomProperty('order');
+            return $order ?? PHP_INT_MAX;
+        }) as $image) {
+            if ($image->hasGeneratedConversion('resize_images')) {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl('resize_images'),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            } else {
+                array_push(
+                    $gallery,
+                    [
+                        'id' => $image->id,
+                        'path' => $image->getUrl(),
+                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+                    ]
+                );
+            }
+        }
+        return $gallery;
     }
     public function registerMediaConversions(Media $media = null): void
     {
@@ -252,6 +252,12 @@ class Property extends Model implements HasMedia
             ->watermarkPosition(Manipulations::POSITION_CENTER)
             ->watermarkHeight(10, Manipulations::UNIT_PERCENT)
             ->watermarkOpacity(50)
+            ->performOnCollections('subImages')
+            ->nonQueued();
+        }else{
+            $this->addMediaConversion('resize_images')
+            ->format(Manipulations::FORMAT_WEBP)
+            ->height(400)
             ->performOnCollections('subImages')
             ->nonQueued();
         }
