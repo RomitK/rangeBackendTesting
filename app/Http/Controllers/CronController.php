@@ -147,8 +147,13 @@ class CronController extends Controller
                         $propDel->delete();
                     }
                 }
+                $limitedProperties = array_slice($properties, 0, 26);
 
                 foreach($properties as $index=>$rental){
+                    if ($counter >= 26) {
+                        break;  // Exit the loop after processing 26 elements
+                    }
+                    
                     //if($rental['RefNo'] == 'AP7466'){
 
                     Log::info($index);
@@ -798,7 +803,7 @@ class CronController extends Controller
                     Log::info("projectId=".$project->id);
                     Log::info("propertyId=".$property->id);
                 //}
-
+                $counter++;
                 }
             }
             DB::commit();
