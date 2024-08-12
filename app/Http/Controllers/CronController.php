@@ -129,7 +129,7 @@ class CronController extends Controller
                 $properties = $xml_arr['UnitDTO'];
 
 
-                $CRMProperties = Property::where('property_source', 'xml')->get();
+                $CRMProperties = Property::where('property_source', 'xml')->where('category_id', 8)->get();
 
                 foreach ($CRMProperties as $prop) {
                     
