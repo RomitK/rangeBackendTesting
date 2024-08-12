@@ -147,6 +147,7 @@ class CronController extends Controller
                         $propDel->delete();
                     }
                 }
+                $counter = 0;
                 $limitedProperties = array_slice($properties, 0, 26);
 
                 foreach($properties as $index=>$rental){
