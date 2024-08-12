@@ -69,7 +69,7 @@ class GoyzerRentalProperties implements ShouldQueue
             $today = Carbon::now();
             
             $user = User::where('email', 'goyzer@gmail.com')->first();
-            $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
+            $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode=$R@nGe!NteRn@t!on@l&GroupCode=5084&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
             $xml_arr  = simplexml_load_file($feed,'SimpleXMLElement',LIBXML_NOCDATA);        
             $xml_arr  = json_decode(json_encode($xml_arr,true),true);
     

@@ -71,7 +71,7 @@ class GoyzerSaleProperties implements ShouldQueue
 
             //Log::info($userID);
 
-            $feed = 'https://webapi.goyzer.com/Company.asmx/SalesListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&SpecialProjects=&CountryID=&StateID=&CommunityID=&DistrictID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
+            $feed = 'https://webapi.goyzer.com/Company.asmx/SalesListings?AccessCode=$R@nGe!NteRn@t!on@l&GroupCode=5084&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&SpecialProjects=&CountryID=&StateID=&CommunityID=&DistrictID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
 
            // $feed = 'https://webapi.goyzer.com/Company.asmx/SalesListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
             $xml_arr  = simplexml_load_file($feed,'SimpleXMLElement',LIBXML_NOCDATA);        
