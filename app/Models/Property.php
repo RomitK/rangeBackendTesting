@@ -197,32 +197,32 @@ class Property extends Model implements HasMedia
         //   return $subImages;
 
         $gallery = array();
-        foreach ($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {
-            $order = $mediaItem->getCustomProperty('order');
-            return $order ?? PHP_INT_MAX;
-        }) as $image) {
-            if ($image->hasGeneratedConversion('resize_images')) {
-                array_push(
-                    $gallery,
-                    [
-                        'id' => $image->id,
-                        'path' => $image->getUrl('resize_images'),
-                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                    ]
-                );
-            } else {
-                array_push(
-                    $gallery,
-                    [
-                        'id' => $image->id,
-                        'path' => $image->getUrl(),
-                        'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
-                        'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
-                    ]
-                );
-            }
-        }
+        // foreach ($this->getMedia('subImages')->sortBy(function ($mediaItem, $key) {
+        //     $order = $mediaItem->getCustomProperty('order');
+        //     return $order ?? PHP_INT_MAX;
+        // }) as $image) {
+        //     if ($image->hasGeneratedConversion('resize_images')) {
+        //         array_push(
+        //             $gallery,
+        //             [
+        //                 'id' => $image->id,
+        //                 'path' => $image->getUrl('resize_images'),
+        //                 'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+        //                 'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+        //             ]
+        //         );
+        //     } else {
+        //         array_push(
+        //             $gallery,
+        //             [
+        //                 'id' => $image->id,
+        //                 'path' => $image->getUrl(),
+        //                 'title' => $image->getCustomProperty('title'), // Get the 'title' custom property
+        //                 'order' => $image->getCustomProperty('order'), // Get the 'order' custom property
+        //             ]
+        //         );
+        //     }
+        // }
         return $gallery;
     }
     public function registerMediaConversions(Media $media = null): void
