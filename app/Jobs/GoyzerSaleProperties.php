@@ -101,12 +101,12 @@ class GoyzerSaleProperties implements ShouldQueue
                     }
                 }
                 $counter = 0;
-                $limitedProperties = array_slice($properties, 0, 50);
+                //$limitedProperties = array_slice($properties, 0, 50);
 
                 foreach($properties as $index=>$rental){
-                    if ($counter >= 50) {
-                        break;  // Exit the loop after processing 26 elements
-                    }
+                    // if ($counter >= 50) {
+                    //     break;  // Exit the loop after processing 26 elements
+                    // }
                     
                     //if($rental['RefNo'] == 'AP7466'){
 
