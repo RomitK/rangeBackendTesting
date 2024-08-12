@@ -866,11 +866,11 @@ class CronController extends Controller
                     }
                 }
 
-                $counter = 0;
-                $limitedProperties = array_slice($properties, 0, 50);
+                $counter = 50;
+                $limitedProperties = array_slice($properties, 50, 80);
 
                 foreach($properties as $index=>$rental){
-                    if ($counter >= 50) {
+                    if ($counter >= 80) {
                         break;  // Exit the loop after processing 26 elements
                     }
                     //if($rental['RefNo'] == 'AP7466'){
