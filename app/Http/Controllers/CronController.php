@@ -34,6 +34,7 @@ use PDF;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
 use App\Jobs\{
+    GoyzerSaleProperties,
     GoyzerRentalProperties
 };
 
@@ -103,11 +104,17 @@ class CronController extends Controller
             return response()->json(['error' => $error->getMessage()]);
         }
     }
+
+    public function getSaleListings()
+    {
+        GoyzerSaleProperties::dispatch();
+        return "getSaleListings";
+    }
     public function getRentListings()
     {
         
         GoyzerRentalProperties::dispatch();
-        return "hello";
+        return "getRentListings";
         
         //     $baseUrl = 'https://webapi.goyzer.com';
         //     $endpoint = '/Company.asmx/RentListings';

@@ -518,13 +518,15 @@
                                                             View Sale Offer
                                                         </a>
                                                     @endif
-
-                                                    @can(config('constants.Permissions.real_estate') && $property->property_source == 'crm')
+                                                    
+                                                    @can(config('constants.Permissions.real_estate'))
+                                                        @if($property->property_source == 'crm')
                                                         <a class="btn btn-primary btn-sm"
                                                             href="{{ route('dashboard.properties.duplicate', $property->id) }}">
                                                             <i class="fas fa-file"></i>
                                                             Duplicate
                                                         </a>
+                                                        @endif
                                                     @endcan
                                                     @can(config('constants.Permissions.seo'))
                                                         <a class="btn btn-secondary btn-sm"

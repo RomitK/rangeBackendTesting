@@ -478,6 +478,7 @@ class PropertyRepository implements PropertyRepositoryInterface
                 $originalAttributes['amenityIds'] = [];
             }
             $property->name = $request->name;
+            $property->permit_number = $request->permit_number;
             $property->rental_period = $request->rental_period;
             $property->sub_title = $request->sub_title;
             $property->used_for = $request->used_for;
@@ -604,6 +605,15 @@ class PropertyRepository implements PropertyRepositoryInterface
                 $property->addMediaFromRequest('video')->usingFileName($videoName)->toMediaCollection('videos', 'propertyFiles');
             }
 
+            if ($request->hasFile('qr')) {
+                $property->clearMediaCollection('qrs');
+                $img =  $request->file('qr');
+                $ext = $img->getClientOriginalExtension();
+                $imageName =  Str::slug($request->title) . '_qr.' . $ext;
+
+                $property->addMediaFromRequest('qr')->usingFileName($imageName)->toMediaCollection('qrs', 'propertyFiles');
+            }
+
 
 
             // Handle website status and approval
@@ -646,7 +656,9 @@ class PropertyRepository implements PropertyRepositoryInterface
             $property->updated_by = Auth::user()->id;
             $property->save();
 
-            
+            if ($request->hasFile('qr')) {
+                $property->qr_link = $property->qr;
+            }
 
 
             if ($request->hasFile('mainImage')) {

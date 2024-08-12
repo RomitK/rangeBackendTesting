@@ -38,12 +38,12 @@ use Illuminate\Support\Facades\DB;
 use PDF;
 use GuzzleHttp\Client;
 
-class GoyzerRentalProperties implements ShouldQueue
+
+class GoyzerSaleProperties implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 3600; // 1 hour
-    //public $tries = 1; // Max attempts
 
     /**
      * Create a new job instance.
@@ -60,16 +60,20 @@ class GoyzerRentalProperties implements ShouldQueue
      *
      * @return void
      */
-
     public function handle()
     {
-        Log::info('getRentListings');
+        Log::info('getSaleListings');
         DB::beginTransaction();
         try{
             $today = Carbon::now();
-            
             $user = User::where('email', 'goyzer@gmail.com')->first();
-            $feed = 'https://webapi.goyzer.com/Company.asmx/RentListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
+            $userID = 16;
+
+            //Log::info($userID);
+
+            $feed = 'https://webapi.goyzer.com/Company.asmx/SalesListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&SpecialProjects=&CountryID=&StateID=&CommunityID=&DistrictID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
+
+           // $feed = 'https://webapi.goyzer.com/Company.asmx/SalesListings?AccessCode='.env('API_ACCESS_CODE').'&GroupCode='.env('API_GROUP_CODE').'&PropertyType=&Bedrooms=&StartPriceRange=&EndPriceRange=&categoryID=&CountryID=&StateID=&CommunityID=&FloorAreaMin=&FloorAreaMax=&UnitCategory=&UnitID=&BedroomsMax=&PropertyID=&ReadyNow=&PageIndex=';
             $xml_arr  = simplexml_load_file($feed,'SimpleXMLElement',LIBXML_NOCDATA);        
             $xml_arr  = json_decode(json_encode($xml_arr,true),true);
     
@@ -133,14 +137,14 @@ class GoyzerRentalProperties implements ShouldQueue
                     $CountryName = isset($rental['CountryName']) ? $rental['CountryName'] : '';
                     $CityName = isset($rental['CityName']) ? $rental['CityName'] : '';
                     $DistrictName = isset($rental['DistrictName']) ? $rental['DistrictName'] : '';
-                    $Rent = isset($rental['Rent']) ? $rental['Rent'] : '';
+                    $Rent = isset($rental['SellPrice']) ? $rental['SellPrice'] : '';
                     $ProGooglecoordinates = isset($rental['ProGooglecoordinates']) ? $rental['ProGooglecoordinates'] : '';
                     $SalesmanEmail = isset($rental['SalesmanEmail']) ? $rental['SalesmanEmail'] : '';
                     $MarketingTitle = isset($rental['MarketingTitle']) ? $rental['MarketingTitle'] : '';
                     $MarketingOptions = isset($rental['MarketingOptions']) ? $rental['MarketingOptions'] : '';
                     $Mandate = isset($rental['Mandate']) ? $rental['Mandate'] : '';
                     $RentPerMonth = isset($rental['RentPerMonth']) ? $rental['RentPerMonth'] : '';
-                    $Rent = isset($rental['Rent']) ? $rental['Rent'] : '';
+                    $Rent = isset($rental['SellPrice']) ? $rental['SellPrice'] : '';
                     $ReraStrNo = isset($rental['ReraStrNo']) ? $rental['ReraStrNo'] : '';
                     //$PermitNumber = isset($rental['PermitNumber']) ? $rental['PermitNumber'] : '';
 
@@ -221,7 +225,7 @@ class GoyzerRentalProperties implements ShouldQueue
                         $agentD->name = $Agent;
                         $agentD->email = $SalesmanEmail;
                         $agentD->status = 'Inactive';  // Correct variable name
-                        $agentD->user_id = $user->id;
+                        $agentD->user_id = $userID;
                         $agentD->save();
                     }
                    
@@ -231,6 +235,7 @@ class GoyzerRentalProperties implements ShouldQueue
                     }else{
                         $propertyType = new Accommodation;
                         $propertyType->name = $accommodationName;
+                        $propertyType->user_id = $userID;
                         $propertyType->save();
                     }
                     if(Community::where('name', 'like', "%$communityName%")->orWhere('name_1', 'like', "%$communityName%")->exists()){
@@ -254,7 +259,7 @@ class GoyzerRentalProperties implements ShouldQueue
                             
                         }
 
-                        $community->user_id = $user->id;
+                        $community->user_id = $userID;
                         $community->save();
                         
                     }
@@ -295,7 +300,7 @@ class GoyzerRentalProperties implements ShouldQueue
                             $project->address_longitude = $longitude;
                         }
                         
-                        $project->user_id = $user->id;
+                        $project->user_id = $userID;
                         $project->is_parent_project = 1; 
                         $project->save();
                     }
@@ -379,7 +384,7 @@ class GoyzerRentalProperties implements ShouldQueue
                                 $subProject->area =  $BuiltupArea;
                                 $subProject->builtup_area =  $BuiltupArea;
                                 $subProject->starting_price = $Rent;
-                                $subProject->user_id = $user->id;
+                                $subProject->user_id = $userID;
                                 $subProject->accommodation_id = $propertyType->id;
                                 $subProject->is_approved = config('constants.approved');
                                 $subProject->status = config('constants.active');
@@ -398,7 +403,7 @@ class GoyzerRentalProperties implements ShouldQueue
                             $subProject->area =  $BuiltupArea;
                             $subProject->builtup_area =  $BuiltupArea;
                             $subProject->starting_price = $Rent;
-                            $subProject->user_id = $user->id;
+                            $subProject->user_id = $userID;
                             $subProject->accommodation_id = $propertyType->id;
                             $subProject->is_approved = config('constants.approved');
                             $subProject->status = config('constants.active');
@@ -415,7 +420,7 @@ class GoyzerRentalProperties implements ShouldQueue
                         $subProject->area =  $BuiltupArea;
                         $subProject->builtup_area =  $BuiltupArea;
                         $subProject->starting_price = $Rent;
-                        $subProject->user_id = $user->id;
+                        $subProject->user_id = $userID;
                         $subProject->accommodation_id = $propertyType->id;
                         $subProject->is_approved = config('constants.approved');
                         $subProject->status = config('constants.active');
@@ -446,7 +451,7 @@ class GoyzerRentalProperties implements ShouldQueue
                         Log::info('Rent Price-'.$Rent);
                         Log::info($PrimaryUnitView);
                         Log::info('RefNo-'.$RefNo);
-                        Log::info('User ID-'.$user->id);
+                        Log::info('User ID-'.$userID);
                         Log::info("agent id". $agentD->id);
                         Log::info(
 
@@ -501,7 +506,7 @@ class GoyzerRentalProperties implements ShouldQueue
                     }
                     $property->new_reference_number = $RefNo;
                     $property->address = $community->name. " ". $CityName. " ".$CountryName;
-                    $property->user_id = $user->id;
+                    $property->user_id = $userID;
                     $property->agent_id = $agentD->id;
                 
                     $property->completion_status_id = 286;
@@ -511,9 +516,9 @@ class GoyzerRentalProperties implements ShouldQueue
                     $property->sub_project_id = $subProject->id;
                     $property->status = config('constants.active');
                     $property->website_status = config('constants.available');
-                    $property->category_id = 9;
+                    $property->category_id = 8;
                     $property->save();
-                    if ($property->category_id = 9) {
+                    if ($property->category_id = 8) {
                         $prefix = 'S';
                     } else {
                         $prefix = 'R';
@@ -551,7 +556,7 @@ class GoyzerRentalProperties implements ShouldQueue
                                     $amenity->status = 'Inactive';
                                     $amenity->is_approved = config('constants.requested');
                                     $amenity->status = config('constants.Inactive');
-                                    $amenity->user_id   = $user->id;
+                                    $amenity->user_id   = $userID;
                                     
                                     $amenity->save();
                                     $project->amenities()->attach($amenity->id);
@@ -696,7 +701,7 @@ class GoyzerRentalProperties implements ShouldQueue
                 if ($property->website_status == config('constants.available') ) {
 
                     $project = $property->project; // Assuming 'project' is the relationship name
-                    Log::info('Log::info($project->website_status'.$project->website_status. "is_VAlid". $property->is_valid);
+                    Log::info('$project->website_status'.$project->website_status. "is_VAlid". $property->is_valid);
                     Log::info($project->website_status == config('constants.available') && $property->is_valid == 1);
 
                     //$notValidProject = $property->where('is_valid', '!=', 1)->exists();

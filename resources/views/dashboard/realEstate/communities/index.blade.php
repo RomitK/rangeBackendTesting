@@ -93,7 +93,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="type"> Website Status</label>
                                             <select class="form-control" id="website_status" name="website_status">
@@ -137,7 +137,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-3">
                                         <label for="keyword"> Keyword</label>
                                         <input type="text" value="{{ request()->keyword }}" class="form-control"
                                             id="keyword" placeholder="Enter Name" name="keyword">

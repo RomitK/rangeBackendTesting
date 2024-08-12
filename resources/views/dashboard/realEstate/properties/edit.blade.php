@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="sub_project_id">Available Unit</label>
                                             <select data-placeholder="Select Available Unit" style="width: 100%;"
@@ -66,6 +66,19 @@
 
                                             </select>
                                             @error('sub_project_id')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="permit_number">Permit Number</label>
+                                            <input type="text" value="{{ $property->permit_number }}"
+                                                class="form-control @error('permit_number') is-invalid @enderror"
+                                                id="permit_number" placeholder="Enter Permit Number" name="permit_number">
+                                            @error('permit_number')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
@@ -85,7 +98,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="website_status">Wesbite Status</label>
                                             @if (in_array(Auth::user()->role, config('constants.isAdmin')))
@@ -573,48 +586,7 @@
 
 
 
-                                    @if ($property->property_source == 'xml')
 
-                                        <div class="col-sm-4">
-                                            <div class="form-group">
-                                                <label for="mainImage">Main Image</label><br>
-
-                                                @if ($property->property_banner)
-                                                    <img src="{{ $property->property_banner }}"
-                                                        alt="{{ $property->property_banner }}" height="100">
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="form-group">
-                                                <label for="subImages">Sub Images</label><br>
-                                                <div class="container">
-                                                    <div class="card-group">
-                                                        <div class="row">
-                                                            @foreach ($property->propertygallery as $key => $img)
-                                                                @if ($img['galleryimage'])
-                                                                    <div class="card col-md-4">
-                                                                        <div class="image-area"
-                                                                            stye="width:100% !important">
-                                                                            <a href="{{ $img['galleryimage'] }}"
-                                                                                data-toggle="lightbox"
-                                                                                data-title="Sub Images"
-                                                                                data-gallery="gallery">
-                                                                                <img src="{{ $img['galleryimage'] }}"
-                                                                                    alt="{{ $img['galleryimage'] }}"
-                                                                                    width="" height="100"
-                                                                                    style="padding: 10px">
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @else
                                         <div class="col-sm-4">
                                             <div class="form-group">
                                                 <label for="mainImage">Main Image <small class="text-danger">(Prefer
@@ -637,58 +609,28 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <!--<div class="col-sm-4">-->
-                                        <!--    <div class="form-group">-->
-                                        <!--        <label for="subImages">Sub Images <small class="text-danger">(Prefer Dimension800x400)</small></label>-->
-                                        <!--        <div class="custom-file  @error('subImages') is-invalid @enderror">-->
-                                        <!--            <input  multiple type="file" class="custom-file-input" id="subImages" name="subImages[]" accept="image/*" multiple >-->
-                                        <!--            <label class="custom-file-label" for="subImages">Choose file</label>-->
-                                        <!--        </div>-->
-                                        <!--        @error('subImages')
-        -->
-                                            <!--            <span class="invalid-feedback" role="alert">-->
-                                            <!--                <strong>{{ $message }}</strong>-->
-                                            <!--            </span>-->
-                                            <!--
-    @enderror-->
-                                        <!--        @if ($property->subImages)
-    -->
-                                        <!--        <br><br>-->
-                                        <!--        @if (count($property->subImages) > 1)
-    -->
-                                        <!--            <div class="row">-->
-                                        <!--                <a class="btn btn-danger btn-sm float-right mb-2"-->
-                                        <!--                    onclick="return confirm('Are you sure to delete all images?')"-->
-                                        <!--                    href="{{ route('dashboard.properties.medias.delete', $property->id) }}">-->
-                                        <!--                        <i class="fas fa-trash"></i>-->
-                                        <!--                        Delete All Images-->
-                                        <!--                    </a>-->
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label for="qr">QR </label>
+                                                <div class="custom-file   @error('qr') is-invalid @enderror">
+                                                    <input type="file"
+                                                        class="custom-file-input   @error('qr') is-invalid @enderror"
+                                                        id="qr" name="qr" accept="image/*">
+                                                    <label class="custom-file-label" for="qr">Choose file</label>
+                                                </div>
+                                                <img id="qrPreview" style="display: none;" />
+                                                @if ($property->qr)
+                                                    <img src="{{ $property->qr }}" alt="{{ $property->qr }}">
+                                                @endif
+                                                @error('qr')
+                                                    <span class="invalid-feedback" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>   
 
-                                        <!--            </div>-->
-
-                                        <!--
-    @endif-->
-                                        <!--            <div class="row">-->
-                                        <!--                @foreach ($property->subImages as $img)
-    -->
-                                        <!--                <div class="col-md-6">-->
-                                        <!--                    <div class="image-area">-->
-                                        <!--                        <img src="{{ $img['path'] }}" alt="{{ $img['path'] }}" width="" height="100" style="padding: 10px">-->
-                                        <!--                        <a class="remove-image" onclick="return confirm('Are you sure to delete the image?')" href="{{ route('dashboard.properties.media.delete', [$property->id, $img['id']]) }}" style="display: inline;">&#215;</a>-->
-                                        <!--                    </div>-->
-                                        <!--                </div>-->
-
-                                        <!--
-    @endforeach-->
-                                        <!--            </div>-->
-
-                                        <!--
-    @endif-->
-                                        <!--    </div>-->
-                                        <!--</div>-->
-                                    @endif
-
-                                    <div class="col-sm-4">
+                                    {{-- <div class="col-sm-4">
                                         <div class="form-group">
                                             <label for="youtube_video">Youtube Video Link</label>
                                             <input type="text" value="{{ $property->youtube_video }}"
@@ -702,34 +644,7 @@
                                             @enderror
 
                                         </div>
-                                    </div>
-
-                                    <!--<div class="col-sm-4">-->
-                                    <!--    <div class="form-group">-->
-                                    <!--        <label for="video">Video <small class="text-danger">(PreferSize  less than or equal 2 MB)</small></label>-->
-                                    <!--        <div class="custom-file   @error('video') is-invalid @enderror">-->
-                                    <!--            <input type="file" class="custom-file-input" id="video" name="video" accept=".mp4, .mov, .ogg">-->
-                                    <!--            <label class="custom-file-label" for="video">Choose file</label>-->
-                                    <!--        </div>-->
-                                    <!--        @error('video')
-        -->
-                                        <!--            <span class="invalid-feedback" role="alert">-->
-                                        <!--                <strong>{{ $message }}</strong>-->
-                                        <!--            </span>-->
-                                        <!--
-    @enderror-->
-                                    <!--        @if ($property->video)
-    -->
-                                    <!--        @php $path_info = pathinfo($property->video);@endphp-->
-                                    <!--        <video width="200" height="200" autoplay controls>-->
-                                    <!--            <source src="{{ $property->video }}" type="video/mp4">-->
-                                    <!--                Your browser does not support the video tag.-->
-                                    <!--          </video>-->
-                                    <!--
-    @endif-->
-                                    <!--    </div>-->
-                                    <!--</div>-->
-
+                                    </div> --}}
 
                                     <div class="col-sm-12">
 
@@ -985,7 +900,6 @@
 
 
             if (propertyProject != null && propertyProject != "") {
-                console.log('ppppp')
                 $.ajax({
                     url: "{{ route('dashboard.project.subprojects') }}",
                     type: "POST",
@@ -1052,7 +966,7 @@
                             $("#address-input").val(data.project.address)
                             $("#address-latitude").val(data.project.address_latitude)
                             $("#address-longitude").val(data.project.address_longitude)
-                            $("#permit_number").val(data.project.permmit_number);
+                           // $("#permit_number").val(data.project.permmit_number);
                             $('#amenities').val(data.amenities).trigger('change');
                             updateMapWithNewCoords(data.project.address_latitude, data.project
                                 .address_longitude);
@@ -1097,8 +1011,7 @@
                 })
             });
         });
-    </script>
-    <script type="text/javascript">
+    
         function previewImage(event) {
             var reader = new FileReader();
             reader.onload = function() {
@@ -1178,6 +1091,9 @@
 
         document.getElementById('mainImage').addEventListener('change', function(event) {
             showPreview(event, 'mainImagePreview');
+        });
+        document.getElementById('qr').addEventListener('change', function(event) {
+            showPreview(event, 'qrPreview');
         });
 
         function showPreview(event, previewId) {

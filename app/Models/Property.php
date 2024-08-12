@@ -227,6 +227,8 @@ class Property extends Model implements HasMedia
     }
     public function registerMediaConversions(Media $media = null): void
     {
+        $propertySource = $this->property_source ?? '';
+
         $this->addMediaConversion('resize')
             ->format(Manipulations::FORMAT_WEBP)
             //->height(300)
@@ -242,8 +244,8 @@ class Property extends Model implements HasMedia
             ->performOnCollections('mainImages')
             ->nonQueued();
 
-
-        $this->addMediaConversion('resize_images')
+        if($propertySource == 'crm'){
+            $this->addMediaConversion('resize_images')
             ->format(Manipulations::FORMAT_WEBP)
             ->height(400)
             ->watermark(public_path('frontend/assets/images/range_blue.png'))
@@ -252,6 +254,9 @@ class Property extends Model implements HasMedia
             ->watermarkOpacity(50)
             ->performOnCollections('subImages')
             ->nonQueued();
+        }
+
+        
 
 
 

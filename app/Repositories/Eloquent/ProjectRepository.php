@@ -617,6 +617,9 @@ class ProjectRepository implements ProjectRepositoryInterface
 
             if (in_array($request->website_status, [config('constants.available')])) {
                 Log::info("project update for brochue");
+
+                $this->makeXMLPropertiesUpdated($project);
+
                 //StoreProjectBrochure::dispatch($project->id);
 
                 $subProjects = $project->subProjects()->active()->where('website_status', config('constants.requested'))->pluck('id')->toArray();
@@ -645,6 +648,8 @@ class ProjectRepository implements ProjectRepositoryInterface
                 $this->makePropertiesUpdated($project);
             //}
 
+            
+
             DB::commit();
 
             // Return success response
@@ -653,6 +658,87 @@ class ProjectRepository implements ProjectRepositoryInterface
                 'message' => 'Project has been updated successfully.',
                 'project_id' => $project->id,
             ];
+        } catch (\Exception $error) {
+            // Return error response
+            return [
+                'success' => false,
+                'message' => $error->getMessage(),
+            ];
+        }
+    }
+
+    public function makeXMLPropertiesUpdated($project)
+    {
+        try {
+
+            $xmlProperties = Property::where('project_id', $project->id)
+            ->where('property_source', 'xml')
+            ->latest()->get();
+            foreach ($xmlProperties as $property) {
+
+
+                $originalAttributes = $property->getOriginal();
+                $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+
+                if ($property->amenities) {
+                    $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $originalAttributes['amenityIds'] = [];
+                }
+               
+                if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                    if($property->qr_link){
+                        $property->is_valid = 1;
+                    }else{
+                        $property->is_valid = 0; // Optionally set to false if not valid
+                    }
+                   
+                } else {
+                    $property->is_valid = 0; // Optionally set to false if not valid
+                }
+                $property->save();
+
+
+                if($property->is_valid == 1 && $property->website_status == config('constants.requested')){
+                    $property->status = config('constants.active');
+                    $property->website_status = config('constants.available');
+                }elseif($property->is_valid == 0 && $property->website_status == config('constants.requested')){
+                    $property->status = config('constants.active');
+                    $property->website_status = config('constants.NA');
+                }
+                
+                $property->save();
+
+                $newPropertyOriginalAttributes = $property->getOriginal();
+                if ($property->amenities) {
+                    $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $newPropertyOriginalAttributes['amenityIds'] = [];
+                }
+
+                if (isset($property->description)) {
+                    $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                }
+                if (isset($property->short_description)) {
+                    $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                }
+
+                $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+
+                if($property->website_status == config('constants.available')){
+
+                    logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
+                }elseif($property->website_status == config('constants.NA')){
+
+                    logActivity('Property marked as NA due to missing of Permit Number and QR Exist', $property->id, Property::class, $properties);
+                }else{
+                    logActivity('Property Update as project updated', $property->id, Property::class, $properties);
+                }
+                
+            }
+
+
         } catch (\Exception $error) {
             // Return error response
             return [

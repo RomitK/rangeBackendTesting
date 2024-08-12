@@ -257,6 +257,8 @@ return [
         'primary' => 'Primary',
         'secondary' => 'Secondary'
     ],
+    'secondary' => 'secondary',
+    'primary' => 'primary',
     'displayOptionWithAll' => [
         '' => 'All',
         '1' => 'Yes',

@@ -58,16 +58,16 @@ class SinglePropertyResource extends JsonResource
         } else {
             $bathrooms = $this->bathrooms . ' Bathroom';
         }
-        if ($this->property_source == "xml") {
-            $gallery = $this->propertygallery->map(function ($img) {
-                return [
-                    'id' => "gallery_" . $img->id,
-                    'path' => $img->galleryimage
-                ];
-            });
-        } else {
+        // if ($this->property_source == "xml") {
+        //     $gallery = $this->propertygallery->map(function ($img) {
+        //         return [
+        //             'id' => "gallery_" . $img->id,
+        //             'path' => $img->galleryimage
+        //         ];
+        //     });
+        // } else {
             $gallery = $this->subImages;
-        }
+        //}
         /*
         $nearbyProperties = $nearbyProperties = DB::select(DB::raw("
             SELECT 
@@ -156,12 +156,13 @@ class SinglePropertyResource extends JsonResource
         } else {
             $area = $this->area;
         }
+        
         return [
             'id' => $this->id,
             'name' => $this->name,
             'rental_period' => $this->rental_period,
-            'permit_number' => $this->project ? $this->project->permit_number : '',
-            'qr' => $this->project ? $this->project->qr : '',
+            'permit_number' =>  $this->permit_number,
+            'qr' =>  $this->qr_link,
             'reference_number' => $this->reference_number,
             'slug' => $this->slug,
             'youtube_video' => $this->youtube_video ? $this->youtube_video : 'https://www.youtube.com/watch?v=-6jlrq7idl8&list=PLiPk70af-7kf5A4vVxIWXr1yMaaoBTOb4',
