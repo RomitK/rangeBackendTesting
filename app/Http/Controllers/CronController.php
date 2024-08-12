@@ -147,11 +147,11 @@ class CronController extends Controller
                         $propDel->delete();
                     }
                 }
-                $counter = 0;
-                $limitedProperties = array_slice($properties, 0, 26);
+                $counter = 26;
+                $limitedProperties = array_slice($properties, 26, 50);
 
                 foreach($properties as $index=>$rental){
-                    if ($counter >= 26) {
+                    if ($counter >= 50) {
                         break;  // Exit the loop after processing 26 elements
                     }
                     
