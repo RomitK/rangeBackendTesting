@@ -33,6 +33,7 @@ class Amenity extends Model implements HasMedia
      */
     protected $appends = [
         'image',
+        'image1',
         'formattedCreatedAt'
     ];
     /**
@@ -45,6 +46,12 @@ class Amenity extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('images','resize');
     }
+
+    public function getImage1Attribute()
+    {
+        return $this->getFirstMediaUrl('images1','resize');
+    }
+
     public function getFormattedCreatedAtAttribute($value)
     {
         return Carbon::parse($this->created_at)->format('d m Y');
@@ -56,6 +63,13 @@ class Amenity extends Model implements HasMedia
             ->format(Manipulations::FORMAT_WEBP)
             ->performOnCollections('images')
             ->nonQueued();
+
+        $this->addMediaConversion('resize')
+            ->height(60)
+            ->format(Manipulations::FORMAT_WEBP)
+            ->performOnCollections('images1')
+            ->nonQueued();
+
     }
     /**
      * FIND Relationship

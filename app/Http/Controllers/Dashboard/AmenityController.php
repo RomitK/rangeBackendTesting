@@ -83,6 +83,13 @@ class AmenityController extends Controller
             if ($request->hasFile('image')) {
                 $amenity->addMediaFromRequest('image')->toMediaCollection('images', 'amenityFiles');
             }
+
+            if ($request->hasFile('image1')) {
+                $amenity->addMediaFromRequest('image1')->toMediaCollection('images1', 'amenityFiles');
+            }
+
+            
+
             if(isset($request->is_approved)){
              $collection->where('is_approved', $request->is_approved);
             }
@@ -143,9 +150,14 @@ class AmenityController extends Controller
             
             $amenity->is_approved = $request->is_approved;
             
-             if ($request->hasFile('image')) {
+            if ($request->hasFile('image')) {
                 $amenity->clearMediaCollection('images');
                 $amenity->addMediaFromRequest('image')->toMediaCollection('images', 'amenityFiles');
+            }
+
+            if ($request->hasFile('image1')) {
+                $amenity->clearMediaCollection('images1');
+                $amenity->addMediaFromRequest('image1')->toMediaCollection('images1', 'amenityFiles');
             }
             
             $amenity->save();

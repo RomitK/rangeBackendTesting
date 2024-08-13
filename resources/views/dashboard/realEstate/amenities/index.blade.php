@@ -105,8 +105,9 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                         <th>Icon</th> 
-                                        <th>Status</th>
+                                        <th>Blue Icon</th> 
+                                        <th>Blue Icon</th> 
+                                        <th>Orange Status</th>
                                         <th>Approval Status</th>
                                         <th>Approval By</th>
                                         <th>Added By</th>
@@ -123,6 +124,13 @@
                                                 <ul class="list-inline">
                                                     <li class="list-inline-item">
                                                         <img alt="{{ $amenity->name }}" class="table-avatar" src="{{ $amenity->image }}" style="padding:2px; ">
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td>
+                                                <ul class="list-inline">
+                                                    <li class="list-inline-item">
+                                                        <img alt="{{ $amenity->name }}" class="table-avatar" src="{{ $amenity->image1 }}" style="padding:2px; ">
                                                     </li>
                                                 </ul>
                                             </td>

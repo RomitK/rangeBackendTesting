@@ -62,14 +62,28 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    <div class="col-sm-12">
+                                    <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label for="logo">Icon<small class="text-danger">(Prefer Size 60x60)</small></label>
+                                            <label for="logo">Blue Icon<small class="text-danger">(Color Code: #2878bc, Prefer Size 60x60)</small></label>
                                             <div class="custom-file   @error('image') is-invalid @enderror">
                                                 <input type="file" class="custom-file-input" id="image" name="image" accept="image/*" required>
                                                 <label class="custom-file-label" for="image">Choose file</label>
                                             </div>
                                             @error('image')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="image1">Orange Icon<small class="text-danger">(color Code:#F58120, Prefer Size 60x60)</small></label>
+                                            <div class="custom-file   @error('image1') is-invalid @enderror">
+                                                <input type="file" class="custom-file-input" id="image1" name="image1" accept="image/*" required>
+                                                <label class="custom-file-label" for="image1">Choose file</label>
+                                            </div>
+                                            @error('image1')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
