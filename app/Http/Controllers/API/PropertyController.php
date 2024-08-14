@@ -999,11 +999,11 @@ class PropertyController extends Controller
             //PropertyListResource::using(['currencyINR' => $currencyINR]);
             return $this->success('Properties', [
                 'count' => $properties->count(),
-                // 'properties' => PropertyListResource::collection($properties, $currencyINR)->response()->getData(true),
+                'properties' => PropertyListResource::collection($properties)->response()->getData(true),
 
-                'properties' =>$propertiesResource = $properties->map(function ($property) use ($currencyINR) {
-                    return new PropertyListResource($property, $currencyINR);
-                }),
+                // 'properties' =>$propertiesResource = $properties->map(function ($property) use ($currencyINR) {
+                //     return new PropertyListResource($property, $currencyINR);
+                // }),
                 'amenities' =>  AmenitiesNameResource::collection($amenities),
 
             ], 200);
