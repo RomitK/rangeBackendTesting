@@ -26,6 +26,15 @@ use DB;
 
 class SingleDeveloperResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -171,12 +180,24 @@ class SingleDeveloperResource extends JsonResource
             'longDescription' => $this->long_description->render(),
             'shortDescription' => $this->short_description->render(),
             'newProjects' => ProjectOptionResource::collection($projectOptions->OrderBy('title', 'asc')->get()),
-            'projects' => DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
-            'developrMapProjects' =>  DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
+            
+            // 'projects' => DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
+            // 'developrMapProjects' =>  DeveloperProjectsResource::collection($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get()),
+            
+
+            'projects' => new DeveloperProjectsCollectionResource($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get(),  $this->currencyINR),
+            'developrMapProjects' =>  new DeveloperProjectsCollectionResource($developerProjects->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->get(),  $this->currencyINR),
+
+
+            
+            
             'communities' => DeveloperCommunitiesResource::collection($this->communityDevelopers()->active()->approved()->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get()),
             // 'properties'=> DeveloperPropertiesResource::collection($properties),
-            'saleProperties' => DeveloperPropertiesResource::collection($saleProperties),
-            'rentProperties' => DeveloperPropertiesResource::collection($rentProperties),
+           // 'saleProperties' => DeveloperPropertiesResource::collection($saleProperties),
+            'saleProperties' => new DeveloperPropertiesCollectionResource($saleProperties, $this->currencyINR),
+            
+            //'rentProperties' => DeveloperPropertiesResource::collection($rentProperties),
+            'rentProperties' => new DeveloperPropertiesCollectionResource($rentProperties, $this->currencyINR),
             'meta_keyword' => $meta_keywords,
             'meta_title' => $meta_title,
             'meta_description' => $meta_description,

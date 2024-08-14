@@ -20,6 +20,16 @@ use DB;
 
 class HomeMapProjectsResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -70,7 +80,7 @@ class HomeMapProjectsResource extends JsonResource
         $dateStr = $this['completion_date'];
         $month = date("n", strtotime($dateStr));
         $yearQuarter = ceil($month / 3);
-
+        $priceInINR = $this->currencyINR ? $startingPrice * $this->currencyINR : $startingPrice;
 
 
         return [
@@ -83,6 +93,7 @@ class HomeMapProjectsResource extends JsonResource
             'accommodationName' => $this['accommodation_name'],
             'completionStatusName' => $this['completion_statuses_name'],
             'starting_price' => $startingPrice,
+            'starting_price_in_inr' => $priceInINR,
             'bedrooms' => $bedroom,
             'area' => $area,
             'area_unit' => 'sq ft',

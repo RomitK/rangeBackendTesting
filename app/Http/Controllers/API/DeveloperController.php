@@ -246,7 +246,14 @@ class DeveloperController extends Controller
         try {
             if (Developer::where('slug', $slug)->exists()) {
                 $developer = Developer::with(['communityDevelopers'])->where('slug', $slug)->first();
-                $developer = new SingleDeveloperResource($developer);
+
+
+                $currencyINR = null;
+                if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                    $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+                }
+
+                $developer = new SingleDeveloperResource($developer, $currencyINR);
 
 
 

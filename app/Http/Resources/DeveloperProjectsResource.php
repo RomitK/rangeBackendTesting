@@ -24,6 +24,15 @@ use DB;
 
 class DeveloperProjectsResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -83,7 +92,8 @@ class DeveloperProjectsResource extends JsonResource
         $dateStr = $this->completion_date;
         $month = date("n", strtotime($dateStr));
         $yearQuarter = ceil($month / 3);
-            
+        $startingPrice = count( $this->subProjects) > 0 ? $this->subProjects->where('starting_price', $this->subProjects->min('starting_price'))->first()->starting_price : 0;
+        $priceInINR = $this->currencyINR ? $startingPrice * $this->currencyINR : $startingPrice;
         return [
             'id'=>"project_".$this->id,
             'slug'=>$this->slug,
@@ -95,7 +105,9 @@ class DeveloperProjectsResource extends JsonResource
             'mainImage'=>$this->banner_image,
             'accommodationName'=> $this->accommodation ? $this->accommodation->name: null,
             'completionStatusName'=> $this->completionStatus ? $this->completionStatus->name: null,
-            'starting_price'=> count( $this->subProjects) > 0 ? $this->subProjects->where('starting_price', $this->subProjects->min('starting_price'))->first()->starting_price : 0,
+            'starting_price'=> $startingPrice,
+            'starting_price_in_inr'=> $priceInINR,
+            
             'area_unit' => 'sq ft',
             'bedrooms'=> $bedroom,
             'bathrooms'=>$this->bathrooms,

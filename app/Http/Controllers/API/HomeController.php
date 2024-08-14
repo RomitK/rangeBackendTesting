@@ -27,6 +27,7 @@ use App\Http\Resources\{
     HomeProjectResource,
     ProjectOptionResource,
     HomeMapProjectsResource,
+    HomeMapProjectsCollectionResource,
     DubaiGuideResource,
     SellGuideResource,
     DeveloperListResource,
@@ -446,7 +447,7 @@ echo $curl_scraped_page;
     {
         try {
 
-            return $this->success('Home Data', Cache::remember('homeData', 24 * 60 * 60, function () {
+            return $this->success('Home Data', Cache::remember('homeData', 0 * 0 * 0, function () {
                 // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
                 $communities =  HomeCommunitiesResource::collection(DB::table('communities')
                     ->select('name', 'slug', 'banner_image', 'id')
@@ -518,8 +519,8 @@ echo $curl_scraped_page;
                 $subProjects = DB::table('projects')
                     ->select('projects.id as sub_project_id', 'projects.area', 'projects.bedrooms', 'projects.starting_price', 'projects.parent_project_id')
                     ->where('projects.is_parent_project', false) // Fetch only sub-projects
-                    ->where('projects.is_approved', config('constants.approved'))
-                    ->where('projects.status', config('constants.active'))
+                    // ->where('projects.is_approved', config('constants.approved'))
+                    // ->where('projects.status', config('constants.active'))
                     ->whereNull('projects.deleted_at')
                     ->get();
 
@@ -532,8 +533,16 @@ echo $curl_scraped_page;
                     $projectsWithSubProjects[$project->id]['has_sub_projects'] = count($projectsWithSubProjects[$project->id]['sub_projects']) > 0;
                 }
 
-                $mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
+                //$mapProjects = HomeMapProjectsResource::collection($projectsWithSubProjects);
 
+                $currencyINR = null;
+                if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                    $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+                }
+
+                $mapProjects = new HomeMapProjectsCollectionResource($projectsWithSubProjects, $currencyINR);
+
+                
                 // Fetch results from the database
                 $results = DB::select("
                     SELECT starting_price
