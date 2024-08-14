@@ -24,15 +24,27 @@ use DB;
 
 class PropertyListResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
+    
     public function toArray($request)
     {
        
+        $priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
+
         return [
             'id'=>"property_".$this->id,
             'slug'=>$this->slug,
@@ -45,6 +57,7 @@ class PropertyListResource extends JsonResource
             'completionStatusName'=> $this->completionStatus ? $this->completionStatus->name: null,
             'categoryName'=> $this->category ? $this->category->name : null,
             'price'=> $this->price,
+           'price_in_inr' => $priceInINR, // Converted price
             'area_unit' => 'sq ft',
             'bedrooms'=> $this->bedrooms,
             'bathrooms'=>$this->bathrooms,

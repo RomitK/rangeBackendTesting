@@ -10,7 +10,8 @@ use App\Models\{
     Community,
     PageTag,
     Property,
-    Project
+    Project,
+    WebsiteSetting
 };
 
 use Illuminate\Http\Request;
@@ -25,6 +26,40 @@ use PDF;
 
 class HomeController extends Controller
 {
+
+    public function converter(){
+        
+        // Define the API URL and parameters
+        $apiUrl = 'https://api.fastforex.io/convert';
+        $apiKey = '0729fcd7c5-ddde638fbf-si5nsk';
+        $fromCurrency = 'AED';
+        $toCurrency = 'INR';
+        $amount = 1;
+
+        // Make the GET request
+        $response = Http::get($apiUrl, [
+            'from' => $fromCurrency,
+            'to' => $toCurrency,
+            'amount' => $amount,
+            'api_key' => $apiKey,
+        ]);
+
+        // Check if the response was successful
+        if ($response->successful()) {
+            // Decode the JSON response
+            $data = $response->json();
+
+            // Access the conversion result
+            $convertedAmount = $data['result'][$toCurrency] ?? null;
+
+            WebsiteSetting::setSetting(config('constants.INR_Currency'),  $convertedAmount);
+
+        } else {
+            // Handle error
+            echo "Error: " . $response->status();
+        }
+
+    }
     public function DLDTransaction()
     {
         try {
