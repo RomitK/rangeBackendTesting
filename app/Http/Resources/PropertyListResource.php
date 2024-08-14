@@ -25,13 +25,13 @@ use DB;
 class PropertyListResource extends JsonResource
 {
 
-    // protected $currencyINR;
+    protected $currencyINR;
 
-    // public function __construct($resource, $currencyINR = null)
-    // {
-    //     parent::__construct($resource);
-    //     $this->currencyINR = $currencyINR;
-    // }
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
 
     /**
      * Transform the resource into an array.
@@ -39,31 +39,28 @@ class PropertyListResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    
     public function toArray($request)
     {
-       
-        //$priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
+       $priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
 
         return [
-            'id'=>"property_".$this->id,
-            'slug'=>$this->slug,
-            'name'=>$this->name,
-            'lat'=> (double)$this->address_latitude, 
-            'lng'=> (double)$this->address_longitude,
-            'address'=> $this->address,
-            'property_banner'=>$this->property_banner,
-            'accommodationName'=> $this->accommodations ? $this->accommodations->name: null,
-            'completionStatusName'=> $this->completionStatus ? $this->completionStatus->name: null,
-            'categoryName'=> $this->category ? $this->category->name : null,
-            'price'=> $this->price,
-           'price_in_inr' => 22222, // Converted price
+            'id' => "property_" . $this->id,
+            'slug' => $this->slug,
+            'name' => $this->name,
+            'lat' => (double)$this->address_latitude,
+            'lng' => (double)$this->address_longitude,
+            'address' => $this->address,
+            'property_banner' => $this->property_banner,
+            'accommodationName' => $this->accommodations ? $this->accommodations->name : null,
+            'completionStatusName' => $this->completionStatus ? $this->completionStatus->name : null,
+            'categoryName' => $this->category ? $this->category->name : null,
+            'price' => $this->price,
+            'price_in_inr'=>$priceInINR,
             'area_unit' => 'sq ft',
-            'bedrooms'=> $this->bedrooms,
-            'bathrooms'=>$this->bathrooms,
+            'bedrooms' => $this->bedrooms,
+            'bathrooms' => $this->bathrooms,
             'area' => $this->area,
-            'propertyOrder'=>$this->propertyOrder
-            
+            'propertyOrder' => $this->propertyOrder,
         ];
     }
 }

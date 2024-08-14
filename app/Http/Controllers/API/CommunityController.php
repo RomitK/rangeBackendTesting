@@ -253,7 +253,14 @@ class CommunityController extends Controller
         try {
             if (Community::where('slug', $slug)->exists()) {
                 $community = Community::with(['highlights', 'amenities'])->where('slug', $slug)->first();
-                $community = new CommunityResource($community);
+
+                $currencyINR = null;
+                if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                    $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+                }
+
+
+                $community = new CommunityResource($community, $currencyINR);
                 return $this->success('Single Community', $community, 200);
             } else {
                 return $this->success('Single Community', [], 200);

@@ -28,6 +28,15 @@ use Illuminate\Support\Arr;
 
 class PropertySimiliarListingR extends JsonResource
 {
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR)
+    {
+       
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -55,12 +64,14 @@ class PropertySimiliarListingR extends JsonResource
         }else{
             $bathrooms = $this->bathrooms. ' Bathroom';
         }
-        
+        $priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
+
         return [
             'id'=>'similar_'.$this->id,
             'name' => $this->name,
             'slug' => $this->slug,
             'price' => $this->price,
+            'price_in_inr'=>$priceInINR,
             'area' => $this->area,
             'unit_measure'=> 'sq ft',
             'accommodation' => $this->accommodationName,

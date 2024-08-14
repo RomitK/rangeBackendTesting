@@ -24,6 +24,16 @@ use DB;
 
 class ProjectListResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -105,6 +115,7 @@ class ProjectListResource extends JsonResource
             'accommodationName'=> $this->accommodation ? $this->accommodation->name: null,
             'completionStatusName'=> $this->completionStatus ? $this->completionStatus->name: null,
             'starting_price'=> $starting_price,
+            'starting_price_in_inr'=> $this->currencyINR ? $starting_price * $this->currencyINR : $starting_price,
             'area_unit' => 'sq ft',
             'bedrooms'=> $bedroom,
             'bathrooms'=>$this->bathrooms,

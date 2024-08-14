@@ -15,7 +15,8 @@ use App\Http\Resources\{
     PropertyAmenitiesResource,
     PropertyAgentResource,
     PropertySimiliarListing,
-    PropertySimiliarListingR
+    PropertySimiliarListingR,
+    SimiliarPropertyCollection
 };
 use App\Models\{
     Project,
@@ -30,6 +31,16 @@ use DB;
 
 class SinglePropertyResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -156,6 +167,7 @@ class SinglePropertyResource extends JsonResource
         } else {
             $area = $this->area;
         }
+        $priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
         
         return [
             'id' => $this->id,
@@ -178,6 +190,7 @@ class SinglePropertyResource extends JsonResource
             'accommodation' => $this->accommodations ?  $this->accommodations->name : '',
             'floorplans' => $this->subProject ? $this->subProject->floorPlan ? $this->subProject->floorPlan : [] : [],
             'price' => $this->price,
+            'price_in_inr'=>$priceInINR,
             'brochureLink' => url('/property/' . $this->slug . '/brochure'),
             'saleOfferLink' => url('/property/' . $this->slug . '/saleOffer'),
             'type' => $this->category ?  $this->category->name : '',
@@ -192,7 +205,7 @@ class SinglePropertyResource extends JsonResource
             'category' => $this->category->name,
             //'similarProperties'=> PropertySimiliarListing::collection(Property::where('slug', '!=', $this->slug)->where('category_id', $this->category_id)->approved()->active()->latest()->get())
 
-            'similarProperties' => PropertySimiliarListingR::collection($nearbyProperties),
+            'similarProperties' => new SimiliarPropertyCollection($nearbyProperties, $this->currencyINR),
             'completionStatus' => $this->completionStatus ? $this->completionStatus->name : ''
 
         ];

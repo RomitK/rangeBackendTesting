@@ -18,6 +18,15 @@ use DB;
 
 class CommunityProperties extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -26,6 +35,7 @@ class CommunityProperties extends JsonResource
      */
     public function toArray($request)
     {
+        $priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
         return [
             'id'=>"property_".$this->id,
             'name'=>$this->name,
@@ -37,6 +47,7 @@ class CommunityProperties extends JsonResource
             'area'=>$this->area,
             'unit_measure'=>'sq ft',
             'price'=>$this->price,
+            'price_in_inr'=> $priceInINR,
             'propertyOrder'=>$this->propertyOrder
                 
         ];

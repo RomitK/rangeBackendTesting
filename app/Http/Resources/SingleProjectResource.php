@@ -27,6 +27,15 @@ use Illuminate\Support\Arr;
 
 class SingleProjectResource extends JsonResource
 {
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -190,6 +199,7 @@ class SingleProjectResource extends JsonResource
             $count++;
         }
 
+        $priceInINR = $this->currencyINR ? $starting_price * $this->currencyINR : $starting_price;
 
         return [
             'id' => 'project-' . $this->id,
@@ -204,6 +214,7 @@ class SingleProjectResource extends JsonResource
             'address_latitude' => $this->address_latitude,
             'address_longitude' => $this->address_longitude,
             'price' => $starting_price,
+            'price_in_inr'=>$priceInINR,
             'minPrice' => $minPrice,
             'maxPrice' => $maxPrice,
             'communityName' => $this->mainCommunity ? $this->mainCommunity->name : '',
@@ -214,15 +225,22 @@ class SingleProjectResource extends JsonResource
             'amenities' => AmenitiesResource::collection($this->amenities),
             'payment' => PaymentPlansResource::collection($this->mPaymentPlans),
             // 'types'=> SubProjectsResource::collection($this->subProjects()->active()->approved()->get()),
-            'secondaryTypes' => SubProjectsResource::collection($this->subProjects->where('list_type', config('constants.secondary'))),
-            'primaryTypes' => SubProjectsResource::collection($this->subProjects->where('list_type', config('constants.primary'))),
+            //'secondaryTypes' => SubProjectsResource::collection($this->subProjects->where('list_type', config('constants.secondary'))),
+            'secondaryTypes' => new SubProjectsCollectionResource(
+                $this->subProjects->where('list_type', config('constants.secondary')),
+                $this->currencyINR
+            ),
+            //'primaryTypes' => SubProjectsResource::collection($this->subProjects->where('list_type', config('constants.primary'))),
+            'primaryTypes' => new SubProjectsCollectionResource($this->subProjects->where('list_type', config('constants.primary')), $this->currencyINR),
             'developer' => new ProjectDeveloperResource($this->developer),
             //'rentProperties'=>ProjectPropertiesResource::collection( Property::with('accommodations')->where('project_id', $this->id)->where('category_id', config('constants.rentId'))->active()->approved()->latest()->limit(8)->get()),
             //'buyProperties'=>ProjectPropertiesResource::collection( Property::with('accommodations')->where('project_id', $this->id)->where('category_id', config('constants.buyId'))->active()->approved()->latest()->limit(8)->get()),
 
 
-            'rentProperties' => ProjectPropertiesResource::collection($rentProperties),
-            'buyProperties' => ProjectPropertiesResource::collection($buyProperties),
+            //'rentProperties' => ProjectPropertiesResource::collection($rentProperties),
+            'rentProperties' => new ProjectPropertiesCollectionResource($rentProperties, $this->currencyINR),
+            //'buyProperties' => ProjectPropertiesResource::collection($buyProperties),
+            'buyProperties' => new ProjectPropertiesCollectionResource($buyProperties, $this->currencyINR),
             'qr' => $this->qr,
             'interiorGallery' => $this->interiorGallery,
             'exteriorGallery' => $exteriorGallery,

@@ -24,6 +24,14 @@ use DB;
 
 class ProjectPropertiesResource extends JsonResource
 {
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -32,6 +40,8 @@ class ProjectPropertiesResource extends JsonResource
      */
     public function toArray($request)
     {
+        $priceInINR = $this->currencyINR ? $this->price * $this->currencyINR : $this->price;
+
         if($this->property_source == "crm"){
             //$banner = $this->mainImage;
             $banner = $this->property_banner;
@@ -47,6 +57,7 @@ class ProjectPropertiesResource extends JsonResource
             'unit_measure'=>'sq ft',
             'bathrooms'=>$this->bathrooms,
             'price'=>$this->price,
+            'price_in_inr'=>$priceInINR,
             'mainImage' =>  $banner,
             'accommodation'=>$this->accommodationName
         ];

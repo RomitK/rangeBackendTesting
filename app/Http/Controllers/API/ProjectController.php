@@ -20,7 +20,8 @@ use App\Http\Resources\{
     NearByProjectsResource,
     ProjectListResource,
     AmenitiesNameResource,
-    AccommodationListResource
+    AccommodationListResource,
+    ProjectCollection
 };
 use Illuminate\Support\Arr;
 
@@ -652,6 +653,12 @@ class ProjectController extends Controller
     {
         try {
             if (Project::where('slug', $slug)->exists()) {
+
+                $currencyINR = null;
+                if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                    $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+                }
+
                 $singleProject = new SingleProjectResource(Project::with([
                     'subProjects' => function ($query) {
                         return $query->active()->get();
@@ -660,7 +667,7 @@ class ProjectController extends Controller
                     'mPaymentPlans',
                     'developer',
                     'mainCommunity'
-                ])->where('slug', $slug)->first());
+                ])->where('slug', $slug)->first(), $currencyINR);
 
                 return $this->success('Single Project', $singleProject, 200);
             } else {
@@ -916,10 +923,17 @@ class ProjectController extends Controller
     {
 
         try {
-
+            
             $developers = [];
             $communities = [];
             $projectArrays = [];
+
+
+            $currencyINR = null;
+            if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+            }
+
             if (isset($request->searchBy)) {
 
                 foreach (json_decode($request->searchBy, true) as $search) {
@@ -1094,7 +1108,8 @@ class ProjectController extends Controller
             return $this->success(
                 'Projects',
                 [
-                    'projects' => ProjectListResource::collection($projects)->response()->getData(true),
+                    //'projects' => ProjectListResource::collection($projects)->response()->getData(true),
+                    'projects' => new ProjectCollection($projects, $currencyINR),
                     'amenities' =>  AmenitiesNameResource::collection($amenities),
 
                 ],

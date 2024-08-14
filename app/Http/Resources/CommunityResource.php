@@ -23,6 +23,15 @@ use DB;
 
 class CommunityResource extends JsonResource
 {
+
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -143,10 +152,14 @@ class CommunityResource extends JsonResource
             'meta_title' => $meta_title,
             'meta_description' => $meta_description,
             'nearbyCommunities' => $nearbyCommunities,
-            'properties' => CommunityProperties::collection($properties),
-            'saleProperties' => CommunityProperties::collection($saleProperties),
-            'rentProperties' => CommunityProperties::collection($rentProperties),
-
+            
+            //'properties' => CommunityProperties::collection($properties),
+            'properties' => new CommunityPropertiesCollection($properties, $this->currencyINR),
+            //'saleProperties' => CommunityProperties::collection($saleProperties),
+            'saleProperties' => new CommunityPropertiesCollection($saleProperties, $this->currencyINR),
+           // 'rentProperties' => CommunityProperties::collection($rentProperties),
+            'rentProperties' => new CommunityPropertiesCollection($rentProperties, $this->currencyINR),
+            
             'longDescription' => $this->description->render()
 
         ];

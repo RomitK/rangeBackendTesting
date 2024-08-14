@@ -11,6 +11,14 @@ use DB;
 
 class SubProjectsResource extends JsonResource
 {
+    protected $currencyINR;
+
+    public function __construct($resource, $currencyINR = null)
+    {
+        
+        parent::__construct($resource);
+        $this->currencyINR = $currencyINR;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -19,6 +27,8 @@ class SubProjectsResource extends JsonResource
      */
     public function toArray($request)
     {
+        $priceInINR = $this->currencyINR ? $this->starting_price * $this->currencyINR : $thisstarting_price;
+
         if (Property::where('sub_project_id', $this->id)->where('website_status', config('constants.available'))->where('is_valid', 1)->exists()) {
             $property =  Property::where('sub_project_id', $this->id)->where('website_status', config('constants.available'))->where('is_valid', 1)->first()->slug;
         } else {
@@ -40,6 +50,7 @@ class SubProjectsResource extends JsonResource
             'name' => $this->title,
             'bedrooms' => $this->bedrooms,
             'startingPrice' => $this->starting_price,
+            'startingPriceInINR' => $priceInINR,
             'area' =>  $area,
             'areaUnit' => $this->area_unit ? $this->area_unit : 'Sq.Ft',
             'accommodation' => $this->accommodation ? $this->accommodation->name : '',

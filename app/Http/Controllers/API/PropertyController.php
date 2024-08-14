@@ -19,6 +19,8 @@ use App\Http\Resources\{
     SinglePropertyResource,
     SinglePropertyResourceR,
     AmenitiesNameResource,
+    PropertyCollection,
+    SimiliarPropertyCollection
 };
 
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -757,7 +759,13 @@ class PropertyController extends Controller
                 $property = Property::with(['amenities', 'completionStatus', 'accommodations', 'subProject', 'category', 'project', 'project.mainCommunity', 'agent'])
                     ->where('slug', $slug)
                     ->first();
-                $property = new SinglePropertyResource($property);
+
+                $currencyINR = null;
+                if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                    $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+                }
+
+                $property = new SinglePropertyResource($property, $currencyINR);
 
                 return $this->success('Single Property', $property, 200);
             } else {
@@ -843,6 +851,18 @@ class PropertyController extends Controller
             $collection = Property::with('completionStatus', 'accommodations', 'category')->available()->where('is_valid', 1);
            
 
+            $currencyINR = null;
+            if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
+                $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
+            }
+            
+            // if(isset($request->currency)){
+            //     if($request->currency == 'INR' && isset($request->minprice) || isset($request->maxprice)){
+            //         $request['minprice'] =  $request->minprice/$currencyINR;
+            //         $request['maxprice'] = $request->maxprice/$currencyINR ;
+            //     }
+               
+            // }
             if (isset($request->category)) {
                 if ($request->category == 'rent') {
                     $categoryName = "Rent";
@@ -991,15 +1011,13 @@ class PropertyController extends Controller
 
             $properties->appends(request()->query());
 
-            $currencyINR = null;
-            if (WebsiteSetting::where('key', config('constants.INR_Currency'))->exists()) {
-                $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
-            }
+            
            
             //PropertyListResource::using(['currencyINR' => $currencyINR]);
             return $this->success('Properties', [
                 'count' => $properties->count(),
-                'properties' => PropertyListResource::collection($properties)->response()->getData(true),
+                'properties' => new PropertyCollection($properties, $currencyINR),
+                //'properties' => PropertyListResource::collection($properties)->response()->getData(true),
 
                 // 'properties' =>$propertiesResource = $properties->map(function ($property) use ($currencyINR) {
                 //     return new PropertyListResource($property, $currencyINR);
