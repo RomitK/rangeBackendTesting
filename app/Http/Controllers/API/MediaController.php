@@ -89,7 +89,7 @@ class MediaController extends Controller
                 $media = Article::where('slug', $slug)->first();
                 $media = new SingleMediaResource($media);
 
-                $similarArticles = Article::where('slug', '!=', $slug)->where('article_type', $media->article_type)->orderByRaw('ISNULL(mediaOrder)')->orderBy('mediaOrder', 'asc')->take(4)->get();
+                $similarArticles = Article::where('slug', '!=', $slug)->where('article_type', $media->article_type)->orderByRaw('ISNULL(mediaOrder)')->orderBy('mediaOrder', 'asc')->take(1)->get();
                 $similarArticles = MediaListResource::collection($similarArticles);
 
                 return $this->success('Single Article', [
