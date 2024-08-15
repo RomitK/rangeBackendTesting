@@ -312,6 +312,29 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function inventoryUpdate(Request $request, Property $property)
+    {
+        dd($property);
+        try {
+            Property::find($property);
+            $result = $this->projectRepository->updateData($request, $project);
+            return response()->json([
+                'success' => $result['success'],
+                'message' => $result['message'],
+                'redirect' => route('dashboard.projects.index'),
+                //'project_id' => $result['project_id'], // If returned from repository
+            ]);
+        } catch (\Exception $error) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.projects.index'),
+            ]);
+        }
+        
+    }
     public function update(ProjectRequest $request, Project $project)
     {
 

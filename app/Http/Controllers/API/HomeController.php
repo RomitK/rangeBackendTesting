@@ -1107,7 +1107,8 @@ echo $curl_scraped_page;
                     "GoldenVisaForm",
                     "sellContactForm",
                     "mortgageForm",
-                    "bookACall"
+                    "bookACall",
+                    "SpendAdayWithRange"
                 ]
             )) {
                 Log::info("formName:" . $request->formName);
@@ -1174,6 +1175,10 @@ echo $curl_scraped_page;
                         Log::info('MortgageLeadJob ERROR DONE');
                         Log::info($errorMessage);
                     }
+                }
+                if ($request->formName == "SpendAdayWithRange") {
+                    $data = $this->CRMCampaignManagement($data, 270, 578, 2676);
+                    CRMLeadJob::dispatch($data);
                 }
                 if ($request->formName == "FooterContactForm") {
                     $data = $this->CRMCampaignManagement($data, 270, 490, 2580);
