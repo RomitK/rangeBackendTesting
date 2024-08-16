@@ -63,19 +63,19 @@
 
                                     <div class="col-sm-6">
                                         <div class="form-group">
-                                            <label for="our_profile">Our Profile</label>
-                                            <div class="custom-file   @error('our_profile') is-invalid @enderror">
-                                                <input type="file" class="custom-file-input" id="our_profile" name="our_profile"
+                                            <label for="ourProfile">Our Profile</label>
+                                            <div class="custom-file   @error('ourProfile') is-invalid @enderror">
+                                                <input type="file" class="custom-file-input" id="ourProfile" name="ourProfile"
                                                 accept="pdf/*">
-                                                <label class="custom-file-label" for="our_profile">Choose file</label>
+                                                <label class="custom-file-label" for="ourProfile">Choose file</label>
                                             </div>
-                                            @error('our_profile')
+                                            @error('ourProfile')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
-                                            @if ($content->our_profile)
-                                                <a href="{{ $content->our_profile }}" download="">Download our_profile</a>
+                                            @if ($content->ourProfile)
+                                                <a href="{{ $content->ourProfile }}" download="">Download our_profile</a>
                                             @endif
                                             
                                             
