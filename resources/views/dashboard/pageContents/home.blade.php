@@ -59,6 +59,29 @@
                                     
                                         </div>
                                     </div>
+
+
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="our_profile">Our Profile</label>
+                                            <div class="custom-file   @error('our_profile') is-invalid @enderror">
+                                                <input type="file" class="custom-file-input" id="our_profile" name="our_profile"
+                                                accept="pdf/*">
+                                                <label class="custom-file-label" for="our_profile">Choose file</label>
+                                            </div>
+                                            @error('our_profile')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                            @if ($content->our_profile)
+                                                <a href="{{ $content->our_profile }}" download="">Download our_profile</a>
+                                            @endif
+                                            
+                                            
+                                    
+                                        </div>
+                                    </div>
                                     
                                    
                                 </div>

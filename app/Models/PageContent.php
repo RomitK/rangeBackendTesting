@@ -68,6 +68,12 @@ class PageContent extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('brochure');
     }
+
+    public function getOurProfileAttribute()
+    {
+        return $this->getFirstMediaUrl('ourProfile');
+    }
+
     public function getBuyerGuideAttribute()
     {
         return $this->getFirstMediaUrl('buyerGuide');

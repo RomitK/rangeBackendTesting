@@ -102,6 +102,16 @@ class PageContentController extends Controller
                 $content->addMediaFromRequest('brochure')->usingFileName($imageName)->toMediaCollection('brochure', 'pageContentFiles');
             }
 
+
+            if ($request->hasFile('ourProfile')) {
+                $content->clearMediaCollection('ourProfile');
+                $img =  $request->file('ourProfile');
+                $ext = $img->getClientOriginalExtension();
+                $imageName = 'Our Profile.' . $ext;
+                $content->addMediaFromRequest('ourProfile')->usingFileName($imageName)->toMediaCollection('ourProfile', 'pageContentFiles');
+            }
+
+
             $content->save();
             return response()->json([
                 'success' => true,
