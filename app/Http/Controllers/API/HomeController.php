@@ -447,7 +447,7 @@ echo $curl_scraped_page;
     {
         try {
 
-            return $this->success('Home Data', Cache::remember('homeData', 24 * 60 * 60, function () {
+            return $this->success('Home Data', Cache::remember('homeData1', 24 * 60 * 60, function () {
                 // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
                 $communities =  HomeCommunitiesResource::collection(DB::table('communities')
                     ->select('name', 'slug', 'banner_image', 'id')
@@ -1419,7 +1419,14 @@ echo $curl_scraped_page;
 
                     $data = $this->CRMCampaignManagement($data, 270, 490, 2582);
                     CRMLeadJob::dispatch($data);
-                } elseif ($request->formName == 'GoldenVisaGuideForm') {
+                } elseif ($request->formName == 'homePageCompanyProfile') {
+                    $link = PageContent::WherePageName(config('constants.home.name'))->first();
+                    $link = $link->ourProfile;
+
+                    $data = $this->CRMCampaignManagement($data, 270, 490, 2677);
+                    CRMLeadJob::dispatch($data);
+                }
+                elseif ($request->formName == 'GoldenVisaGuideForm') {
 
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->goldenVisa;

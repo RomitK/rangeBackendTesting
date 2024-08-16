@@ -75,7 +75,7 @@
                                                 </span>
                                             @enderror
                                             @if ($content->ourProfile)
-                                                <a href="{{ $content->ourProfile }}" download="">Download our_profile</a>
+                                                <a href="{{ $content->ourProfile }}" download="">Download Our Profile</a>
                                             @endif
                                             
                                             
