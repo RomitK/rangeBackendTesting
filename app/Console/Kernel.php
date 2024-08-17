@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
         //     Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
         // })->everyMinute();
 
-        $schedule->job(new LatestCurrencyJob)->at('01:00');
-
+        $schedule->job(new LatestCurrencyJob)->daily()->at('01:00');
+        
         $schedule->job(new WeeklyWebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
         $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
 
