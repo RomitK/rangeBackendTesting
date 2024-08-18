@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Models\{
+    Currency,
     Project,
     Community,
     WebsiteSetting,
@@ -446,13 +447,13 @@ echo $curl_scraped_page;
     public function homeData()
     {
         try {
-
-            return $this->success('Home Data', Cache::remember('homeData1', 24 * 60 * 60, function () {
+          
+            return $this->success('Home Data', Cache::remember('homeData', 3 * 60 * 60, function () {
                 // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
                 $communities =  HomeCommunitiesResource::collection(DB::table('communities')
                     ->select('name', 'slug', 'banner_image', 'id')
-                    ->where('status', config('constants.active'))
-                    ->where('is_approved', config('constants.approved'))
+                    //->where('status', config('constants.active'))
+                    ->where('website_status', config('constants.available'))
                     ->where('display_on_home', 1)
                     ->whereNull('deleted_at')
                     ->limit(12)
@@ -476,9 +477,9 @@ echo $curl_scraped_page;
 
                 $developers =  DeveloperListResource::collection(DB::table('developers')
                     ->select('id', 'logo_image', 'slug', 'name', 'developerOrder')
-                    ->where('status', config('constants.active'))
-                    ->where('is_approved', config('constants.approved'))
+                    ->where('website_status', config('constants.available'))
                     ->where('display_on_home', 1)
+                    >limit(12)
                     ->whereNull('deleted_at')
                     ->orderByRaw('ISNULL(developerOrder)')
                     ->orderBy('developerOrder', 'asc')
@@ -503,8 +504,8 @@ echo $curl_scraped_page;
                     ->leftJoin('accommodations', 'projects.accommodation_id', '=', 'accommodations.id')
                     ->leftJoin('completion_statuses', 'projects.completion_status_id', '=', 'completion_statuses.id')
                     ->where('projects.is_parent_project', true)
-                    ->where('projects.is_approved', config('constants.approved'))
-                    ->where('projects.status', config('constants.active'))
+                   // ->where('projects.is_approved', config('constants.approved'))
+                    ->where('projects.website_status', config('constants.available'))
                     ->where('projects.is_display_home', 1)
                     ->whereNull('projects.deleted_at');
 
@@ -543,54 +544,53 @@ echo $curl_scraped_page;
                 $mapProjects = new HomeMapProjectsCollectionResource($projectsWithSubProjects, $currencyINR);
 
                 
-                // Fetch results from the database
                 $results = DB::select("
-                    SELECT starting_price
-                    FROM projects
-                    WHERE deleted_at IS NULL
-                    AND status = 'active'
-                    AND is_approved = 'approved'
-                    AND starting_price IS NOT NULL
-                    AND starting_price REGEXP '^[0-9]+$'
-                    GROUP BY starting_price
-                    ORDER BY starting_price;
-                ");
+                SELECT starting_price
+                FROM projects
+                WHERE deleted_at IS NULL
+               
+                AND website_status = 'available'
+                AND starting_price IS NOT NULL
+                AND starting_price REGEXP '^[0-9]+$'
+                GROUP BY starting_price
+                ORDER BY starting_price;
+            ");
 
-                // Initialize arrays to store starting prices in words
-                $thousands = [];
-                $lakhs = [];
-                $crores = [];
-                $millions = [];
-                $billions = [];
+            // Initialize arrays to store starting prices in words
+            $thousands = [];
+            $lakhs = [];
+            $crores = [];
+            $millions = [];
+            $billions = [];
 
-                // Convert each starting price to words and categorize them
-                foreach ($results as $row) {
-                    $startingPrice = (int)$row->starting_price;
-                    if ($startingPrice >= 1000000000) {
-                        $billions[] = $this->convertToWords($startingPrice);
-                    } elseif ($startingPrice >= 10000000) {
-                        $crores[] = $this->convertToWords($startingPrice);
-                    } elseif ($startingPrice >= 100000) {
-                        $lakhs[] = $this->convertToWords($startingPrice);
-                    } elseif ($startingPrice >= 1000) {
-                        $thousands[] = $this->convertToWords($startingPrice);
-                    } elseif ($startingPrice >= 1000000) {
-                        $millions[] = $this->convertToWords($startingPrice);
-                    }
+            // Convert each starting price to words and categorize them
+            foreach ($results as $row) {
+                $startingPrice = (int)$row->starting_price;
+                if ($startingPrice >= 1000000000) {
+                    $billions[] = $this->convertToWords($startingPrice);
+                } elseif ($startingPrice >= 10000000) {
+                    $crores[] = $this->convertToWords($startingPrice);
+                } elseif ($startingPrice >= 100000) {
+                    $lakhs[] = $this->convertToWords($startingPrice);
+                } elseif ($startingPrice >= 1000) {
+                    $thousands[] = $this->convertToWords($startingPrice);
+                } elseif ($startingPrice >= 1000000) {
+                    $millions[] = $this->convertToWords($startingPrice);
                 }
+            }
 
-                $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
+            $combinedArray = array_merge(array_unique($thousands), array_unique($lakhs), array_unique($crores), array_unique($millions), array_unique($billions));
 
-                $formattedNumbers = [];
-                foreach ($combinedArray as $row) {
-                    $formattedNumbers[] =  $this->convertToNumber($row);
-                }
-                $formattedNumbers = sort($formattedNumbers);
+            $text = [];
+            foreach ($combinedArray as $row) {
+                $text[] =  $this->convertToNumber($row);
+            }
+            sort($text);
 
-
-
+                
+                
                 return $data = [
-                    'formattedNumbers' => $formattedNumbers,
+                    'formattedNumbers' => $text,
                     'projects' => $projects,
                     'newProjects' => $newProjects,
                     'mapProjects' => $mapProjects,

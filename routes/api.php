@@ -24,6 +24,8 @@ Route::get('/test', function () {
 });
 Route::namespace('App\Http\Controllers\API')->group(function () {
 
+    Route::get('/currencyRates', 'CurrencyController@index');
+
     Route::get('/sendSMS', 'HomeController@sendSMS');
 
     Route::get('/bankNames', 'HomeController@bankNames');

@@ -11,7 +11,8 @@ use App\Models\{
     Category,
     Community,
     Property,
-    CompletionStatus
+    CompletionStatus,
+    Currency
 };
 use DB;
 use App\Http\Resources\{
@@ -201,8 +202,8 @@ class ProjectController extends Controller
                 SELECT starting_price
                 FROM projects
                 WHERE deleted_at IS NULL
-                AND status = 'active'
-                AND is_approved = 'approved'
+               
+                AND website_status = 'available'
                 AND starting_price IS NOT NULL
                 AND starting_price REGEXP '^[0-9]+$'
                 GROUP BY starting_price
@@ -934,6 +935,21 @@ class ProjectController extends Controller
                 $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
             }
 
+            if(isset($request->currency)){
+                $currenyExist = Currency::where('name', $request->currency)->exists();
+
+                if($currenyExist){
+                    $currency = Currency::where('name', $request->currency)->first()->value;
+                }
+                if (isset($request->minprice) || isset($request->maxprice)) {
+                    $request->merge([
+                        'minprice' => $request->minprice / $currency,
+                        'maxprice' => $request->maxprice / $currency
+                    ]);
+
+                }
+            }
+            
             if (isset($request->searchBy)) {
 
                 foreach (json_decode($request->searchBy, true) as $search) {

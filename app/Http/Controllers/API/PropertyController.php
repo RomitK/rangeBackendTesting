@@ -13,6 +13,7 @@ use App\Models\{
     Developer,
     Accommodation,
     Category,
+    Currency
 };
 use App\Http\Resources\{
     PropertyListResource,
@@ -272,8 +273,7 @@ class PropertyController extends Controller
                         SELECT price
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND category_id= 8
                         AND completion_status_id= 286
                         AND price IS NOT NULL
@@ -286,9 +286,9 @@ class PropertyController extends Controller
                 SELECT price
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
+                       
                         AND category_id = 9
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
                         GROUP BY price
@@ -299,8 +299,7 @@ class PropertyController extends Controller
                 SELECT price
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND category_id= 8
                         AND completion_status_id= 287
                         AND price IS NOT NULL
@@ -313,9 +312,8 @@ class PropertyController extends Controller
                 SELECT price
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
                         AND category_id= 8
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
                         GROUP BY price
@@ -326,8 +324,7 @@ class PropertyController extends Controller
                 SELECT price
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND exclusive = 1
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
@@ -339,8 +336,7 @@ class PropertyController extends Controller
                 SELECT price
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
                         GROUP BY price
@@ -856,6 +852,21 @@ class PropertyController extends Controller
                 $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
             }
             
+            if(isset($request->currency)){
+                $currenyExist = Currency::where('name', $request->currency)->exists();
+
+                if($currenyExist){
+                    $currency = Currency::where('name', $request->currency)->first()->value;
+                }
+                if (isset($request->minprice) || isset($request->maxprice)) {
+                    $request->merge([
+                        'minprice' => $request->minprice / $currency,
+                        'maxprice' => $request->maxprice / $currency
+                    ]);
+
+                }
+            }
+            
             // if(isset($request->currency)){
             //     if($request->currency == 'INR' && isset($request->minprice) || isset($request->maxprice)){
             //         $request['minprice'] =  $request->minprice/$currencyINR;
@@ -1069,6 +1080,22 @@ class PropertyController extends Controller
                 ->whereHas('project', function ($query) {
                     $query->whereNotNull('permit_number'); // Check if permit number is not null
                 })->active();
+
+                if(isset($request->currency)){
+                    $currenyExist = Currency::where('name', $request->currency)->exists();
+    
+                    if($currenyExist){
+                        $currency = Currency::where('name', $request->currency)->first()->value;
+                    }
+                    if (isset($request->minprice) || isset($request->maxprice)) {
+                        $request->merge([
+                            'minprice' => $request->minprice / $currency,
+                            'maxprice' => $request->maxprice / $currency
+                        ]);
+    
+                    }
+                }
+               
 
             if (isset($request->category)) {
                 if ($request->category == 'rent') {
