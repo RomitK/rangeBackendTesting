@@ -479,7 +479,7 @@ echo $curl_scraped_page;
                     ->select('id', 'logo_image', 'slug', 'name', 'developerOrder')
                     ->where('website_status', config('constants.available'))
                     ->where('display_on_home', 1)
-                    >limit(12)
+                   
                     ->whereNull('deleted_at')
                     ->orderByRaw('ISNULL(developerOrder)')
                     ->orderBy('developerOrder', 'asc')
