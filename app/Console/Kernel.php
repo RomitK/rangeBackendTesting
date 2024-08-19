@@ -9,7 +9,8 @@ use Carbon\Carbon;
 use App\Jobs\{
     WeeklyWebsiteStateReportJob,
     MonthlyWebsiteStateReportJob,
-    InactivePropertyJob
+    InactivePropertyJob,
+    LatestCurrencyJob
 };
 
 class Kernel extends ConsoleKernel
