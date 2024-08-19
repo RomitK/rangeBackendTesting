@@ -116,7 +116,7 @@ class AccommodationController extends Controller
     {
        
         try{
-            $accommodations = Accommodation::whereIn('id',Project::approved()->active()->mainProject()->pluck('accommodation_id')->toArray())->active()->approved()->get();
+            $accommodations = Accommodation::whereIn('id',Project::where('website_status', config('constants.available'))->mainProject()->pluck('accommodation_id')->toArray())->active()->approved()->get();
             $accommodations =  AccommodationListResource::collection($accommodations);
             
            
@@ -130,7 +130,7 @@ class AccommodationController extends Controller
     {
        
         try{
-            $accommodations = Accommodation::whereIn('id',Property::approved()->active()->pluck('accommodation_id')->toArray())->active()->approved()->get();
+            $accommodations = Accommodation::whereIn('id',Property::where('website_status', config('constants.available'))->pluck('accommodation_id')->toArray())->active()->approved()->get();
             $accommodations =  AccommodationListResource::collection($accommodations);
             
            
