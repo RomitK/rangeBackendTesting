@@ -24,11 +24,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        // $schedule->call(function () {
-        //     Log::info('UpdateAgentResponOnLead run at-' . Carbon::now());
-        // })->everyMinute();
+        $schedule->call(function () {
+            Log::info('start everyMinute run at-' . Carbon::now());
+        })->everyMinute();
 
         $schedule->job(new LatestCurrencyJob)->daily()->at('01:00');
+
+
         
         $schedule->job(new WeeklyWebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
         $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
