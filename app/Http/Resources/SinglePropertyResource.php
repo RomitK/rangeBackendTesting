@@ -172,6 +172,7 @@ class SinglePropertyResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'market' => $this->property_source == 'xml' ? 'secondary' : 'primary',
             'rental_period' => $this->rental_period,
             'permit_number' =>  $this->permit_number,
             'qr' =>  $this->qr_link,
