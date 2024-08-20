@@ -65,7 +65,7 @@ class PropertyDataExport implements FromCollection, WithHeadings, WithMapping, W
             $property->id,
             $property->name,
             $property->reference_number,
-            $property->project ? $property->project->permit_number ?  $property->project->permit_number : '' : '',
+            $property->permit_number,
             $property->project ? $property->project->title : '',
             $property->subProject ? $property->subProject->title : '',
             $property->subProject ? $property->subProject->list_type : '',
@@ -85,7 +85,7 @@ class PropertyDataExport implements FromCollection, WithHeadings, WithMapping, W
             $property->user->name,
             $property->formattedCreatedAt,
             $property->formattedUpdatedAt,
-            $property->project ? $property->project->qr_link ?  $property->project->qr_link : '' : '',
+            $property->qr_link,
         ];
     }
     public function styles(Worksheet $sheet)
