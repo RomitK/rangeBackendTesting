@@ -455,7 +455,7 @@
                         <h4>Bedroom</h4>
                     </td>
                     <td>
-                        <h4>Price </h4>
+                        <h4>Price {{$currency}}</h4>
                     </td>
                 </tr>
             </thead>
