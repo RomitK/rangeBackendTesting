@@ -1505,11 +1505,13 @@ echo $curl_scraped_page;
 
                             $project->save();
 
-                            $project->brochure_link = $project->brochure;
-                            $project->updated_brochure = 1;
-                            $project->save();
+                            // $project->brochure_link = $project->brochure;
+                            // $project->updated_brochure = 1;
+                            // $project->save();
+
+                            $link = $project->brochure;
                         });
-                        $link = $project->brochure;
+                        
                      
                      $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
                     // CRMLeadJob::dispatch($data);
