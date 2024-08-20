@@ -1509,10 +1509,12 @@ echo $curl_scraped_page;
                             // $project->updated_brochure = 1;
                             // $project->save();
 
-                            $link = $project->brochure;
+                            
                         });
                         
-                     
+                        $link = $project->brochure_link;
+
+
                      $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
                     // CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
