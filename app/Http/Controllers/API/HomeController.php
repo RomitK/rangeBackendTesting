@@ -1447,14 +1447,7 @@ echo $curl_scraped_page;
                     $project = Project::where('slug', $request->project)->first();
                    
                     
-                    
-
-
-                    // Disable timestamps for this scope
-                    Project::withoutTimestamps(function () use ($project) {
-                        $project->brochure_link = null;
-                        $project->save();
-                        $currency = 'AED';
+                    $currency = 'AED';
                         $exchange_rate = 1;
                         if(isset($request->currency)){
                             $currenyExist = Currency::where('name', $request->currency)->exists();
@@ -1465,6 +1458,13 @@ echo $curl_scraped_page;
                             }
                             
                         }
+
+
+                    // Disable timestamps for this scope
+                    Project::withoutTimestamps(function () use ($project, $currency, $exchange_rate) {
+                        $project->brochure_link = null;
+                        $project->save();
+                        
                        
                             $minBed = $project->subProjects->min('bedrooms');
                             $maxBed = $project->subProjects->max('bedrooms');
