@@ -1506,9 +1506,9 @@ echo $curl_scraped_page;
 
                             $project->save();
 
-                            // $project->brochure_link = $project->brochure;
-                            // $project->updated_brochure = 1;
-                            // $project->save();
+                            $project->brochure_link = $project->brochure;
+                            $project->updated_brochure = 1;
+                            $project->save();
 
                             
                         });
