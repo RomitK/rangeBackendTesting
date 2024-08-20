@@ -1452,7 +1452,8 @@ echo $curl_scraped_page;
 
                     // Disable timestamps for this scope
                     Project::withoutTimestamps(function () use ($project) {
-
+                        $project->brochure_link = null;
+                        $project->save();
                         $currency = 'AED';
                         $exchange_rate = 1;
                         if(isset($request->currency)){
