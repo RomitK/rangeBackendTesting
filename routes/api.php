@@ -110,6 +110,8 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/projectAmenities', 'AmenityController@projectAmenities');
     Route::get('/properties/{type}/priceList', 'PropertyController@priceList');
     Route::get('/properties/{type}/areaList', 'PropertyController@areaList');
+    Route::get('/properties/{type}/accommodationList', 'PropertyController@accommodationList');
+
 
 
     Route::any('/properties', 'PropertyController@propertiesDemo')->name('properties-demos');

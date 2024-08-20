@@ -514,8 +514,17 @@ class GoyzerSaleProperties implements ShouldQueue
                     $property->address = $community->name. " ". $CityName. " ".$CountryName;
                     $property->user_id = $userID;
                     $property->agent_id = $agentD->id;
-                
-                    $property->completion_status_id = 286;
+                   
+                 
+                      
+                        if($project->completion_status_id == 289){
+                            $property->completion_status_id = 291;
+                        }else{
+                            $property->completion_status_id = 286;
+                        }
+                    
+                    
+                   
                     $property->community_id = $community->id;
                     $property->accommodation_id = $propertyType->id;
                     $property->project_id = $project->id;
@@ -549,25 +558,28 @@ class GoyzerSaleProperties implements ShouldQueue
                         foreach ($FittingFixtures as $keys => $facilityArray) {
 
                             foreach($facilityArray as $faci){
-                                $faci = $faci['Name'];
-                                $checkFC = Amenity::where('name', $faci)->exists();
-                                if($checkFC){
-                                    $checkFC = Amenity::where('name', $faci)->first();
-                                    $project->amenities()->attach($checkFC->id);
-                                    $property->amenities()->attach($checkFC->id);
-                                }else{
+                                if(is_array($faci) && array_key_exists('Name', $faci)){
+                                    $faci = $faci['Name'];
+                                    $checkFC = Amenity::where('name', $faci)->exists();
+                                    if($checkFC){
+                                        $checkFC = Amenity::where('name', $faci)->first();
+                                        $project->amenities()->attach($checkFC->id);
+                                        $property->amenities()->attach($checkFC->id);
+                                    }else{
 
-                                    $amenity = new Amenity;
-                                    $amenity->name = $faci;
-                                    $amenity->status = 'Inactive';
-                                    $amenity->is_approved = config('constants.requested');
-                                    $amenity->status = config('constants.Inactive');
-                                    $amenity->user_id   = $userID;
-                                    
-                                    $amenity->save();
-                                    $project->amenities()->attach($amenity->id);
-                                    $property->amenities()->attach($amenity->id);
+                                        $amenity = new Amenity;
+                                        $amenity->name = $faci;
+                                        $amenity->status = 'Inactive';
+                                        $amenity->is_approved = config('constants.requested');
+                                        $amenity->status = config('constants.Inactive');
+                                        $amenity->user_id   = $userID;
+                                        
+                                        $amenity->save();
+                                        $project->amenities()->attach($amenity->id);
+                                        $property->amenities()->attach($amenity->id);
+                                    }
                                 }
+                                
                             }
                             
                             
@@ -599,7 +611,7 @@ class GoyzerSaleProperties implements ShouldQueue
 
                         foreach ($galleryImages as $key => $img) {
 
-                            if ($imageCount >= 4) {
+                            if ($imageCount >= 2) {
                                 break; // Exit the loop if 4 images have been processed
                             }
 

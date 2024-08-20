@@ -30,6 +30,9 @@ use Illuminate\Support\Facades\DB;
 class PropertyController extends Controller
 {
 
+    public function accommodationList($type){
+
+    }
     // Function to convert number to words
     function convertToWords($number)
     {
@@ -147,8 +150,7 @@ class PropertyController extends Controller
                         SELECT area
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND category_id= 8
                         AND completion_status_id= 286
                         AND area IS NOT NULL
@@ -161,9 +163,8 @@ class PropertyController extends Controller
                 SELECT area
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
                         AND category_id = 9
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND area IS NOT NULL
                         AND area REGEXP '^[0-9]+$'
                         GROUP BY area
@@ -174,8 +175,7 @@ class PropertyController extends Controller
                 SELECT area
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND category_id= 8
                         AND completion_status_id= 287
                         AND area IS NOT NULL
@@ -183,14 +183,27 @@ class PropertyController extends Controller
                         GROUP BY area
                         ORDER BY area
                     ");
-            } elseif ($type == "buy") {
+            } elseif ($type == "offplanReslae") {
+                $results = DB::select("
+                SELECT area
+                        FROM properties
+                        WHERE deleted_at IS NULL
+                        AND website_status = 'available'
+                        AND category_id= 8
+                        AND completion_status_id= 291
+                        AND area IS NOT NULL
+                        AND area REGEXP '^[0-9]+$'
+                        GROUP BY area
+                        ORDER BY area
+                    ");
+            }elseif ($type == "buy") {
                 $results = DB::select("
                 SELECT area
                         FROM properties
                         WHERE deleted_at IS NULL
                         AND status = 'active'
                         AND category_id= 8
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND area IS NOT NULL
                         AND area REGEXP '^[0-9]+$'
                         GROUP BY area
@@ -201,8 +214,7 @@ class PropertyController extends Controller
                 SELECT area
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND exclusive = 1
                         AND area IS NOT NULL
                         AND area REGEXP '^[0-9]+$'
@@ -214,8 +226,7 @@ class PropertyController extends Controller
                 SELECT area
                         FROM properties
                         WHERE deleted_at IS NULL
-                        AND status = 'active'
-                        AND is_approved = 'approved'
+                        AND website_status = 'available'
                         AND area IS NOT NULL
                         AND area REGEXP '^[0-9]+$'
                         GROUP BY area
@@ -302,6 +313,19 @@ class PropertyController extends Controller
                         AND website_status = 'available'
                         AND category_id= 8
                         AND completion_status_id= 287
+                        AND price IS NOT NULL
+                        AND price REGEXP '^[0-9]+$'
+                        GROUP BY price
+                        ORDER BY price
+                    ");
+            } elseif ($type == "offplanResale") {
+                $results = DB::select("
+                SELECT price
+                        FROM properties
+                        WHERE deleted_at IS NULL
+                        AND website_status = 'available'
+                        AND category_id= 8
+                        AND completion_status_id= 291
                         AND price IS NOT NULL
                         AND price REGEXP '^[0-9]+$'
                         GROUP BY price
@@ -948,16 +972,12 @@ class PropertyController extends Controller
                 // $commericalAcc =Accommodation::whereIn('type', ['Both', 'Commercial'])->active()->approved()->pluck('id')->toArray();
                 $collection->whereIn('used_for', ['Both', 'Commercial']);
             }
-            if (isset($request->accommodation_id)) {
-                $collection->where('accommodation_id', $request->accommodation_id);
-            }
+            
 
             // if (isset($request->community)) {
             //     $collection->where('community_id', $request->community);
             // }
-            if (isset($request->bedrooms)) {
-                $collection->where('bedrooms', $request->bedrooms);
-            }
+            
 
             if (isset($request->bathroom)) {
                 $collection->where('bathrooms', $request->bathroom);
@@ -1015,19 +1035,59 @@ class PropertyController extends Controller
                 $multiPolygonString = 'MULTIPOLYGON(' . implode(',', $polygons) . ')';
                 $collection->whereRaw("ST_Within(Point(address_longitude, address_latitude), ST_GeomFromText(?))", [$multiPolygonString]);
             }
-
+            
             $amenities = $collection->get()->flatMap->amenities->unique('id');
+
+            $accommodations = $collection->get()->unique('accommodation_id')->pluck('accommodation_id');
+
+
+            // Extract 'bedrooms', filter out null values, and make unique
+            $bedrooms = $collection->pluck('bedrooms')
+                ->filter()   // Removes null values
+                ->unique();  // Removes duplicate values
+
+                $bedroomsCollection = collect($bedrooms);
+
+                // Sort the collection
+                $sortedBedrooms = $bedroomsCollection->sort(function ($a, $b) {
+                    // Custom sorting: "Studio" first, then numbers
+                    if ($a === 'Studio' && $b !== 'Studio') return -1;
+                    if ($a !== 'Studio' && $b === 'Studio') return 1;
+                
+                    // Convert numeric values for comparison
+                    $aInt = is_numeric($a) ? (int)$a : PHP_INT_MAX;
+                    $bInt = is_numeric($b) ? (int)$b : PHP_INT_MAX;
+                
+                    return $aInt <=> $bInt;
+                });
+                $uniqueBedrooms = $sortedBedrooms->values()->toArray();
+
+                if (isset($request->bedrooms)) {
+                    $collection->where('bedrooms', $request->bedrooms);
+                }
+
+                if (isset($request->accommodation_id)) {
+                    $collection->where('accommodation_id', $request->accommodation_id);
+                }
+                
 
             $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy('propertyOrder', 'asc')->paginate(1000);
 
             $properties->appends(request()->query());
 
-            
+            //return $this->success(new PropertyCollection($properties, $currencyINR));
            
             //PropertyListResource::using(['currencyINR' => $currencyINR]);
             return $this->success('Properties', [
                 'count' => $properties->count(),
                 'properties' => new PropertyCollection($properties, $currencyINR),
+                'uniqueBedrooms' => $uniqueBedrooms,
+                'accommodations' => Accommodation::whereIN('id',$accommodations)->get()->map(function($accommodation){
+                    return [
+                        'id'=>$accommodation->id,
+                        'name'=>$accommodation->name
+                    ];
+                }),
                 //'properties' => PropertyListResource::collection($properties)->response()->getData(true),
 
                 // 'properties' =>$propertiesResource = $properties->map(function ($property) use ($currencyINR) {
