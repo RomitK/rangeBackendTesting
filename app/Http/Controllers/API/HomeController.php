@@ -1447,21 +1447,23 @@ echo $curl_scraped_page;
                     $project = Project::where('slug', $request->project)->first();
                    
                     
-                    $currency = 'AED';
-                    $exchange_rate = 1;
-                    if(isset($request->currency)){
-                        $currenyExist = Currency::where('name', $request->currency)->exists();
-        
-                        if($currenyExist){
-                            $currency = $request->currency;
-                            $exchange_rate = Currency::where('name', $request->currency)->first()->value;
-                        }
-                        
-                    }
+                    
 
 
                     // Disable timestamps for this scope
                     Project::withoutTimestamps(function () use ($project) {
+
+                        $currency = 'AED';
+                        $exchange_rate = 1;
+                        if(isset($request->currency)){
+                            $currenyExist = Currency::where('name', $request->currency)->exists();
+            
+                            if($currenyExist){
+                                $currency = $request->currency;
+                                $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+                            }
+                            
+                        }
                        
                             $minBed = $project->subProjects->min('bedrooms');
                             $maxBed = $project->subProjects->max('bedrooms');
@@ -1508,8 +1510,9 @@ echo $curl_scraped_page;
                             $project->save();
                         });
                         $link = $project->brochure;
-                    $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
-                    CRMLeadJob::dispatch($data);
+                     
+                     $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
+                    // CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
                     $property = Property::where('slug', $request->property)->first();
                     if ($request->formName == 'propertyBrochure') {
