@@ -268,8 +268,8 @@ class GoyzerRentalProperties implements ShouldQueue
 
                     
                    
-                    if(Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->where('is_parent_project', 1)->exists()){
-                        $project = Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->where('is_parent_project', 1)->first();
+                    if(Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->orWhere('title_2', 'like', "%$projectName%")->where('is_parent_project', 1)->exists()){
+                        $project = Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->orWhere('title_2', 'like', "%$projectName%")->where('is_parent_project', 1)->first();
                     }else{
                         $project = new Project;
                       
@@ -291,12 +291,8 @@ class GoyzerRentalProperties implements ShouldQueue
                         $project->address = $community->name. " ". $CityName. " ".$CountryName;
                         //$project->completion_date = $HandoverDate;
 
-                        if ($HandoverDate > $today) {
-                            $project->completion_status_id = config('constants.underConstruction');
-                        } else {
-                            $project->completion_status_id = config('constants.completed');
-                        }
-
+                        
+                        $project->completion_status_id = config('constants.completed');
                         if($ProGooglecoordinates){
                             $project->address_latitude = $latitude;
                             $project->address_longitude = $longitude;
@@ -511,7 +507,11 @@ class GoyzerRentalProperties implements ShouldQueue
                     $property->user_id = $user->id;
                     $property->agent_id = $agentD->id;
                 
-                    $property->completion_status_id = 286;
+                    if($project->completion_status_id == 289){
+                        $property->completion_status_id = 291;
+                    }else{
+                        $property->completion_status_id = 286;
+                    }
                     $property->community_id = $community->id;
                     $property->accommodation_id = $propertyType->id;
                     $property->project_id = $project->id;

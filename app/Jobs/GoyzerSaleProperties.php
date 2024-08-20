@@ -272,8 +272,8 @@ class GoyzerSaleProperties implements ShouldQueue
 
                     
                    
-                    if(Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->where('is_parent_project', 1)->exists()){
-                        $project = Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->where('is_parent_project', 1)->first();
+                    if(Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->orWhere('title_2', 'like', "%$projectName%")->where('is_parent_project', 1)->exists()){
+                        $project = Project::where('title', 'like', "%$projectName%")->orWhere('title_1', 'like', "%$projectName%")->orWhere('title_2', 'like', "%$projectName%")->where('is_parent_project', 1)->first();
                     }else{
                         $project = new Project;
                       
@@ -295,12 +295,8 @@ class GoyzerSaleProperties implements ShouldQueue
                         $project->address = $community->name. " ". $CityName. " ".$CountryName;
                         //$project->completion_date = $HandoverDate;
 
-                        if ($HandoverDate > $today) {
-                            $project->completion_status_id = config('constants.underConstruction');
-                        } else {
-                            $project->completion_status_id = config('constants.completed');
-                        }
-
+                       
+                        $project->completion_status_id = config('constants.completed');
                         if($ProGooglecoordinates){
                             $project->address_latitude = $latitude;
                             $project->address_longitude = $longitude;
@@ -611,7 +607,7 @@ class GoyzerSaleProperties implements ShouldQueue
 
                         foreach ($galleryImages as $key => $img) {
 
-                            if ($imageCount >= 2) {
+                            if ($imageCount >= 4) {
                                 break; // Exit the loop if 4 images have been processed
                             }
 
