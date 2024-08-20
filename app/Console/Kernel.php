@@ -25,9 +25,9 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->call(function () {
-            Log::info('start everyMinute run at-' . Carbon::now());
-        })->everyMinute();
+        // $schedule->call(function () {
+        //     Log::info('start everyMinute run at-' . Carbon::now());
+        // })->everyMinute();
 
         $schedule->job(new LatestCurrencyJob)->daily()->at('01:00');
 
