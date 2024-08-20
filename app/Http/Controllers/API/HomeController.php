@@ -1373,171 +1373,168 @@ echo $curl_scraped_page;
     }
     public function verifyOtp(Request $request)
     {
-        
-        $project = Project::where('slug', $request->project)->first();
-         // Disable timestamps for this scope
-         
-            try {
-                $minBed = $project->subProjects->min('bedrooms');
-                $maxBed = $project->subProjects->max('bedrooms');
-                if ($minBed != $maxBed) {
-                    if ($maxBed === "Studio") {
-                        $bedroom = $maxBed . "-" . $minBed;
-                    } else {
-                        $bedroom = $minBed . "-" . $maxBed;
-                    }
-                } else {
-                    $bedroom = $minBed;
-                }
-                $area_unit = 'sq ft';
+        $data = [
+            'email' => $request->email,
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'message' => "Page Url:" . $request->page . " Message-" . $request->message,
+        ];
 
-                $starting_price = 0;
-                $dateStr = $project->completion_date;
-                $month = date("n", strtotime($dateStr));
-                $yearQuarter = ceil($month / 3);
-
-                view()->share([
-                    'project' => $project,
-                    'area_unit' => $area_unit,
-                    'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
-                    'bedrooms' => $bedroom,
-                    'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
-                    'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
-                ]);
-                $pdf = PDF::loadView('pdf.projectBrochure');
-                //return $pdf->stream();
-                //return $pdf->download($project->title.' Brochure.pdf');
-
-                // $pdfContent = $this->generateBrochure($project);
-                $pdfContent = $pdf->output();
-
-                $project->clearMediaCollection('brochures');
-
-                $project->addMediaFromString($pdfContent)
-                    ->usingFileName($project->title . '-brochure.pdf')
-                    ->toMediaCollection('brochures', 'projectFiles');
-
-                $project->save();
-
-                $project->brochure_link = $project->brochure;
-                $project->updated_brochure = 1;
-                $project->save();
-
-                return $this->success('Form Submit', ['verify' => true, 'link' => $project->brochure_link], 200);
-
-            } catch (\Exception $error) {
-                return $this->failure($error->getMessage());
-
-                //return redirect()->route('dashboard.projects.index')->with('error', $error->getMessage());
+        try {
+            $link = null;
+            $messages = [
+                'fullPhoneNumber' => 'Phone field is Required ',
+                'otp' => 'OTP field is Required',
+            ];
+            $validator = Validator::make($request->all(), [
+                'fullPhoneNumber' => 'required',
+                'otp' => 'required',
+            ], $messages);
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 401);
             }
-       
+
+            $otpModel =  OtpVerification::where('phone', str_replace(' ', '', $request->fullPhoneNumber))
+                ->where('otp', $request->otp)
+                ->where('is_used', 0)
+                ->where('expired_at', '>', now()->format('Y-m-d H:i:s'))
+                ->first();
+
+            if ($otpModel) {
+                $otpModel->is_used = 1;
+                $otpModel->save();
+                if ($request->has('superformName') && $request->superformName == "DubaiGuides") {
+                    Log::info("DubaiGuides");
+                    if ($request->has('sourceId')) {
+                        //Log::info("sourceId-" . $request->sourceId);
+                        //$data = $this->CRMCampaignManagement($data, 262, 468, $request->sourceId);
+                        $data = $this->CRMCampaignManagement($data, 270, 495, '', '', true, $request->formName, $request->formName);
+                        CRMLeadJob::dispatch($data);
+                    }
+                }
+                if ($request->formName == 'homePageBrochure') {
+                    $link = PageContent::WherePageName(config('constants.home.name'))->first();
+                    $link = $link->brochure;
+
+                    $data = $this->CRMCampaignManagement($data, 270, 490, 2582);
+                    CRMLeadJob::dispatch($data);
+                } elseif ($request->formName == 'homePageCompanyProfile') {
+                    $link = PageContent::WherePageName(config('constants.home.name'))->first();
+                    $link = $link->ourProfile;
+
+                    $data = $this->CRMCampaignManagement($data, 270, 490, 2677);
+                    CRMLeadJob::dispatch($data);
+                }
+                elseif ($request->formName == 'GoldenVisaGuideForm') {
+
+                    $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
+                    $link = $link->goldenVisa;
+                } elseif ($request->formName == 'BuyerGuideForm') {
+                    $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
+                    $link = $link->buyerGuide;
+                } elseif ($request->formName == 'InvestmentGuideForm') {
+                    $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
+                    $link = $link->propertiesGuide;
+                } elseif ($request->formName == 'SellerGuideDownload') {
+
+                    //$data = $this->CRMCampaignManagement($data, 258, 463, 2527);
+                    $data = $this->CRMCampaignManagement($data, 270, 496, '', '', true, $request->formName, $request->formName);
+                    CRMLeadJob::dispatch($data);
+
+                    $link = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
+                    $link =  $link->sellerGuide;
+                } elseif ($request->formName == 'projectBrochure') {
+                    $project = Project::where('slug', $request->project)->first();
+                   
+                    
+                    $currency = 'AED';
+                    $exchange_rate = 1;
+                    if(isset($request->currency)){
+                        $currenyExist = Currency::where('name', $request->currency)->exists();
+        
+                        if($currenyExist){
+                            $currency = $request->currency;
+                            $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+                        }
+                        
+                    }
 
 
+                    // Disable timestamps for this scope
+                    Project::withoutTimestamps(function () use ($project) {
+                       
+                            $minBed = $project->subProjects->min('bedrooms');
+                            $maxBed = $project->subProjects->max('bedrooms');
+                            if ($minBed != $maxBed) {
+                                if ($maxBed === "Studio") {
+                                    $bedroom = $maxBed . "-" . $minBed;
+                                } else {
+                                    $bedroom = $minBed . "-" . $maxBed;
+                                }
+                            } else {
+                                $bedroom = $minBed;
+                            }
+                            $area_unit = 'sq ft';
 
-        // $data = [
-        //     'email' => $request->email,
-        //     'name' => $request->name,
-        //     'phone' => $request->phone,
-        //     'message' => "Page Url:" . $request->page . " Message-" . $request->message,
-        // ];
+                            $starting_price = 0;
+                            $dateStr = $project->completion_date;
+                            $month = date("n", strtotime($dateStr));
+                            $yearQuarter = ceil($month / 3);
 
-        // try {
-        //     $link = null;
-        //     $messages = [
-        //         'fullPhoneNumber' => 'Phone field is Required ',
-        //         'otp' => 'OTP field is Required',
-        //     ];
-        //     $validator = Validator::make($request->all(), [
-        //         'fullPhoneNumber' => 'required',
-        //         'otp' => 'required',
-        //     ], $messages);
-        //     if ($validator->fails()) {
-        //         return response()->json(['error' => $validator->errors()], 401);
-        //     }
+                            view()->share([
+                                'currency' => $currency,
+                                'exchange_rate' => $exchange_rate,
+                                'project' => $project,
+                                'area_unit' => $area_unit,
+                                'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
+                                'bedrooms' => $bedroom,
+                                'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
+                                'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
+                            ]);
+                            $pdf = PDF::loadView('pdf.projectBrochure');
+                           
+                            $pdfContent = $pdf->output();
 
-        //     $otpModel =  OtpVerification::where('phone', str_replace(' ', '', $request->fullPhoneNumber))
-        //         ->where('otp', $request->otp)
-        //         ->where('is_used', 0)
-        //         ->where('expired_at', '>', now()->format('Y-m-d H:i:s'))
-        //         ->first();
+                            $project->clearMediaCollection('brochures');
 
-        //     if ($otpModel) {
-        //         $otpModel->is_used = 1;
-        //         $otpModel->save();
-        //         if ($request->has('superformName') && $request->superformName == "DubaiGuides") {
-        //             Log::info("DubaiGuides");
-        //             if ($request->has('sourceId')) {
-        //                 //Log::info("sourceId-" . $request->sourceId);
-        //                 //$data = $this->CRMCampaignManagement($data, 262, 468, $request->sourceId);
-        //                 $data = $this->CRMCampaignManagement($data, 270, 495, '', '', true, $request->formName, $request->formName);
-        //                 CRMLeadJob::dispatch($data);
-        //             }
-        //         }
-        //         if ($request->formName == 'homePageBrochure') {
-        //             $link = PageContent::WherePageName(config('constants.home.name'))->first();
-        //             $link = $link->brochure;
+                            $project->addMediaFromString($pdfContent)
+                                ->usingFileName($project->title . '-brochure.pdf')
+                                ->toMediaCollection('brochures', 'projectFiles');
 
-        //             $data = $this->CRMCampaignManagement($data, 270, 490, 2582);
-        //             CRMLeadJob::dispatch($data);
-        //         } elseif ($request->formName == 'homePageCompanyProfile') {
-        //             $link = PageContent::WherePageName(config('constants.home.name'))->first();
-        //             $link = $link->ourProfile;
+                            $project->save();
 
-        //             $data = $this->CRMCampaignManagement($data, 270, 490, 2677);
-        //             CRMLeadJob::dispatch($data);
-        //         }
-        //         elseif ($request->formName == 'GoldenVisaGuideForm') {
+                            $project->brochure_link = $project->brochure;
+                            $project->updated_brochure = 1;
+                            $project->save();
+                        });
+                        $link = $project->brochure;
+                    $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
+                    CRMLeadJob::dispatch($data);
+                } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
+                    $property = Property::where('slug', $request->property)->first();
+                    if ($request->formName == 'propertyBrochure') {
+                        $link = $property->brochure;
+                    }
 
-        //             $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
-        //             $link = $link->goldenVisa;
-        //         } elseif ($request->formName == 'BuyerGuideForm') {
-        //             $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
-        //             $link = $link->buyerGuide;
-        //         } elseif ($request->formName == 'InvestmentGuideForm') {
-        //             $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
-        //             $link = $link->propertiesGuide;
-        //         } elseif ($request->formName == 'SellerGuideDownload') {
+                    $data['message'] = "Property URL-" . $property->slug;
+                    //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
+                    $email = $property->agent ? $property->agent->email : '';
 
-        //             //$data = $this->CRMCampaignManagement($data, 258, 463, 2527);
-        //             $data = $this->CRMCampaignManagement($data, 270, 496, '', '', true, $request->formName, $request->formName);
-        //             CRMLeadJob::dispatch($data);
+                    if ($email == 'lester@range.ae') {
+                        $email = "";
+                    }
+                    $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
 
-        //             $link = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
-        //             $link =  $link->sellerGuide;
-        //         } elseif ($request->formName == 'projectBrochure') {
-        //             $project = Project::where('slug', $request->project)->first();
-        //             $link = $project->brochure;
-        //             //$data = $this->CRMCampaignManagement($data, 266, 480, "", '', true, $project->title);
-
-        //             $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
-
-        //             Log::info($data);
-        //             CRMLeadJob::dispatch($data);
-        //         } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
-        //             $property = Property::where('slug', $request->property)->first();
-        //             if ($request->formName == 'propertyBrochure') {
-        //                 $link = $property->brochure;
-        //             }
-
-        //             $data['message'] = "Property URL-" . $property->slug;
-        //             //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
-        //             $email = $property->agent ? $property->agent->email : '';
-
-        //             if ($email == 'lester@range.ae') {
-        //                 $email = "";
-        //             }
-        //             $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
-
-        //             Log::info($data);
-        //             CRMLeadJob::dispatch($data);
-        //         }
-        //         return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
-        //     } else {
-        //         return $this->success('Form Submit', ['verify' => false], 200);
-        //     }
-        // } catch (\Exception $exception) {
-        //     return $this->failure($exception->getMessage());
-        // }
+                    Log::info($data);
+                    CRMLeadJob::dispatch($data);
+                }
+                return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
+            } else {
+                return $this->success('Form Submit', ['verify' => false], 200);
+            }
+        } catch (\Exception $exception) {
+            return $this->failure($exception->getMessage());
+        }
     }
 
     function CRMCampaignManagementCRM($data)

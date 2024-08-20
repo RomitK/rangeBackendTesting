@@ -364,7 +364,7 @@
                 <tr>
                     <td>
                         <div class="vtTextBXox">
-                            <h3 class="text-primary">AED {{ number_format($starting_price) }}</h3>
+                            <h3 class="text-primary">{{$currency}} {{ number_format($starting_price * $exchange_rate) }}</h3>
                         </div>
                     </td>
                     <td>
@@ -476,7 +476,7 @@
                             <p class="tblTdText text-secondary  text-center">{{ $sub->bedrooms }}</p>
                         </td>
                         <td>
-                            <p class="tblTdText text-secondary">AED {{ number_format(intval($sub->starting_price)) }}
+                            <p class="tblTdText text-secondary">{{$currency}} {{ number_format(intval($sub->starting_price * $exchange_rate)) }}
                             </p>
                         </td>
                     </tr>
