@@ -1448,16 +1448,16 @@ echo $curl_scraped_page;
                    
                     
                     $currency = 'AED';
-                        $exchange_rate = 1;
-                        if(isset($request->currency)){
-                            $currenyExist = Currency::where('name', $request->currency)->exists();
+                    $exchange_rate = 1;
+                    if(isset($request->currency)){
+                        $currenyExist = Currency::where('name', $request->currency)->exists();
             
-                            if($currenyExist){
-                                $currency = $request->currency;
-                                $exchange_rate = Currency::where('name', $request->currency)->first()->value;
-                            }
-                            
+                        if($currenyExist){
+                            $currency = $request->currency;
+                            $exchange_rate = Currency::where('name', $request->currency)->first()->value;
                         }
+                            
+                    }
 
 
                     // Disable timestamps for this scope
@@ -1511,17 +1511,65 @@ echo $curl_scraped_page;
                             $project->save();
 
                             
-                        });
+                    });
                         
-                        $link = $project->brochure_link;
+                    $link = $project->brochure_link;
 
 
                      $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
                     // CRMLeadJob::dispatch($data);
                 } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
                     $property = Property::where('slug', $request->property)->first();
+
+
+                    $currency = 'AED';
+                    $exchange_rate = 1;
+                    if(isset($request->currency)){
+                        $currenyExist = Currency::where('name', $request->currency)->exists();
+            
+                        if($currenyExist){
+                            $currency = $request->currency;
+                            $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+                        }
+                            
+                    }
+
                     if ($request->formName == 'propertyBrochure') {
-                        $link = $property->brochure;
+
+                        Property::withoutTimestamps(function () use ($property, $currency, $exchange_rate) {
+                            $property->brochure_link = null;
+                            $property->save();
+                            
+                           
+                            view()->share(['property' => $property]);
+                            $pdf = PDF::loadView('pdf.propertyBrochure');
+                            $pdfContent = $pdf->output();
+        
+                            $saleOffer = PDF::loadView('pdf.propertySaleOffer');
+                            $saleOfferPdf = $saleOffer->output();
+                            //return $saleOfferPdf->stream();
+        
+                            $property->clearMediaCollection('brochures');
+                            // $property->clearMediaCollection('saleOffers');
+        
+        
+                            $property->addMediaFromString($pdfContent)
+                                ->usingFileName($property->name . '-brochure.pdf')
+                                ->toMediaCollection('brochures', 'propertyFiles');
+        
+                            // $property->addMediaFromString($saleOfferPdf)
+                            //     ->usingFileName($property->name . '-saleoffer.pdf')
+                            //     ->toMediaCollection('saleOffers', 'propertyFiles');
+        
+                            $property->save();
+                            $property->brochure_link = $property->brochure;
+                            $property->updated_brochure = 1;
+                            $property->save();
+                                
+                        });
+
+                        $link = $property->brochure_link;
+
                     }
 
                     $data['message'] = "Property URL-" . $property->slug;
@@ -1534,7 +1582,7 @@ echo $curl_scraped_page;
                     $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
 
                     Log::info($data);
-                    CRMLeadJob::dispatch($data);
+                   // CRMLeadJob::dispatch($data);
                 }
                 return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
             } else {

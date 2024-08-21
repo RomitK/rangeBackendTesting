@@ -413,22 +413,25 @@
             $yearQuarter = ceil($month / 3);
             $handOver = 'Q' . $yearQuarter . ' ' . date('Y', strtotime($dateStr));
         }
-        $a_fees = $property->price / 0.04;
+        $a_fees = ($property->price * $exchange_rate) / 0.04;
         $b_fees = 540;
         $c_fees = 1000;
         $d_fees = 1000;
         $subTotal = $a_fees + $b_fees + $c_fees + $d_fees;
-        $total = $property->price + $subTotal;
-        if ($property->property_source == 'xml') {
-            $gallery = $property->propertygallery->map(function ($img) {
-                return [
-                    'id' => 'gallery_' . $img->id,
-                    'path' => $img->galleryimage,
-                ];
-            });
-        } else {
-            $gallery = $property->subImages;
-        }
+        $total = ($property->price * $exchange_rate) + $subTotal;
+        // if ($property->property_source == 'xml') {
+        //     $gallery = $property->propertygallery->map(function ($img) {
+        //         return [
+        //             'id' => 'gallery_' . $img->id,
+        //             'path' => $img->galleryimage,
+        //         ];
+        //     });
+        // } else {
+        //     $gallery = $property->subImages;
+        // }
+
+        $gallery = $property->subImages;
+
         if (count($gallery) > 0) {
             $bannerImage = $property->getMedia('mainImages')->first();
             $bannerImage = $bannerImage->getUrl();
@@ -460,9 +463,9 @@
                             {{ $property->short_description }}
                         </td>
 
-                        @if ($property->project->qr)
+                        @if ($property->qr)
                             <td>
-                                <img src="{{ $property->project->qr }}" alt="{{ $property->project->qr }}"
+                                <img src="{{ $property->qr }}" alt="{{ $property->qr }}"
                                     style="padding:10px">
                             </td>
                         @endif
@@ -506,12 +509,12 @@
                                 @if ($property->project)
                                     <tr>
                                         <td class="clum3Bar bg-primery">Permit Number</td>
-                                        <td class="clum2Bar bg-gray">{{ $property->project->permit_number }}</td>
+                                        <td class="clum2Bar bg-gray">{{ $property->permit_number }}</td>
                                     </tr>
                                 @endif
                                 <tr>
                                     <td class="clum2Bar bg-primery">Gross Price</td>
-                                    <td class="clum3Bar bg-gray">AED {{ number_format($property->price) }}</td>
+                                    <td class="clum3Bar bg-gray">{{$currency}} {{ number_format($property->price * $exchange_rate ) }}</td>
                                 </tr>
 
                             </table>
