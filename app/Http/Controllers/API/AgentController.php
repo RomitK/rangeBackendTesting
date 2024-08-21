@@ -13,7 +13,9 @@ use App\Models\{
     Developer,
     Community,
     Project,
-    WebsiteSetting
+    WebsiteSetting,
+    Property,
+    Currency
 };
 use Auth;
 use App\Http\Resources\{
@@ -21,7 +23,7 @@ use App\Http\Resources\{
     SingleAgentResource,
     ManagementListResource,
     AgentListResource,
-    Property
+    
 };
 use PDF;
 
