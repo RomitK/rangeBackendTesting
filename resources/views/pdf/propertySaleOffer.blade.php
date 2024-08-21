@@ -276,9 +276,9 @@
         }
 
         $a_fees = ($property->price * $exchange_rate ) / 0.04;
-        $b_fees = 540;
-        $c_fees = 1000;
-        $d_fees = 1000;
+        $b_fees = 540 * $exchange_rate;
+        $c_fees = 1000 * $exchange_rate;
+        $d_fees = 1000 * $exchange_rate;
         $subTotal = $a_fees + $b_fees + $c_fees + $d_fees;
         $total = $property->price + $subTotal;
     @endphp
