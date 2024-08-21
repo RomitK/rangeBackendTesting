@@ -312,15 +312,18 @@
 
                     </tr>
                     <tr>
+                        <table class="clmTbl">
+                            <tr>
+                                <td class="clum3Bar bg-primery">Product Name</td>
+                                <td class="clum2Bar bg-gray">{{ $property->name }}</td>
+                            </tr>
+                        </table>
+                    </tr>
+                    <tr>
                         <td style="width:100%">
                             <table class="gridTable">
                                 <td class="cell3Td rightBdr">
-                                    <table class="clmTbl">
-                                        <tr>
-                                            <td class="clum3Bar bg-primery">Product Name</td>
-                                            <td class="clum2Bar bg-gray">{{ $property->name }}</td>
-                                        </tr>
-                                    </table>
+                                    
                                     <table class="clmTbl">
                                         <tr>
                                             <td class="clum3Bar bg-primery">Community Name</td>
