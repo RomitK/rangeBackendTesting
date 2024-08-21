@@ -11,7 +11,8 @@ use App\Models\{
     PageTag,
     Property,
     Project,
-    WebsiteSetting
+    WebsiteSetting,
+    Currency
 };
 
 use Illuminate\Http\Request;
@@ -118,8 +119,24 @@ class HomeController extends Controller
 
     public function singlePropertySaleOffer($slug)
     {
+
+
+        $currency = 'AED';
+        $exchange_rate = 1;
+        if(isset($request->currency)){
+            $currenyExist = Currency::where('name', $request->currency)->exists();
+
+            if($currenyExist){
+                $currency = $request->currency;
+                $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+            }
+                
+        }
+
         $property = Property::with('communities', 'project')->where('slug', $slug)->first();
         view()->share([
+            'currency' => $currency,
+            'exchange_rate' => $exchange_rate,
             'property' => $property,
         ]);
 
