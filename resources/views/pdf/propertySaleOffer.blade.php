@@ -106,7 +106,7 @@
     }
 
     .clum33Bar {
-        width: 60%;
+        width: 67%;
     }
 
     .clum2Bar {
@@ -114,7 +114,7 @@
     }
 
     .clum22Bar {
-        width: 30%;
+        width: 33%;
     }
 
 
