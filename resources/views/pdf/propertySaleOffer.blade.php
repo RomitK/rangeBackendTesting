@@ -105,9 +105,18 @@
         width: 60%;
     }
 
+    .clum33Bar {
+        width: 60%;
+    }
+
     .clum2Bar {
         width: 40%;
     }
+
+    .clum22Bar {
+        width: 30%;
+    }
+
 
     .clum3Bar.bg-primery {
         background-color: #2879bc;
@@ -315,8 +324,8 @@
                     <tr>
                         <table class="clmTbl">
                             <tr>
-                                <td class="clum2Bar bg-primery">Product Name</td>
-                                <td class="clum3Bar bg-gray">{{ $property->name }}</td>
+                                <td class="clum22Bar bg-primery">Product Name</td>
+                                <td class="clum33Bar bg-gray">{{ $property->name }}</td>
                             </tr>
                         </table>
                     </tr>
