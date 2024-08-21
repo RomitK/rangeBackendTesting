@@ -315,7 +315,7 @@
                         <table class="clmTbl">
                             <tr>
                                 <td class="clum3Bar bg-primery">Product Name</td>
-                                <td class="clum2Bar bg-gray">{{ $property->name }}</td>
+                                <td class="clum2Bar bg-gray" colspan="2">{{ $property->name }}</td>
                             </tr>
                         </table>
                     </tr>
@@ -345,13 +345,7 @@
                                                 </td>
                                             </tr>
                                         @endif
-                                        @if ($property->qr)
-                                            <td class="clum3Bar bg-primery">QR Code</td>
-                                            <td class="clum2Bar bg-gray">
-                                                <img src="{{ $property->qr }}"
-                                                    alt="{{ $property->qr }}">
-                                            </td>
-                                        @endif
+                                        
 
                                     </table>
                                 </td>
@@ -369,6 +363,13 @@
                                             <td class="clum2Bar bg-primery">Net Price</td>
                                             <td class="clum3Bar bg-gray">{{$currency}} {{ number_format($total) }}</td>
                                         </tr>
+                                        @if ($property->qr)
+                                            <td class="clum3Bar bg-primery">QR Code</td>
+                                            <td class="clum2Bar bg-gray">
+                                                <img src="{{ $property->qr }}"
+                                                    alt="{{ $property->qr }}">
+                                            </td>
+                                        @endif
 
                                     </table>
                                 </td>
