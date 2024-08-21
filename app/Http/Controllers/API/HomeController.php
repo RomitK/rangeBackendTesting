@@ -1541,7 +1541,10 @@ echo $curl_scraped_page;
                             $property->save();
                             
                            
-                            view()->share(['property' => $property]);
+                            view()->share(['property' => $property, 
+                                'currency' => $currency,
+                                'exchange_rate' => $exchange_rate
+                            ]);
                             $pdf = PDF::loadView('pdf.propertyBrochure');
                             $pdfContent = $pdf->output();
         
