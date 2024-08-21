@@ -348,7 +348,7 @@ return [
         ''=>'All',
         'Leadership'=>'Leadership',
         'Sales' => 'Sales',
-        'Operation'=>'Operation',
+        'Operations'=>'Operations',
         'Marketing'=> 'Marketing',
         'Accounts'=> 'Accounts',
 
@@ -364,7 +364,7 @@ return [
  'departments' => [
         'Leadership',
         'Sales',
-        'Operation'=>'Operation',
+        'Operations'=>'Operations',
         'Marketing'=> 'Marketing',
         'Accounts'=> 'Accounts',
 
