@@ -254,13 +254,14 @@
         color: #fff;
         font-size: 24px;
         font-weight: 600;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
 
     .footertextBox p {
         color: #fff;
         font-size: 18px;
         font-weight: 400;
+        margin-bottom: 15px;
     }
 </style>
 
@@ -314,14 +315,15 @@
                     <tr>
                         <table class="clmTbl">
                             <tr>
-                                <td class="clum3Bar bg-primery">Product Name</td>
-                                <td class="clum2Bar bg-gray" colspan="2">{{ $property->name }}</td>
+                                <td class="clum2Bar bg-primery">Product Name</td>
+                                <td class="clum3Bar bg-gray">{{ $property->name }}</td>
                             </tr>
                         </table>
                     </tr>
                     <tr>
                         <td style="width:100%">
                             <table class="gridTable">
+                                
                                 <td class="cell3Td rightBdr">
                                     
                                     <table class="clmTbl">
@@ -363,19 +365,24 @@
                                             <td class="clum2Bar bg-primery">Net Price</td>
                                             <td class="clum3Bar bg-gray">{{$currency}} {{ number_format($total) }}</td>
                                         </tr>
-                                        @if ($property->qr)
-                                            <td class="clum3Bar bg-primery">QR Code</td>
-                                            <td class="clum2Bar bg-gray">
-                                                <img src="{{ $property->qr }}"
-                                                    alt="{{ $property->qr }}">
-                                            </td>
-                                        @endif
+                                        
 
                                     </table>
                                 </td>
                             </table>
                         </td>
                     </tr>
+                    @if ($property->qr)
+                    <tr>
+                        <table class="clmTbl">
+                            <tr>
+                                <td class="clum2Bar bg-primery">QR Code</td>
+                                <td class="clum3Bar bg-gray" colspan="2"> <img src="{{ $property->qr }}"
+                                    alt="{{ $property->qr }}"></td>
+                            </tr>
+                        </table>
+                    </tr>
+                    @endif
                 </table>
                 <table class="gridMainTable">
                     <tr>
@@ -492,7 +499,7 @@
             </td>
         </tr>
     </table>
-    <div class="page_break"></div>
+    {{-- <div class="page_break"></div> --}}
     <!--- First Page End --->
     @if (count($property->project->mPaymentPlans) > 0)
         <!--- 2 Page Start --->
