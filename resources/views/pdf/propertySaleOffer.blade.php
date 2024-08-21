@@ -275,7 +275,7 @@
             $handOver = 'Q' . $yearQuarter . ' ' . date('Y', strtotime($dateStr));
         }
 
-        $a_fees = $property->price / 0.04;
+        $a_fees = ($property->price * $exchange_rate ) / 0.04;
         $b_fees = 540;
         $c_fees = 1000;
         $d_fees = 1000;
@@ -320,6 +320,8 @@
                                             <td class="clum3Bar bg-primery">Product Name</td>
                                             <td class="clum2Bar bg-gray">{{ $property->name }}</td>
                                         </tr>
+                                    </table>
+                                    <table class="clmTbl">
                                         <tr>
                                             <td class="clum3Bar bg-primery">Community Name</td>
                                             <td class="clum2Bar bg-gray">{{ $property->project->mainCommunity->name }}
@@ -336,15 +338,15 @@
                                         @if ($property->project)
                                             <tr>
                                                 <td class="clum3Bar bg-primery">Permit Number</td>
-                                                <td class="clum2Bar bg-gray">{{ $property->project->permit_number }}
+                                                <td class="clum2Bar bg-gray">{{ $property->permit_number }}
                                                 </td>
                                             </tr>
                                         @endif
-                                        @if ($property->project->qr)
-                                            <td class="clum3Bar bg-primery">Permit Number</td>
+                                        @if ($property->qr)
+                                            <td class="clum3Bar bg-primery">QR Code</td>
                                             <td class="clum2Bar bg-gray">
-                                                <img src="{{ $property->project->qr }}"
-                                                    alt="{{ $property->project->qr }}">
+                                                <img src="{{ $property->qr }}"
+                                                    alt="{{ $property->qr }}">
                                             </td>
                                         @endif
 
@@ -354,7 +356,7 @@
                                     <table class="clmTbl">
                                         <tr class="htFix">
                                             <td class="clum2Bar bg-primery">Gross Price</td>
-                                            <td class="clum3Bar bg-gray">AED {{ number_format($property->price) }}</td>
+                                            <td class="clum3Bar bg-gray">{{$currency}} {{ number_format($property->price * $exchange_rate) }}</td>
                                         </tr>
                                         <tr class="htFix">
                                             <td class="clum2Bar bg-primery">VAT</td>
@@ -362,7 +364,7 @@
                                         </tr>
                                         <tr class="htFix">
                                             <td class="clum2Bar bg-primery">Net Price</td>
-                                            <td class="clum3Bar bg-gray">AED {{ number_format($total) }}</td>
+                                            <td class="clum3Bar bg-gray">{{$currency}} {{ number_format($total) }}</td>
                                         </tr>
 
                                     </table>
@@ -438,16 +440,16 @@
                                     <table class="clmTbl">
                                         <tr>
                                             <td class="clum2Bar bg-primery">Land Registration Fee (A)*</td>
-                                            <td class="clum3Bar bg-gray">AED {{ number_format($a_fees) }}</td>
+                                            <td class="clum3Bar bg-gray">{{$currency}} {{ number_format($a_fees) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="clum2Bar bg-primery">OQOOD Fee(C)</td>
-                                            <td class="clum3Bar bg-gray">AED {{ number_format($c_fees) }}</td>
+                                            <td class="clum3Bar bg-gray">{{$currency}}  {{ number_format($c_fees) }}</td>
                                         </tr>
 
                                         <tr>
                                             <td class="clum2Bar bg-primery">Total Fees to DLD(A+B+C+D+E)</td>
-                                            <td class="clum3Bar bg-gray">AED {{ number_format($subTotal) }}</td>
+                                            <td class="clum3Bar bg-gray">{{$currency}}  {{ number_format($subTotal) }}</td>
                                         </tr>
 
                                     </table>
@@ -456,11 +458,11 @@
                                     <table class="clmTbl">
                                         <tr>
                                             <td class="clum3Bar bg-primery">Title Deed (B)</td>
-                                            <td class="clum2Bar bg-gray">AED {{ number_format($b_fees) }}</td>
+                                            <td class="clum2Bar bg-gray">{{$currency}}  {{ number_format($b_fees) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="clum3Bar bg-primery">DSR Fees(D)</td>
-                                            <td class="clum2Bar bg-gray">AED {{ number_format($d_fees) }}</td>
+                                            <td class="clum2Bar bg-gray">{{$currency}}  {{ number_format($d_fees) }}</td>
                                         </tr>
                                         <tr>
                                             <td class="clum2Bar bg-primery">Other Fee(E)</td>
@@ -546,8 +548,8 @@
         <table class="MapTable">
             <tr>
                 <td>
-                    <table>
-                        <tr>
+                    <table style="text-align:center">
+                        <tr style="text-align:center">
                             <td
                                 style="
 					 	    	      width:180px; 
@@ -582,8 +584,8 @@
         <table class="MapTable">
             <tr>
                 <td>
-                    <table>
-                        <tr>
+                    <table style="text-align:center">
+                        <tr style="text-align:center">
                             <td
                                 style="
 					 	    	       width:180px; 
@@ -617,7 +619,7 @@
     <table class="footerTable">
         <tr>
             <td class="pageLogoBox" style="text-align:center">
-                <img src="{{ asset('frontend/assets/images/logo.png') }}" class="pageLogo">
+                <img src="{{ asset('frontend/assets/images/logo.png') }}" class="pageLogo" style="padding-bottom: 2%">
             </td>
         </tr>
         <tr>

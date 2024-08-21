@@ -1574,6 +1574,36 @@ echo $curl_scraped_page;
                         $link = $property->brochure_link;
 
                     }
+                    if($request->formName == 'propertySaleOfferDownloadForm')
+                    {
+                        Property::withoutTimestamps(function () use ($property, $currency, $exchange_rate) {
+                            $property->saleoffer_link = null;
+                            $property->save();
+                            
+                           
+                            view()->share(['property' => $property, 
+                                'currency' => $currency,
+                                'exchange_rate' => $exchange_rate
+                            ]);
+    
+        
+                            $saleOffer = PDF::loadView('pdf.propertySaleOffer');
+                            $saleOfferPdf = $saleOffer->output();
+                         
+                            $property->clearMediaCollection('saleOffers');
+        
+                            $property->addMediaFromString($saleOfferPdf)
+                                ->usingFileName($property->name . '-saleoffer.pdf')
+                                ->toMediaCollection('saleOffers', 'propertyFiles');
+        
+                            $property->save();
+                            $property->saleoffer_link = $property->saleOffer;
+                            $property->save();
+                                
+                        });
+
+                        $link = $property->saleoffer_link;
+                    }
 
                     $data['message'] = "Property URL-" . $property->slug;
                     //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);

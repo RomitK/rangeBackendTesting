@@ -174,6 +174,19 @@ class ProjectController extends Controller
 
     public function updateBrochure(Project $project)
     {
+
+        $currency = 'AED';
+        $exchange_rate = 1;
+        if(isset($request->currency)){
+            $currenyExist = Currency::where('name', $request->currency)->exists();
+            
+            if($currenyExist){
+                $currency = $request->currency;
+                $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+            }
+                            
+        }
+
         // Disable timestamps for this scope
         Project::withoutTimestamps(function () use ($project) {
             try {
@@ -196,6 +209,8 @@ class ProjectController extends Controller
                 $yearQuarter = ceil($month / 3);
 
                 view()->share([
+                    'currency' => $currency,
+                    'exchange_rate' => $exchange_rate,
                     'project' => $project,
                     'area_unit' => $area_unit,
                     'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
