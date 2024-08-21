@@ -20,8 +20,10 @@ use App\Http\Resources\{
     SingleManagementResource,
     SingleAgentResource,
     ManagementListResource,
-    AgentListResource
+    AgentListResource,
+    Property
 };
+use PDF;
 
 class AgentController extends Controller
 {
