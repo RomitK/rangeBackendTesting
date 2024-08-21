@@ -40,7 +40,55 @@ class AgentController extends Controller
     {
         try {
 
-            return $this->success('check Employee Id', Agent::where('employeeId', $request->employeeId)->active()->exists(), 200);
+                $currency = 'AED';
+                $exchange_rate = 1;
+                if(isset($request->currency)){
+                    $currenyExist = Currency::where('name', $request->currency)->exists();
+        
+                    if($currenyExist){
+                        $currency = $request->currency;
+                        $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+                    }
+                        
+                }
+
+                $link = null;
+                if($request->formName == 'propertySaleOfferDownloadForm')
+                {
+                    $property = Property::where('slug', $request->property)->first();
+
+                    Property::withoutTimestamps(function () use ($property, $currency, $exchange_rate) {
+                        $property->saleoffer_link = null;
+                        $property->save();
+                        
+                       
+                        view()->share(['property' => $property, 
+                            'currency' => $currency,
+                            'exchange_rate' => $exchange_rate
+                        ]);
+
+    
+                        $saleOffer = PDF::loadView('pdf.propertySaleOffer');
+                        $saleOfferPdf = $saleOffer->output();
+                     
+                        $property->clearMediaCollection('saleOffers');
+    
+                        $property->addMediaFromString($saleOfferPdf)
+                            ->usingFileName($property->name . '-saleoffer.pdf')
+                            ->toMediaCollection('saleOffers', 'propertyFiles');
+    
+                        $property->save();
+                        $property->saleoffer_link = $property->saleOffer;
+                        $property->save();
+                            
+                    });
+
+                    $link = $property->saleoffer_link;
+                }
+                
+            return $this->success('check Employee Id', ['verify' => true, 'link' => $link], 200);
+
+
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }
