@@ -419,8 +419,8 @@
                     <tr>
                         <table class="clmTbl">
                             <tr>
-                                <td class="clum2Bar bg-primery">QR Code</td>
-                                <td class="clum3Bar bg-gray" colspan="2"> <img src="{{ $property->qr }}"
+                                <td class="clum22Bar bg-primery">QR Code</td>
+                                <td class="clum33Bar bg-gray" colspan="2"> <img src="{{ $property->qr }}"
                                     alt="{{ $property->qr }}"></td>
                             </tr>
                         </table>
@@ -600,8 +600,8 @@
     <!--- 3 Page Start --->
     @if (count($property->subProject->floorPlan) > 0)
         <table class="MapTable">
-            <tr>
-                <td>
+            <tr style="text-align:center">
+                <td style="text-align:center">
                     <table style="text-align:center">
                         <tr style="text-align:center">
                             <td
@@ -636,8 +636,8 @@
     @if ($property->project->mainCommunity->clusterPlan)
         <div class="page_break"></div>
         <table class="MapTable">
-            <tr>
-                <td>
+            <tr style="text-align:center">
+                <td style="text-align:center">
                     <table style="text-align:center">
                         <tr style="text-align:center">
                             <td
