@@ -346,22 +346,35 @@ return [
     ],
 'allDepartments' => [
         ''=>'All',
-                'Administration'=>'Administration',
-        'Human Resources'=>'Human Resources',
-       'Finance and Accounting'=> 'Finance and Accounting',
-        'Legal and Compliance'=>'Legal and Compliance',
-          'Marketing and Communications'=>'Marketing and Communications',
-         'Operation'=>'Operation',
-          'Sales and Leasing'=>'Sales and Leasing'
+        'Leadership'=>'Leadership',
+        'Sales' => 'Sales',
+        'Operation'=>'Operation',
+        'Marketing'=> 'Marketing',
+        'Accounts'=> 'Accounts',
+
+
+        // 'Administration'=>'Administration',
+        // 'Human Resources'=>'Human Resources',
+        // 'Finance and Accounting'=> 'Finance and Accounting',
+        // 'Legal and Compliance'=>'Legal and Compliance',
+        // 'Marketing and Communications'=>'Marketing and Communications',
+        // 'Operation'=>'Operation',
+        // 'Sales and Leasing'=>'Sales and Leasing'
     ],
  'departments' => [
         'Leadership',
-        'Administration',
-        'Human Resources',
-        'Finance and Accounting',
-        'Legal and Compliance',
-        'Marketing and Communications',
-        'Operation',
-        'Sales and Leasing'
+        'Sales',
+        'Operation'=>'Operation',
+        'Marketing'=> 'Marketing',
+        'Accounts'=> 'Accounts',
+
+        // 'Leadership',
+        // 'Administration',
+        // 'Human Resources',
+        // 'Finance and Accounting',
+        // 'Legal and Compliance',
+        // 'Marketing and Communications',
+        // 'Operation',
+        // 'Sales and Leasing'
     ]
 ];
