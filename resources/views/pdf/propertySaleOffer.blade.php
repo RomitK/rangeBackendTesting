@@ -126,6 +126,15 @@
         padding: 3px 5px;
     }
 
+    .clum33Bar.bg-primery {
+        background-color: #2879bc;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 3px 5px;
+    }
+
+
     .clum2Bar.bg-gray {
         background-color: #f7f8f9;
         color: #01020a;
@@ -133,6 +142,15 @@
         padding: 3px 5px;
         font-weight: 400;
     }
+
+    .clum22Bar.bg-gray {
+        background-color: #f7f8f9;
+        color: #01020a;
+        font-size: 13px;
+        padding: 3px 5px;
+        font-weight: 400;
+    }
+
 
     .htFix {
         height: 36px;
@@ -163,7 +181,23 @@
         padding: 3px 5px;
     }
 
+    .clum22Bar.bg-primery {
+        background-color: #2879bc;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 3px 5px;
+    }
+
     .clum3Bar.bg-gray {
+        background-color: #f7f8f9;
+        color: #01020a;
+        font-size: 13px;
+        padding: 3px 5px;
+        font-weight: 400;
+    }
+
+    .clum33Bar.bg-gray {
         background-color: #f7f8f9;
         color: #01020a;
         font-size: 13px;
