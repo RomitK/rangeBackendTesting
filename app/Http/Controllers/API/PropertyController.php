@@ -882,9 +882,16 @@ class PropertyController extends Controller
                 if($currenyExist){
                     $currency = Currency::where('name', $request->currency)->first()->value;
                 }
-                if (isset($request->minprice) || isset($request->maxprice)) {
+                if (isset($request->minprice)) {
                     $request->merge([
                         'minprice' => $request->minprice / $currency,
+                       
+                    ]);
+
+                }
+                if (isset($request->maxprice)) {
+                    $request->merge([
+                      
                         'maxprice' => $request->maxprice / $currency
                     ]);
 
@@ -1010,6 +1017,7 @@ class PropertyController extends Controller
             if (isset($request->minprice) || isset($request->maxprice)) {
 
                 if (isset($request->minprice) && isset($request->maxprice)) {
+                    dd($request->all());
                     $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
                 } else {
                     if (isset($request->minprice)) {
@@ -1019,6 +1027,7 @@ class PropertyController extends Controller
                     }
                 }
             }
+           
 
             if ($request->coordinates) {
                 $allPolygons = $request->coordinates;
