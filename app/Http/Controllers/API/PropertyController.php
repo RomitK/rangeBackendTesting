@@ -1017,7 +1017,7 @@ class PropertyController extends Controller
             if (isset($request->minprice) || isset($request->maxprice)) {
 
                 if (isset($request->minprice) && isset($request->maxprice)) {
-                    dd($request->all());
+       
                     $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
                 } else {
                     if (isset($request->minprice)) {
