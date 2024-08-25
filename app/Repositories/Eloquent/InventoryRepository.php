@@ -34,16 +34,16 @@ class InventoryRepository implements InventoryRepositoryInterface
         $collection = Project::mainProject()
             ->withCount([
                 'properties as available_count' => function ($query) {
-                    $query->where('website_status', config('constants.available'));
+                    $query->where('properties.website_status', config('constants.available'))->where('properties.property_source', 'crm');
                 },
                 'properties as na_count' => function ($query) {
-                    $query->where('website_status', config('constants.NA'));
+                    $query->where('properties.website_status', config('constants.NA'))->where('properties.property_source', 'crm');
                 },
                 'properties as requested_count' => function ($query) {
-                    $query->where('website_status', config('constants.requested'));
+                    $query->where('properties.website_status', config('constants.requested'))->where('properties.property_source', 'crm');
                 },
                 'properties as rejected_count' => function ($query) {
-                    $query->where('website_status', config('constants.rejected'));
+                    $query->where('properties.website_status', config('constants.rejected'))->where('properties.property_source', 'crm');
                 }
             ])
             ->has('properties')
