@@ -680,16 +680,16 @@ class ProjectController extends Controller
 
         $project = $project->withCount([
             'properties as available_count' => function ($query) {
-                $query->where('properties.website_status', config('constants.available'))->where('property_source', 'xml');
+                $query->where('properties.website_status', config('constants.available'))->where('property_source', 'crm');
             },
             'properties as na_count' => function ($query) {
-                $query->where('properties.website_status', config('constants.NA'))->where('property_source', 'xml');
+                $query->where('properties.website_status', config('constants.NA'))->where('property_source', 'crm');
             },
             'properties as requested_count' => function ($query) {
-                $query->where('properties.website_status', config('constants.requested'))->where('property_source', 'xml');
+                $query->where('properties.website_status', config('constants.requested'))->where('property_source', 'crm');
             },
             'properties as rejected_count' => function ($query) {
-                $query->where('properties.website_status', config('constants.rejected'))->where('property_source', 'xml');
+                $query->where('properties.website_status', config('constants.rejected'))->where('property_source', 'crm');
             }
         ])
             ->where('projects.id', $project->id)
