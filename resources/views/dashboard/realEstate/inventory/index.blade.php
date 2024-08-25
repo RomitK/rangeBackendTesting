@@ -186,7 +186,7 @@
                                     @php use Carbon\Carbon; @endphp
                                     @foreach ($projects as $key => $project)
                                     <tr
-                                    class="{{ $project->inventory_update && Carbon::parse($project->inventory_update)->diffInDays(Carbon::now()) > 25 ? 'bg-danger' : '' }}">
+                                        class="{{ $project->inventory_update && Carbon::parse($project->inventory_update)->diffInDays(Carbon::now()) > 25 ? 'bg-danger' : '' }}">
 
 
                                             <td>{{ $sr_no_start++ }}</td>

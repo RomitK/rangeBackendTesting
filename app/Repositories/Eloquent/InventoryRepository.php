@@ -32,6 +32,9 @@ class InventoryRepository implements InventoryRepositoryInterface
         $sr_no_start = isset($request->page) ? (($request->page * $current_page) - $current_page + 1) : 1;
 
         $collection = Project::mainProject()
+            ->whereHas('properties', function ($query) {
+                $query->where('property_source', 'crm');
+            })
             ->withCount([
                 'properties as available_count' => function ($query) {
                     $query->where('properties.website_status', config('constants.available'))->where('properties.property_source', 'crm');
@@ -46,7 +49,7 @@ class InventoryRepository implements InventoryRepositoryInterface
                     $query->where('properties.website_status', config('constants.rejected'))->where('properties.property_source', 'crm');
                 }
             ])
-            ->has('properties')
+            
             ->with('user');
 
         if (isset($request->website_status)) {
