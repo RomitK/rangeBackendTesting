@@ -33,7 +33,7 @@ if (!function_exists('activeParentNavBar')) {
                 'dashboard.offer-types',
                 'dashboard.developers',
                 'dashboard.developer',
-
+                'dashboard.inventoryReport',
                 'dashboard.completion-statuses',
                 'dashboard.categories',
                 'dashboard.communities',

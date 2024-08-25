@@ -12,7 +12,8 @@ use Illuminate\Support\Str;
 use App\Models\{
     Community,
     Developer,
-    Project
+    Project,
+    Accommodation
 };
 
 use  App\Imports\{
@@ -21,6 +22,12 @@ use  App\Imports\{
 use Excel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\Dashboard\Project\{
+    ProjectRequest,
+    SubProjectRequest,
+    ProjectPaymentRequest,
+};
+use App\Repositories\Contracts\ProjectRepositoryInterface;
 
 class InventoryReport extends Controller
 {
@@ -51,7 +58,7 @@ class InventoryReport extends Controller
 
 
 
-            return view('dashboard.reports.inventory.index', compact(
+            return view('dashboard.realEstate.inventory.index', compact(
                 'projects',
                 'sr_no_start',
                 'communities',
@@ -88,7 +95,7 @@ class InventoryReport extends Controller
             'project',
         ));
     }
-    public function inventoryUpdate(InventoryRequest $request, Project $project)
+    public function inventoryUpdate2(InventoryRequest $request, Project $project)
     {
         try {
             if ($request->hasFile('inventoryFile')) {

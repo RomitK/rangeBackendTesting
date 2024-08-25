@@ -160,8 +160,14 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->midd
 Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dashboard', 'middleware' => 'auth'], function () {
 
     Route::get('inventory-report', 'Reports\InventoryReport@index')->name('dashboard.reports.inventory-report');
-    Route::get('projects/{project}/inventoryList', 'Reports\InventoryReport@inventoryList')->name('dashboard.projects.inventoryList');
-    Route::put('projects/{project}/inventoryUpdate', 'Reports\InventoryReport@inventoryUpdate')->name('dashboard.projects.inventoryUpdate');
+
+    Route::get('inventoryReport', 'Reports\InventoryReport@index')->name('dashboard.inventoryReport');
+    Route::get('projects/{project}/inventoryList', 'ProjectController@inventoryList')->name('dashboard.inventoryReport.list');
+    Route::get('projects/{project}/inventoryCreate', 'ProjectController@inventoryCreate')->name('dashboard.inventoryReport.create');
+    Route::post('projects/{project}/inventoryStore', 'ProjectController@inventoryStore')->name('dashboard.inventoryReport.store');
+
+
+    Route::put('projects/{project}/inventoryUpdate', 'ProjectController@inventoryUpdate')->name('dashboard.projects.inventoryUpdate');
 
 
     Route::get('general-report', 'Reports\GeneralReport@index')->name('dashboard.reports.general-report');
@@ -266,7 +272,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::resource('projects', ProjectController::class, ['as' => 'dashboard']);
     Route::get('projects/{project}/logs', 'ProjectController@logs')->name('dashboard.projects.logs');
     Route::get('projects/{project}/inventory', 'ProjectController@inventory')->name('dashboard.projects.inventory');
-    Route::post('projects/update-property/{property}', 'ProjectController@inventoryUpdate')->name('dashboard.projects.inventoryUpdateField');
+    Route::post('projects/update-property/{property}', 'ProjectController@inventoryUpdate1')->name('dashboard.projects.inventoryUpdateField');
 
     Route::get('projects/{project}/meta', 'ProjectController@meta')->name('dashboard.projects.meta');
     Route::post('projects/{project}/meta', 'ProjectController@updateMeta')->name('dashboard.project.meta.store');

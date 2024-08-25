@@ -8,10 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\Dashboard\Project\{
     ProjectRequest,
+    SubProjectRequest,
     ProjectPaymentRequest,
 };
 use App\Http\Requests\Dashboard\{
-    ProjectMetaRequest
+    ProjectMetaRequest,
+    
+};
+use App\Http\Requests\InventoryRequest;
+use  App\Imports\{
+    InventoryImport
 };
 use Illuminate\Support\Str;
 use App\Models\{
@@ -34,7 +40,8 @@ use App\Models\{
     ProjectAmenity,
     Highlight,
     ProjectDetail,
-    User
+    User,
+    Currency
 };
 use App\Jobs\{
     StoreProjectBrochure,
@@ -58,8 +65,18 @@ class ProjectController extends Controller
             'permission:' . config('constants.Permissions.offplan') . '|' . config('constants.Permissions.seo'),
             [
                 'only' => [
-                    'index', 'create', 'edit', 'update', 'destroy', 'mediaDestroy',
-                    'payments', 'createPayment', 'storePayment', 'editPayment', 'updatePayment', 'destroyPayment'
+                    'index',
+                    'create',
+                    'edit',
+                    'update',
+                    'destroy',
+                    'mediaDestroy',
+                    'payments',
+                    'createPayment',
+                    'storePayment',
+                    'editPayment',
+                    'updatePayment',
+                    'destroyPayment'
                 ]
             ]
         );
@@ -133,7 +150,7 @@ class ProjectController extends Controller
 
     public function generateBrochure($project)
     {
-        try {           
+        try {
             //$project = Project::with('developer', 'mainCommunity', 'subProjects')->where('slug', $slug)->first();
             $minBed = $project->subProjects->min('bedrooms');
             $maxBed = $project->subProjects->max('bedrooms');
@@ -177,18 +194,17 @@ class ProjectController extends Controller
 
         $currency = 'AED';
         $exchange_rate = 1;
-        if(isset($request->currency)){
+        if (isset($request->currency)) {
             $currenyExist = Currency::where('name', $request->currency)->exists();
-            
-            if($currenyExist){
+
+            if ($currenyExist) {
                 $currency = $request->currency;
                 $exchange_rate = Currency::where('name', $request->currency)->first()->value;
             }
-                            
         }
 
         // Disable timestamps for this scope
-        Project::withoutTimestamps(function () use ($project) {
+        Project::withoutTimestamps(function () use ($project, $currency, $exchange_rate) {
             try {
                 $minBed = $project->subProjects->min('bedrooms');
                 $maxBed = $project->subProjects->max('bedrooms');
@@ -292,7 +308,7 @@ class ProjectController extends Controller
     {
         return redirect()->route('dubai-offplan', $project->slug);
     }
-    
+
 
     /**
      * Show the form for editing the specified resource.
@@ -330,10 +346,10 @@ class ProjectController extends Controller
 
     public function inventoryUpdate(Request $request, Property $property)
     {
-        dd($property);
         try {
             Property::find($property);
-            $result = $this->projectRepository->updateData($request, $project);
+            $result = $this->projectRepository->updateData($request, $property);
+
             return response()->json([
                 'success' => $result['success'],
                 'message' => $result['message'],
@@ -348,7 +364,65 @@ class ProjectController extends Controller
                 'redirect' => route('dashboard.projects.index'),
             ]);
         }
-        
+    }
+
+    public function inventoryUpdate1(Request $request, Property $property)
+    {
+
+
+        try {
+            $project = Project::find($property->project_id);
+            Log::info($project);
+            if (isset($request->field) && isset($request->value)) {
+                if ($request->field == 'price') {
+                    if ($request->value != $property->price) {
+                        $property->price = $request->value;
+                        $project->inventory_update = Carbon::now();
+                        $property->user_id = Auth::user()->id;
+                        Log::info($property);
+                        $property->save();
+                        $project->save();
+                        return response()->json([
+                            'success' => true,
+                            'message' => "Inventory has been updated Succesfully",
+                        ]);
+                    }
+                } elseif ($request->field == 'website_status') {
+                    if ($request->value != $property->website_status) {
+                        $property->website_status = $request->value;
+                        $project->inventory_update = Carbon::now();
+                        $property->user_id = Auth::user()->id;
+                        Log::info($property);
+                        $property->save();
+                        $project->save();
+                        return response()->json([
+                            'success' => true,
+                            'message' => "Inventory has been updated Succesfully",
+                        ]);
+                    }
+                } elseif ($request->field == 'area') {
+                    if ($request->value != $property->area) {
+                        $property->area = $request->value;
+                        $project->inventory_update = Carbon::now();
+                        $property->user_id = Auth::user()->id;
+                        Log::info($property);
+                        $property->save();
+                        $project->save();
+                        return response()->json([
+                            'success' => true,
+                            'message' => "Inventory has been updated Succesfully",
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $error) {
+
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.projects.index'),
+            ]);
+        }
     }
     public function update(ProjectRequest $request, Project $project)
     {
@@ -572,7 +646,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    
+
     public function singleProjectDetail(Request $request)
     {
         $project = $request->project_id;
@@ -589,14 +663,229 @@ class ProjectController extends Controller
     {
         DB::beginTransaction();
         try {
-		$project =  Project::with(['subProjects', 'subProjects.accommodation', 'subProjects.properties'])->find($project->id);
-	    $projectName = $project->title.'-Inventory.xlsx';
- 		return  Excel::download(new DLDTransaction($project), $projectName);
+            $project =  Project::with(['subProjects', 'subProjects.accommodation', 'subProjects.properties'])->find($project->id);
+            $projectName = $project->title . '-Inventory.xlsx';
+            return  Excel::download(new DLDTransaction($project), $projectName);
 
-          //  dd('projectId'.$project->id);
+            //  dd('projectId'.$project->id);
             DB::commit();
         } catch (\Exception $error) {
             return redirect()->back()->with('error', $error->getMessage());
+        }
+    }
+
+    public function inventoryList(Project $project)
+    {
+        $today = Carbon::now();
+
+        $project = $project->withCount([
+            'properties as available_count' => function ($query) {
+                $query->where('properties.website_status', config('constants.available'));
+            },
+            'properties as na_count' => function ($query) {
+                $query->where('properties.website_status', config('constants.NA'));
+            },
+            'properties as requested_count' => function ($query) {
+                $query->where('properties.website_status', config('constants.requested'));
+            },
+            'properties as rejected_count' => function ($query) {
+                $query->where('properties.website_status', config('constants.rejected'));
+            }
+        ])
+            ->where('projects.id', $project->id)
+            ->with('user')
+            //->selectRaw('projects.*, DATEDIFF(?, (SELECT MAX(inventory_update) FROM projects WHERE properties.project_id = projects.id)) as date_diff', [$today])
+            ->first();
+
+        return view('dashboard.realEstate.inventory.inventory', compact(
+            'project',
+        ));
+    }
+
+    public function inventoryCreate(Project $project)
+    {
+        $accommodations = Accommodation::active()->latest()->get();
+
+        return view('dashboard.realEstate.inventory.create', compact(
+            'accommodations',
+            'project',
+        ));
+    }
+
+    public function inventoryStore(SubProjectRequest $request, Project $project)
+    {
+        DB::beginTransaction();
+        try {
+
+            $subProject = new Project;
+
+            // Set status, approval, and website status based on user role and request
+            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
+                switch ($request->website_status) {
+                    case config('constants.available'):
+                        $subProject->is_approved = config('constants.approved');
+                        $subProject->status = config('constants.active');
+                        $subProject->approval_id = Auth::user()->id;
+                        break;
+                    case config('constants.NA'):
+                        $subProject->is_approved = config('constants.approved');
+                        $subProject->status = config('constants.Inactive');
+                        $subProject->approval_id = Auth::user()->id;
+                        break;
+                    case config('constants.rejected'):
+                        $subProject->is_approved = config('constants.rejected');
+                        $subProject->status = config('constants.active');
+                        $subProject->approval_id = Auth::user()->id;
+                        break;
+                    case config('constants.requested'):
+                    default:
+                        $subProject->is_approved = config('constants.requested');
+                        $subProject->status = config('constants.active');
+                        break;
+                }
+                $subProject->website_status = $request->website_status;
+            } else {
+                $subProject->is_approved = config('constants.requested');
+                $subProject->status = config('constants.active');
+                $subProject->website_status = $request->website_status;
+            }
+            $subProject->title = $request->title;
+            $subProject->is_parent_project = 0;
+            $subProject->parent_project_id = $project->id;
+            $subProject->bedrooms = $request->bedrooms;
+            $subProject->list_type = $request->list_type;
+            $subProject->area = $request->area;
+            $subProject->builtup_area = $request->builtup_area;
+            $subProject->area_unit = $request->area_unit;
+            $subProject->starting_price = $request->starting_price;
+            $subProject->short_description = $request->short_description;
+            $subProject->user_id = Auth::user()->id;
+            $subProject->accommodation_id = $request->accommodation_id;
+            $subProject->save();
+            if ($request->hasFile('floorPlan')) {
+
+                foreach ($request->floorPlan as $floorPlan) {
+                    $subProject->addMedia($floorPlan)->toMediaCollection('floorPlans', 'projectFiles');
+                }
+            }
+            $property = new Property;
+            $property->name = $subProject->title;
+
+
+            if (in_array(Auth::user()->role, config('constants.isAdmin'))) {
+                switch ($request->website_status) {
+                    case config('constants.available'):
+                        $property->is_approved = config('constants.approved');
+                        $property->status = config('constants.active');
+                        $property->approval_id = Auth::user()->id;
+                        break;
+                    case config('constants.NA'):
+                        $property->is_approved = config('constants.approved');
+                        $property->status = config('constants.Inactive');
+                        $property->approval_id = Auth::user()->id;
+                        break;
+                    case config('constants.rejected'):
+                        $property->is_approved = config('constants.rejected');
+                        $property->status = config('constants.active');
+                        $property->approval_id = Auth::user()->id;
+                        break;
+                    case config('constants.requested'):
+                    default:
+                        $property->is_approved = config('constants.requested');
+                        $property->status = config('constants.active');
+                        break;
+                }
+                $property->website_status = $request->website_status;
+            } else {
+                $property->is_approved = config('constants.requested');
+                $property->status = config('constants.active');
+                $property->website_status = $request->website_status;
+            }
+
+            if(!empty($project->qr_link)){
+                $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
+            }
+
+            $property->property_source = 'crm';
+            $property->bathrooms = 0;
+            $property->bedrooms = $subProject->bedrooms;
+            $property->area = $subProject->area;
+            $property->price = $subProject->starting_price;
+            $property->builtup_area = $subProject->builtup_area;
+            $property->project_id = $project->id;
+            $property->sub_project_id = $subProject->id;
+            $property->accommodation_id = $subProject->accommodation_id;
+            $property->category_id = 8;
+            $property->permit_number = $project->permit_number;
+
+            $property->reference_number = generatePropertyUniqueCode('S');
+            if ($project->completion_status_id == 289) { // if the project is under-construction then its offplan else ready
+                $property->completion_status_id = 287;
+            } else {
+                $property->completion_status_id = 286;
+            }
+
+
+            $property->address_longitude = $project->address_longitude;
+            $property->address_latitude = $project->address_latitude;
+            $property->address = $project->address;
+            $property->user_id = Auth::user()->id;
+            $property->save();
+
+            $property->save();
+            if($property->qr){
+                $property->qr_link = $property->qr;
+            }
+            $property->save();
+
+           
+            if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                if($property->qr_link){
+                    $property->is_valid = 1;
+                }else{
+                    $property->is_valid = 0; // Optionally set to false if not valid
+                }
+               
+            } else {
+                $property->is_valid = 0; // Optionally set to false if not valid
+            }
+            $property->save();
+            $property->amenities()->attach($project->amenities->pluck('id')->toArray());
+            $originalAttributes = $property->getOriginal();
+            $originalAttributes['short_description'] = null;
+            $originalAttributes['description'] = null;
+
+            $originalAttributes['amenityIds'] = $project->amenities->pluck('id')->toArray();
+
+
+            // Log activity for developer creation
+            $properties = json_encode([
+                'old' => [],
+                'new' => $originalAttributes,
+                'updateAttribute' => [],
+                'attribute' => []
+            ]);
+            logActivity('New Inventory Property has been created', $property->id, Property::class, $properties);
+
+            $project = Project::find($project->id);
+            $project->timestamps = false;
+            $project->inventory_update = Carbon::now();
+            $project->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Inventory Item has been created successfully ',
+                'redirect' => route('dashboard.inventoryReport.list', $project->id),
+            ]);
+        } catch (\Exception $error) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => $error->getMessage(),
+                'redirect' => route('dashboard.inventoryReport.list', $project->id),
+            ]);
         }
     }
 

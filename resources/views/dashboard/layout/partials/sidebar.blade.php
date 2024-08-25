@@ -53,7 +53,7 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            @canany([config('constants.Permissions.offplan'), config('constants.Permissions.seo')])
+                            @canany([config('constants.Permissions.offplan'), config('constants.Permissions.seo'), config('constants.Permissions.real_estate')])
                                 <li class="nav-item">
                                     <a href="{{ url('dashboard/properties') }}"
                                         class="nav-link {{ activeChildNavBar('dashboard.properties') }}">
@@ -68,12 +68,24 @@
                                         <p>Projects</p>
                                     </a>
                                 </li>
-                            @endcan
+                                {{-- <li class="nav-item">
+                                    <a href="{{ url('dashboard/projects') }}"
+                                        class="nav-link {{ activeChildNavBar('dashboard.projects') }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p> Primary Market Inventory</p>
+                                    </a>
+                                </li> --}}
 
 
+                                <li class="nav-item">
+                                    <a href="{{ url('dashboard/inventoryReport') }}"
+                                        class="nav-link {{ activeChildNavBar('dashboard.inventoryReport') }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Primary Market Inventory Report</p>
+                                    </a>
+                                </li>
 
-
-                            @can(config('constants.Permissions.real_estate'))
+                            
                                 <!--<li class="nav-item">-->
                                 <!--    <a href="{{ url('dashboard/floorPlans') }}"-->
                                 <!--        class="nav-link {{ activeChildNavBar('dashboard.floorPlans') }}">-->
@@ -377,7 +389,7 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
+                        {{--<li class="nav-item">
                             <a href="{{ url('dashboard/inventory-report') }}"
                                 class="nav-link {{ activeChildNavBar('dashboard.reports.inventory-report') }}">
                                 <i class="far fa-circle nav-icon"></i>
@@ -386,7 +398,7 @@
                         </li>
 
 
-                        {{-- <li class="nav-item">
+                         <li class="nav-item">
                             <a href="{{ url('dashboard/communities-report') }}"
                                 class="nav-link {{ activeChildNavBar('dashboard.reports.communities') }}">
                                 <i class="far fa-circle nav-icon"></i>
