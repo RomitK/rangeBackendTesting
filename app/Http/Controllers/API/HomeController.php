@@ -1108,7 +1108,8 @@ echo $curl_scraped_page;
                     "sellContactForm",
                     "mortgageForm",
                     "bookACall",
-                    "SpendAdayWithRange"
+                    "SpendAdayWithRange",
+                    "alMarjan"
                 ]
             )) {
                 Log::info("formName:" . $request->formName);
@@ -1176,6 +1177,11 @@ echo $curl_scraped_page;
                         Log::info($errorMessage);
                     }
                 }
+                if ($request->formName == "alMarjan") {
+                    $data = $this->CRMCampaignManagement($data, 218, 580, 2679);
+                    CRMLeadJob::dispatch($data);
+                }
+
                 if ($request->formName == "SpendAdayWithRange") {
                     $data = $this->CRMCampaignManagement($data, 270, 578, 2676);
                     CRMLeadJob::dispatch($data);
