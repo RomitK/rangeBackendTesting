@@ -390,6 +390,11 @@ class ProjectController extends Controller
                 } elseif ($request->field == 'website_status') {
                     if ($request->value != $property->website_status) {
                         $property->website_status = $request->value;
+                        if($request->value == 'NA'){
+                            $property->out_of_inventory = 1;
+                        }else{
+                            $property->out_of_inventory = 0;
+                        }
                         $project->inventory_update = Carbon::now();
                         $property->user_id = Auth::user()->id;
                         Log::info($property);
