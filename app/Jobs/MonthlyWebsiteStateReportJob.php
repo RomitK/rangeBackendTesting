@@ -50,17 +50,17 @@ class MonthlyWebsiteStateReportJob implements ShouldQueue
                 Log::info('MonthlyWebsiteStateReportJob Start- on monday');
                 $recipients = [
                     ['name' => 'Aqsa', 'email' => 'aqsa@xpertise.ae'],
-                    ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
-                    ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
+                    // ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
+                    // ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
                 ];
             } else {
                 Log::info('MonthlyWebsiteStateReportJob Start- on otherDay');
                 $recipients = [
                     ['name' => 'Aqsa', 'email' => 'aqsa@xpertise.ae'],
-                    ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
-                    ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
-                    ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
-                    ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
+                    // ['name' => 'Nitin Chopra', 'email' => 'nitin@range.ae'],
+                    // ['name' => 'Lester Verma', 'email' => 'lester@range.ae'],
+                    // ['name' => 'Romit Kumar', 'email' => 'romit@range.ae'],
+                    // ['name' => 'Safeena Ahmad', 'email' => 'safeeena@xpertise.ae'],
                 ];
             }
 
