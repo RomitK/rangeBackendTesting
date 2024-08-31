@@ -177,6 +177,7 @@ if (!function_exists('sendWebsiteStatReport')) {
             $propertiesCount = clone $propertiesCollection;
             $ready = clone $propertiesCollection;
             $offplan = clone $propertiesCollection;
+            $offplanResale = clone $propertiesCollection;
             $rentProperties = clone $propertiesCollection;
 
             $data = [
@@ -197,6 +198,7 @@ if (!function_exists('sendWebsiteStatReport')) {
                 'propertiesTypes' => [
                     'Ready' => $ready->buy()->where('completion_status_id', 286)->count(),
                     'Offplan' => $offplan->buy()->where('completion_status_id', 287)->count(),
+                    'Offplan-Resale' => $offplanResale->buy()->where('completion_status_id', 291)->count(),
                     'Rent' => $rentProperties->rent()->count()
                 ],
                 'new_last_week' =>
