@@ -84,7 +84,7 @@ Route::get('/clear-cache', function () {
 /*******************
  * FRONTEND ROUTES  *
  *******************/
-
+Route::get('/testEmail', 'App\Http\Controllers\CronController@testEmail');
 
 Route::get('/propertiesPermitNumber', 'App\Http\Controllers\CronController@propertiesPermitNumber');
 Route::get('/getRentListings', 'App\Http\Controllers\CronController@getRentListings');

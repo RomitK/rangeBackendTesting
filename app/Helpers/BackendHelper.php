@@ -173,7 +173,8 @@ if (!function_exists('sendWebsiteStatReport')) {
             $awards = clone $collection;
             $celebrations = clone $collection;
 
-            $propertiesCollection = Property::approved()->active();
+            $propertiesCollection = Property::where('website_status',  config('constants.available'));
+            
             $propertiesCount = clone $propertiesCollection;
             $ready = clone $propertiesCollection;
             $offplan = clone $propertiesCollection;
