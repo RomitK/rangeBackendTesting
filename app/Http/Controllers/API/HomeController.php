@@ -1066,7 +1066,7 @@ echo $curl_scraped_page;
         try {
 
             $link = null;
-            
+
             $token = '3MPHJP0BC63435345341';
 
             if ($request->formName == 'EmailerForm') {
@@ -1271,7 +1271,12 @@ echo $curl_scraped_page;
                     CRMLeadJob::dispatch($data);
                 }
             }
-
+            $data = [
+                'email' => $request->email,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'message' => "Page Url:" . $request->page . " Message-" . $request->message,
+            ];
 
             if ($request->has('superformName') && $request->superformName == "DubaiGuides") {
                 Log::info("DubaiGuides");
