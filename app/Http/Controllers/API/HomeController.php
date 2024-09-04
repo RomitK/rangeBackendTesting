@@ -1065,6 +1065,8 @@ echo $curl_scraped_page;
     {
         try {
 
+            $link = null;
+            
             $token = '3MPHJP0BC63435345341';
 
             if ($request->formName == 'EmailerForm') {
@@ -1270,9 +1272,220 @@ echo $curl_scraped_page;
                 }
             }
 
-            // Log::info("Form-" . $request->formName . "Data-");
-            // Log::info($data);
 
+            if ($request->has('superformName') && $request->superformName == "DubaiGuides") {
+                Log::info("DubaiGuides");
+                if ($request->has('sourceId')) {
+                    //Log::info("sourceId-" . $request->sourceId);
+                    //$data = $this->CRMCampaignManagement($data, 262, 468, $request->sourceId);
+                    $data = $this->CRMCampaignManagement($data, 270, 495, '', '', true, $request->formName, $request->formName);
+                    CRMLeadJob::dispatch($data);
+                }
+            }
+            if ($request->formName == 'homePageBrochure') {
+                $link = PageContent::WherePageName(config('constants.home.name'))->first();
+                $link = $link->brochure;
+
+                $data = $this->CRMCampaignManagement($data, 270, 490, 2582);
+                CRMLeadJob::dispatch($data);
+            } elseif ($request->formName == 'homePageCompanyProfile') {
+                $link = PageContent::WherePageName(config('constants.home.name'))->first();
+                $link = $link->ourProfile;
+
+                $data = $this->CRMCampaignManagement($data, 270, 490, 2677);
+                CRMLeadJob::dispatch($data);
+            } elseif ($request->formName == 'GoldenVisaGuideForm') {
+
+                $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
+                $link = $link->goldenVisa;
+            } elseif ($request->formName == 'BuyerGuideForm') {
+                $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
+                $link = $link->buyerGuide;
+            } elseif ($request->formName == 'InvestmentGuideForm') {
+                $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
+                $link = $link->propertiesGuide;
+            } elseif ($request->formName == 'SellerGuideDownload') {
+
+                //$data = $this->CRMCampaignManagement($data, 258, 463, 2527);
+                $data = $this->CRMCampaignManagement($data, 270, 496, '', '', true, $request->formName, $request->formName);
+                CRMLeadJob::dispatch($data);
+
+                $link = PageContent::WherePageName(config('constants.sellerGuide.name'))->first();
+                $link =  $link->sellerGuide;
+            } elseif ($request->formName == 'projectBrochure') {
+                $project = Project::where('slug', $request->project)->first();
+               
+                
+                $currency = 'AED';
+                $exchange_rate = 1;
+                if(isset($request->currency)){
+                    $currenyExist = Currency::where('name', $request->currency)->exists();
+        
+                    if($currenyExist){
+                        $currency = $request->currency;
+                        $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+                    }
+                        
+                }
+
+
+                // Disable timestamps for this scope
+                Project::withoutTimestamps(function () use ($project, $currency, $exchange_rate) {
+                    $project->brochure_link = null;
+                    $project->save();
+                    
+                   
+                        $minBed = $project->subProjects->min('bedrooms');
+                        $maxBed = $project->subProjects->max('bedrooms');
+                        if ($minBed != $maxBed) {
+                            if ($maxBed === "Studio") {
+                                $bedroom = $maxBed . "-" . $minBed;
+                            } else {
+                                $bedroom = $minBed . "-" . $maxBed;
+                            }
+                        } else {
+                            $bedroom = $minBed;
+                        }
+                        $area_unit = 'sq ft';
+
+                        $starting_price = 0;
+                        $dateStr = $project->completion_date;
+                        $month = date("n", strtotime($dateStr));
+                        $yearQuarter = ceil($month / 3);
+
+                        view()->share([
+                            'currency' => $currency,
+                            'exchange_rate' => $exchange_rate,
+                            'project' => $project,
+                            'area_unit' => $area_unit,
+                            'starting_price' => count($project->subProjects) > 0 ? $project->subProjects->where('starting_price', $project->subProjects->min('starting_price'))->first()->starting_price : 0,
+                            'bedrooms' => $bedroom,
+                            'handOver' => "Q" . $yearQuarter . " " . date("Y", strtotime($dateStr)),
+                            'communityName' => $project->mainCommunity ? $project->mainCommunity->name : '',
+                        ]);
+                        $pdf = PDF::loadView('pdf.projectBrochure');
+                       
+                        $pdfContent = $pdf->output();
+
+                        $project->clearMediaCollection('brochures');
+
+                        $project->addMediaFromString($pdfContent)
+                            ->usingFileName($project->title . '-brochure.pdf')
+                            ->toMediaCollection('brochures', 'projectFiles');
+
+                        $project->save();
+
+                        $project->brochure_link = $project->brochure;
+                        $project->updated_brochure = 1;
+                        $project->save();
+
+                        
+                });
+                    
+                $link = $project->brochure_link;
+
+
+                 $data = $this->CRMCampaignManagement($data, 270, 497, '', '', true, $project->title, $project->reference_number);
+                // CRMLeadJob::dispatch($data);
+            } elseif ($request->formName == 'propertyBrochure' || $request->formName == 'propertySaleOfferDownloadForm') {
+                $property = Property::where('slug', $request->property)->first();
+
+
+                $currency = 'AED';
+                $exchange_rate = 1;
+                if(isset($request->currency)){
+                    $currenyExist = Currency::where('name', $request->currency)->exists();
+        
+                    if($currenyExist){
+                        $currency = $request->currency;
+                        $exchange_rate = Currency::where('name', $request->currency)->first()->value;
+                    }
+                        
+                }
+
+                if ($request->formName == 'propertyBrochure') {
+
+                    Property::withoutTimestamps(function () use ($property, $currency, $exchange_rate) {
+                        $property->brochure_link = null;
+                        $property->save();
+                        
+                       
+                        view()->share(['property' => $property, 
+                            'currency' => $currency,
+                            'exchange_rate' => $exchange_rate
+                        ]);
+                        $pdf = PDF::loadView('pdf.propertyBrochure');
+                        $pdfContent = $pdf->output();
+    
+                        $saleOffer = PDF::loadView('pdf.propertySaleOffer');
+                        $saleOfferPdf = $saleOffer->output();
+                        //return $saleOfferPdf->stream();
+    
+                        $property->clearMediaCollection('brochures');
+                        // $property->clearMediaCollection('saleOffers');
+    
+    
+                        $property->addMediaFromString($pdfContent)
+                            ->usingFileName($property->name . '-brochure.pdf')
+                            ->toMediaCollection('brochures', 'propertyFiles');
+    
+                        // $property->addMediaFromString($saleOfferPdf)
+                        //     ->usingFileName($property->name . '-saleoffer.pdf')
+                        //     ->toMediaCollection('saleOffers', 'propertyFiles');
+    
+                        $property->save();
+                        $property->brochure_link = $property->brochure;
+                        $property->updated_brochure = 1;
+                        $property->save();
+                            
+                    });
+
+                    $link = $property->brochure_link;
+
+                }
+                if($request->formName == 'propertySaleOfferDownloadForm')
+                {
+                    Property::withoutTimestamps(function () use ($property, $currency, $exchange_rate) {
+                        $property->saleoffer_link = null;
+                        $property->save();
+                        
+                       
+                        view()->share(['property' => $property, 
+                            'currency' => $currency,
+                            'exchange_rate' => $exchange_rate
+                        ]);
+
+    
+                        $saleOffer = PDF::loadView('pdf.propertySaleOffer');
+                        $saleOfferPdf = $saleOffer->output();
+                     
+                        $property->clearMediaCollection('saleOffers');
+    
+                        $property->addMediaFromString($saleOfferPdf)
+                            ->usingFileName($property->name . '-saleoffer.pdf')
+                            ->toMediaCollection('saleOffers', 'propertyFiles');
+    
+                        $property->save();
+                        $property->saleoffer_link = $property->saleOffer;
+                        $property->save();
+                            
+                    });
+
+                    $link = $property->saleoffer_link;
+                }
+
+                $data['message'] = "Property URL-" . $property->slug;
+                //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
+                $email = $property->agent ? $property->agent->email : '';
+
+                if ($email == 'lester@range.ae') {
+                    $email = "";
+                }
+                $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
+
+                Log::info($data);
+             
+            }
             $lead = new Lead;
             $lead->email = $request->email;
             $lead->name = $request->name;
@@ -1284,7 +1497,7 @@ echo $curl_scraped_page;
             $lead->form_name = $request->formName;
             $lead->save();
 
-            return $this->success('Form Submit', [], 200);
+            return $this->success('Form Submit',['verify' => true, 'link' => $link], 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }
@@ -1434,8 +1647,7 @@ echo $curl_scraped_page;
 
                     $data = $this->CRMCampaignManagement($data, 270, 490, 2677);
                     CRMLeadJob::dispatch($data);
-                }
-                elseif ($request->formName == 'GoldenVisaGuideForm') {
+                } elseif ($request->formName == 'GoldenVisaGuideForm') {
 
                     $link = PageContent::WherePageName(config('constants.dubaiGuide.name'))->first();
                     $link = $link->goldenVisa;

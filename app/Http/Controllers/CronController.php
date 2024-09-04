@@ -44,6 +44,7 @@ class CronController extends Controller
     public function contactInsert()
     {
 
+
         $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
             'AccessCode' => '$R@nGe!NteRn@t!on@l',
             'GroupCode' => '5084',
@@ -51,33 +52,34 @@ class CronController extends Controller
             'FirstName' => 'John',
             'FamilyName' => 'Doe',
             'MobileCountryCode' => '971',
-            'MobileAreaCode' => '50',
-            'MobilePhone' => '1234567',
-            'TelephoneCountryCode' => '971',
-            'TelephoneAreaCode' => '4',
-            'Telephone' => '1234567',
-            'Email' => 'john.doe@example.com',
-            'NationalityID' => '',
-            'CompanyID' => '',
-            'Remarks' => ' ',
-            'RequirementType' => '',
-            'ContactType' => '',
-            'CountryID' => '',
-            'StateID' => '',
-            'CityID' => '',
-            'DistrictID' => '',
-            'CommunityID' => '',
-            'SubCommunityID' => '',
-            'PropertyID' => '',
-            'UnitID'=> 'AP7968',
-            'UnitType' => '',
-            'MethodOfContact' => '',
-            'MediaType' => '', 
-            'MediaName' => 'Company website',
+            'TelephoneCountryCode'=>'',
+            'TelephoneAreaCode'=> '',
+            'Telephone'=>'',
+            'NationalityID'=>'',
+            'CompanyID'=>'',
+            'Remarks'=>'',
+            'DistrictID'=>'',
+            'CommunityID'=>'',
+            'SubCommunityID'=>'',
+            'PropertyID'=>'',
+            'Budget'=>'',
+            'MobileAreaCode' => '58',
+            'MobilePhone' => '6238697',
+            'Email' => 'aqsa@4999xpertise.ae',
+            'RequirementType' => '91212',
+            'ContactType' => '0',
+            'CountryID' => '65946',
+            'StateID' => '55367',
+            'CityID' => '54788',
+            'UnitID' => '7968',
+            'UnitType' => '19',
+            'MethodOfContact' => '196061',
+            'MediaType' => '79266',
+            'MediaName' => '78340',
             'ReferredByID' => '1219',
             'ReferredToID' => '1219',
-            'DeactivateNotification' => '',
-            'Bedroom' => '',
+            'DeactivateNotification' => '0.0.0.0',
+            'Bedroom' => '2',
             'Budget' => '',
             'Budget2' => '',
             'RequirementCountryID' => '',
@@ -92,15 +94,17 @@ class CronController extends Controller
             'ActivityTypeId' => '',
             'ActivitySubject' => '',
             'ActivityRemarks' => '',
-        ]);
+        // Add other parameters as necessary
+    ]);
+
     
-        if ($response->successful()) {
+    if ($response->successful()) {
           
-            return $this->success('Accommodations',$response->body() , 200); // Handle successful response
-        } else {
-            dd('error');
-            return $response->status();  // Handle error
-        }
+        return $this->success('Accommodations',$response->body() , 200); // Handle successful response
+    } else {
+        dd('error');
+        return $response->status();  // Handle error
+    }
         
     }
     public function testEmail()
