@@ -328,8 +328,27 @@
                                         <input type="text" value="{{ request()->keyword }}" class="form-control"
                                             id="keyword" placeholder="Enter Name, Reference Number" name="keyword">
                                     </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="minprice">Min Price</label>
+                                            <input type="number" min="0" value="{{ request()->minprice }}"
+                                                class="form-control" id="minprice"
+                                                name="minprice">
+                                            
+                                        </div>
+                                    </div>
 
-                                    <div class="col-sm-4">
+
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="maxprice">Max Price</label>
+                                            <input type="number" min="0" value="{{ request()->maxprice }}"
+                                                class="form-control" id="maxprice"
+                                                name="maxprice">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="date_range">Added At <span
                                                     id="date_range_show">{{ request()->data_range_input }}</span></label>
@@ -344,6 +363,8 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                   
 
                                 </div>
                                 <br>
@@ -421,7 +442,7 @@
                                                 @endif
                                             </td>
                                             {{-- <td>{{ $property->is_duplicate }}</td> --}}
-                                            <td>{{ $property->price }}</td>
+                                            <td>{{ number_format($property->price) }}</td>
 
                                             <td>
                                                 <span

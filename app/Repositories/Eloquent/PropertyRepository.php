@@ -79,6 +79,20 @@ class PropertyRepository implements PropertyRepositoryInterface
                 });
             }
         }
+        if (isset($request->minprice) || isset($request->maxprice)) {
+
+            if (isset($request->minprice) && isset($request->maxprice)) {
+   
+                $collection->whereBetween('price', [(int)$request->minprice, (int)$request->maxprice]);
+                
+            } else {
+                if (isset($request->minprice)) {
+                    $collection->where('price', '>', (int)$request->minprice);
+                } elseif (isset($request->maxprice)) {
+                    $collection->where('price', '<', (int)$request->maxprice);
+                }
+            }
+        }
 
         if (isset($request->data_range_input)) {
             $dateRange = $request->data_range_input;
@@ -138,6 +152,7 @@ class PropertyRepository implements PropertyRepositoryInterface
 
 
         if (isset($request->accommodation_ids)) {
+           
             $collection->whereIn('accommodation_id', $request->accommodation_ids);
         }
 
@@ -167,7 +182,7 @@ class PropertyRepository implements PropertyRepositoryInterface
             $collection->where('updated_brochure', $request->updated_brochure);
         }
 
-
+        //dd($collection->dd());
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction
