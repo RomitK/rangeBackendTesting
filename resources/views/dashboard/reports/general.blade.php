@@ -541,43 +541,48 @@
             function updatePropertyCategoryPermitWiseDataText(data) {
 
                 let tableHtml =
-                    '<table class="table table-bordered"><thead><tr><th>Status</th><th>Ready</th><th>Offplan</th><th>Rent</th><th>Total</th></tr></thead><tbody>';
+                    '<table class="table table-bordered"><thead><tr><th>Status</th><th>Ready</th><th>Offplan</th><th>Offplan-Resale</th><th>Rent</th><th>Total</th></tr></thead><tbody>';
 
                 // Initialize variables to hold the total counts
                 let totalready = 0;
                 let totaloffplan = 0;
+                let totaloffplanresale = 0;
                 let totalrent = 0;
 
 
                 data.forEach(item => {
                     const ready = item.count.ready;
                     const offplan = item.count.offplan;
+                    const offplanresale = item.count.offplan_resale;
                     const rent = item.count.rent;
 
-                    const total = ready + offplan + rent;
+                    const total = ready + offplan + offplanresale + rent;
 
                     // Accumulate totals
                     totalready += ready;
                     totaloffplan += offplan;
+                    totaloffplanresale += offplanresale;
                     totalrent += rent;
 
                     tableHtml += `<tr>
                                     <td>${item.status}</td>
                                     <td>${ready}</td>
                                     <td>${offplan}</td>
+                                    <td>${offplanresale}</td>
                                     <td>${rent}</td>
                                     <td>${total}</td>
                                 </tr>`;
                 });
 
                 // Calculate the grand total
-                const grandTotal = totalready + totaloffplan + totalrent;
+                const grandTotal = totalready + totaloffplan + totaloffplanresale + totalrent;
 
                 // Add the totals row at the end
                 tableHtml += `<tr class="totals-row">
                                 <th>Total</th>
                                 <th>${totalready}</th>
                                 <th>${totaloffplan}</th>
+                                <th>${totaloffplanresale}</th>
                                 <th>${totalrent}</th>
                                 <th>${grandTotal}</th>
                             </tr>`;
@@ -747,6 +752,7 @@
             function transformDataForPropertyPermitCategoryChart(data) {
                 const labels = data.map(item => item.status);
                 const offplanData = data.map(item => item.count.offplan);
+                const offplanResalaeData = data.map(item => item.count.offplan_resale);
                 const readyData = data.map(item => item.count.ready);
                 const rentData = data.map(item => item.count.rent);
 
@@ -756,6 +762,13 @@
                             label: 'offplan',
                             data: offplanData,
                             backgroundColor: 'green',
+                            borderColor: 'rgba(60,141,188,0.8)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'offplan-Resale',
+                            data: offplanResalaeData,
+                            backgroundColor: 'pink',
                             borderColor: 'rgba(60,141,188,0.8)',
                             borderWidth: 1
                         },
@@ -797,6 +810,7 @@
                 const agentNames = data.map(agent => agent.agent_name);
                 const readyCounts = data.map(agent => agent.ready);
                 const offplanCounts = data.map(agent => agent.offplan);
+                const offplanResaleCounts = data.map(agent => agent.offplan_resale);
                 const rentCounts = data.map(agent => agent.rent);
 
                 const barChartData = {
@@ -812,6 +826,12 @@
                         data: offplanCounts,
                         backgroundColor: 'rgba(255, 206, 86, 0.6)', // Yellow color for Offplan
                         borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },{
+                        label: 'Offplan-Resale',
+                        data: offplanResaleCounts,
+                        backgroundColor: 'pink', // Yellow color for Offplan
+                        borderColor: 'pink',
                         borderWidth: 1
                     }, {
                         label: 'Rent',
@@ -1010,14 +1030,15 @@
 
             function updatePropeertyAgentWiseDataText(propertyAgentWiseCounts) {
                 let tableHtml =
-                    '<table class="table table-bordered"><thead><tr><th>Agent Name</th><th>Ready</th><th>Offplan</th><th>Rent</th><th>Total</th></tr></thead><tbody>';
+                    '<table class="table table-bordered"><thead><tr><th>Agent Name</th><th>Ready</th><th>Offplan</th><th>Offplan-Resale</th><th>Rent</th><th>Total</th></tr></thead><tbody>';
 
                 propertyAgentWiseCounts.forEach(agent => {
-                    const total = parseInt(agent.ready) + parseInt(agent.offplan) + parseInt(agent.rent);
+                    const total = parseInt(agent.ready) + parseInt(agent.offplan) + parseInt(agent.offplan_resale) + parseInt(agent.rent);
                     const row = `<tr>
                         <td>${agent.agent_name}</td>
                         <td>${agent.ready}</td>
                         <td>${agent.offplan}</td>
+                         <td>${agent.offplan_resale}</td>
                         <td>${agent.rent}</td>
                         <td>${total}</td>
                     </tr>`;

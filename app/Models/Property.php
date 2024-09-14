@@ -483,13 +483,15 @@ class Property extends Model implements HasMedia
         $propertyAgentWiseCount = DB::table('agents')
             ->select(
                 'agents.name as agent_name',
-                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND properties.status = "active" AND properties.is_approved = "approved" THEN 1 ELSE 0 END), 0) as ready'),
-                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND properties.status = "active" AND properties.is_approved = "approved"THEN 1 ELSE 0 END), 0) as offplan'),
-                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 9 AND properties.status = "active" AND properties.is_approved = "approved" THEN 1 ELSE 0 END), 0) as rent')
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND  properties.website_status = "available" THEN 1 ELSE 0 END), 0) as ready'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND properties.website_status = "available" THEN 1 ELSE 0 END), 0) as offplan'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 291 AND  properties.website_status = "available" THEN 1 ELSE 0 END), 0) as offplan_resale'),
+                DB::raw('IFNULL(SUM(CASE WHEN properties.category_id = 9 AND properties.website_status = "available" THEN 1 ELSE 0 END), 0) as rent')
             )
             ->leftJoin('properties', 'agents.id', '=', 'properties.agent_id')
             ->whereNotNull('properties.agent_id') // Filter agents with properties
             ->whereNull('properties.deleted_at')
+            ->whereNull('agents.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
             ->groupBy('agents.name')
             ->get();
@@ -501,6 +503,7 @@ class Property extends Model implements HasMedia
                 'agent_name' => $agent->agent_name,
                 'ready' => $agent->ready ?? 0,
                 'offplan' => $agent->offplan ?? 0,
+                'offplan_resale' => $agent->offplan_resale ?? 0,
                 'rent' => $agent->rent ?? 0,
             ];
         }
@@ -553,17 +556,17 @@ class Property extends Model implements HasMedia
         return DB::table('properties')
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
-            ->join('projects', 'properties.project_id', '=', 'projects.id')
+           
             ->selectRaw('
-                COUNT(CASE WHEN properties.website_status = "available" AND projects.is_valid = 0 THEN 1 END) as without_permit_available,
-                COUNT(CASE WHEN properties.website_status = "NA" AND projects.is_valid = 0 THEN 1 END) as without_permit_NA,
-                COUNT(CASE WHEN properties.website_status = "rejected" AND projects.is_valid = 0 THEN 1 END) as without_permit_rejected,
-                COUNT(CASE WHEN properties.website_status = "requested" AND projects.is_valid = 0 THEN 1 END) as without_permit_requested,
+                COUNT(CASE WHEN properties.website_status = "available" AND properties.is_valid = 0 THEN 1 END) as without_permit_available,
+                COUNT(CASE WHEN properties.website_status = "NA" AND properties.is_valid = 0 THEN 1 END) as without_permit_NA,
+                COUNT(CASE WHEN properties.website_status = "rejected" AND properties.is_valid = 0 THEN 1 END) as without_permit_rejected,
+                COUNT(CASE WHEN properties.website_status = "requested" AND properties.is_valid = 0 THEN 1 END) as without_permit_requested,
 
-                COUNT(CASE WHEN properties.website_status = "available" AND projects.is_valid = 1 THEN 1 END) as with_permit_available,
-                COUNT(CASE WHEN properties.website_status = "NA" AND projects.is_valid = 1 THEN 1 END) as with_permit_NA,
-                COUNT(CASE WHEN properties.website_status = "rejected" AND projects.is_valid = 1 THEN 1 END) as with_permit_rejected,
-                COUNT(CASE WHEN properties.website_status = "requested" AND projects.is_valid = 1 THEN 1 END) as with_permit_requested
+                COUNT(CASE WHEN properties.website_status = "available" AND properties.is_valid = 1 THEN 1 END) as with_permit_available,
+                COUNT(CASE WHEN properties.website_status = "NA" AND properties.is_valid = 1 THEN 1 END) as with_permit_NA,
+                COUNT(CASE WHEN properties.website_status = "rejected" AND properties.is_valid = 1 THEN 1 END) as with_permit_rejected,
+                COUNT(CASE WHEN properties.website_status = "requested" AND properties.is_valid = 1 THEN 1 END) as with_permit_requested
             ')
             ->first();
     }
@@ -573,15 +576,17 @@ class Property extends Model implements HasMedia
         return DB::table('properties')
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
-            ->join('projects', 'properties.project_id', '=', 'projects.id')
+            
             ->selectRaw('
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND projects.is_valid = 0 THEN 1 END) as without_permit_ready,
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND projects.is_valid = 0 THEN 1 END) as without_permit_offplan,
-                COUNT(CASE WHEN properties.category_id = 9  AND projects.is_valid = 0 THEN 1 END) as without_permit_rent,
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND properties.is_valid = 0 THEN 1 END) as without_permit_ready,
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND properties.is_valid = 0 THEN 1 END) as without_permit_offplan,
+                 COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 291 AND properties.is_valid = 0 THEN 1 END) as without_permit_offplan_resale,
+                COUNT(CASE WHEN properties.category_id = 9  AND properties.is_valid = 0 THEN 1 END) as without_permit_rent,
 
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286  AND projects.is_valid = 1 THEN 1 END) as with_permit_ready,
-                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287  AND projects.is_valid = 1 THEN 1 END) as with_permit_offplan,
-                COUNT(CASE WHEN properties.category_id = 9 AND projects.is_valid = 1 THEN 1 END) as with_permit_rent
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286  AND properties.is_valid = 1 THEN 1 END) as with_permit_ready,
+                COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287  AND properties.is_valid = 1 THEN 1 END) as with_permit_offplan,
+                  COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 291  AND properties.is_valid = 1 THEN 1 END) as with_permit_offplan_resale,
+                COUNT(CASE WHEN properties.category_id = 9 AND properties.is_valid = 1 THEN 1 END) as with_permit_rent
             ')
             ->first();
     }
@@ -593,22 +598,27 @@ class Property extends Model implements HasMedia
             ->whereBetween('properties.created_at', [$startDate, $endDate])
             ->selectRaw('
            
-                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as available_ready,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as NA_ready,
-                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as rejected_ready,
-                COUNT(CASE WHEN is_approved = "requested" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as requested_ready,
+                COUNT(CASE WHEN  website_status = "available" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as available_ready,
+                COUNT(CASE WHEN website_status = "na" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as NA_ready,
+                COUNT(CASE WHEN website_status = "rejected" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as rejected_ready,
+                COUNT(CASE WHEN website_status = "requested" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as requested_ready,
 
 
-                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as available_offplan,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 8  AND completion_status_id = 287 THEN 1 END) as NA_offplan,
-                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 8  AND completion_status_id = 287 THEN 1 END) as rejected_offplan,
-                COUNT(CASE WHEN is_approved = "requested" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as requested_offplan,
+                COUNT(CASE WHEN website_status = "available" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as available_offplan,
+                COUNT(CASE WHEN website_status = "na" AND category_id = 8  AND completion_status_id = 287 THEN 1 END) as NA_offplan,
+                COUNT(CASE WHEN website_status = "rejected" AND category_id = 8  AND completion_status_id = 287 THEN 1 END) as rejected_offplan,
+                COUNT(CASE WHEN website_status = "requested" AND category_id = 8 AND completion_status_id = 287  THEN 1 END) as requested_offplan,
+
+                COUNT(CASE WHEN website_status = "available" AND category_id = 8 AND completion_status_id = 291  THEN 1 END) as available_offplan_resale,
+                COUNT(CASE WHEN website_status = "na" AND category_id = 8  AND completion_status_id = 291 THEN 1 END) as NA_offplan_resale,
+                COUNT(CASE WHEN website_status = "rejected" AND category_id = 8  AND completion_status_id = 291 THEN 1 END) as rejected_offplan_resale,
+                COUNT(CASE WHEN website_status = "requested" AND category_id = 8 AND completion_status_id = 291  THEN 1 END) as requested_offplan_resale,
 
 
-                COUNT(CASE WHEN status = "active" AND is_approved = "approved" AND category_id = 9   THEN 1 END) as available_rent,
-                COUNT(CASE WHEN status = "inactive" AND is_approved = "approved" AND category_id = 9   THEN 1 END) as NA_rent,
-                COUNT(CASE WHEN is_approved = "rejected" AND category_id = 9  THEN 1 END) as rejected_rent,
-                COUNT(CASE WHEN is_approved = "requested" AND category_id = 9  THEN 1 END) as requested_rent
+                COUNT(CASE WHEN website_status = "available" AND category_id = 9   THEN 1 END) as available_rent,
+                COUNT(CASE WHEN website_status = "na" AND category_id = 9   THEN 1 END) as NA_rent,
+                COUNT(CASE WHEN website_status = "rejected" AND category_id = 9  THEN 1 END) as rejected_rent,
+                COUNT(CASE WHEN website_status = "requested" AND category_id = 9  THEN 1 END) as requested_rent
 
         ')->first();
 

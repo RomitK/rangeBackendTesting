@@ -136,6 +136,7 @@ class GeneralReport extends Controller
                 'count' => [
                     'ready' => $propertyPermitCategoryWiseCount->without_permit_ready,
                     'offplan' => $propertyPermitCategoryWiseCount->without_permit_offplan,
+                    'offplan_resale' => $propertyPermitCategoryWiseCount->without_permit_offplan_resale,
                     'rent' => $propertyPermitCategoryWiseCount->without_permit_rent,
 
                 ],
@@ -146,6 +147,7 @@ class GeneralReport extends Controller
                 'count' => [
                     'ready' => $propertyPermitCategoryWiseCount->with_permit_ready,
                     'offplan' => $propertyPermitCategoryWiseCount->with_permit_offplan,
+                    'offplan_resale' => $propertyPermitCategoryWiseCount->with_permit_offplan_resale,
                     'rent' => $propertyPermitCategoryWiseCount->with_permit_rent,
                 ],
 
@@ -197,7 +199,7 @@ class GeneralReport extends Controller
                 'color' => '#6c757d', // Secondary
             ]
         ];
-        // dd($propertyCateoryWiseCounts);
+         //dd($propertyCateoryWiseCounts);
         $propertyCateoryCounts = [
             [
                 'status' => 'Ready',
@@ -216,6 +218,16 @@ class GeneralReport extends Controller
                     'NA' => $propertyCateoryWiseCounts->NA_offplan,
                     'rejected' => $propertyCateoryWiseCounts->rejected_offplan,
                     'requested' => $propertyCateoryWiseCounts->requested_offplan
+                ],
+
+            ],
+            [
+                'status' => 'Offplan-Resale',
+                'count' => [
+                    'available' => $propertyCateoryWiseCounts->available_offplan_resale,
+                    'NA' => $propertyCateoryWiseCounts->NA_offplan_resale,
+                    'rejected' => $propertyCateoryWiseCounts->rejected_offplan_resale,
+                    'requested' => $propertyCateoryWiseCounts->requested_offplan_resale
                 ],
 
             ],
