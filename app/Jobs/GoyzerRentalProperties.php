@@ -112,7 +112,14 @@ class GoyzerRentalProperties implements ShouldQueue
                     $RefNo = isset($rental['RefNo']) ? $rental['RefNo'] : '';
                    
                     $communityName = isset($rental['Community']) ? $rental['Community'] : '';
-                   
+
+                    $CommunityID = isset($rental['CommunityID']) ? $rental['CommunityID'] : '';
+                    $SubCommunityID = isset($rental['SubCommunityID']) ? $rental['SubCommunityID'] : '';
+                    $PropertyID = isset($rental['PropertyID']) ? $rental['PropertyID'] : '';
+                    $UnitID = isset($rental['UnitID']) ? $rental['UnitID'] : '';
+                    $ReferredToID = isset($rental['ReferredToID']) ? $rental['ReferredToID'] : '';
+
+
                     $accommodationName = isset($rental['Category']) ? $rental['Category'] : ''; 
                     $projectName = isset($rental['PropertyName']) ? $rental['PropertyName'] : ''; 
                     $BuiltupArea = isset($rental['BuiltupArea']) ? $rental['BuiltupArea'] : '';
@@ -519,6 +526,12 @@ class GoyzerRentalProperties implements ShouldQueue
                     $property->status = config('constants.active');
                     $property->website_status = config('constants.available');
                     $property->category_id = 9;
+                    $property->CommunityID= $CommunityID;
+                    $property->SubCommunityID = $SubCommunityID;
+                    $property->PropertyID =$PropertyID;
+                    $property->UnitID=$UnitID;
+                    $property->ReferredToID= $ReferredToID;
+                    $property->UnitType = $propertyType->UnitType;
                     $property->save();
                     if ($property->category_id = 9) {
                         $prefix = 'S';
