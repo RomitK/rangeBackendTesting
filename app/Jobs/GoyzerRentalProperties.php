@@ -116,8 +116,8 @@ class GoyzerRentalProperties implements ShouldQueue
                     $CommunityID = isset($rental['CommunityID']) ? $rental['CommunityID'] : '';
                     $SubCommunityID = isset($rental['SubCommunityID']) ? $rental['SubCommunityID'] : '';
                     $PropertyID = isset($rental['PropertyID']) ? $rental['PropertyID'] : '';
-                    $UnitID = isset($rental['UnitID']) ? $rental['UnitID'] : '';
-                    $ReferredToID = isset($rental['ReferredToID']) ? $rental['ReferredToID'] : '';
+                    $UnitID = isset($rental['code']) ? $rental['code'] : '';
+                    $ReferredToID = isset($rental['AgentID']) ? $rental['AgentID'] : '';
 
 
                     $accommodationName = isset($rental['Category']) ? $rental['Category'] : ''; 
