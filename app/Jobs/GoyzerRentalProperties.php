@@ -119,6 +119,11 @@ class GoyzerRentalProperties implements ShouldQueue
                     $UnitID = isset($rental['code']) ? $rental['code'] : '';
                     $ReferredToID = isset($rental['AgentID']) ? $rental['AgentID'] : '';
 
+                    $CountryID = isset($rental['CountryID']) ? $rental['CountryID'] : '';
+                    $CityID = isset($rental['CityID']) ? $rental['CityID'] : '';
+                    $StateID = isset($CityID['StateID']) ? $rental['StateID'] : '';
+                    $DistrictID = isset($rental['DistrictID']) ? $rental['DistrictID'] : '';
+
 
                     $accommodationName = isset($rental['Category']) ? $rental['Category'] : ''; 
                     $projectName = isset($rental['PropertyName']) ? $rental['PropertyName'] : ''; 
@@ -532,6 +537,10 @@ class GoyzerRentalProperties implements ShouldQueue
                     $property->UnitID=$UnitID;
                     $property->ReferredToID= $ReferredToID;
                     $property->UnitType = $propertyType->UnitType;
+                    $property->CountryID = $CountryID;
+                    $property->CityID = $CityID;
+                    $property->StateID = $StateID;
+                    $property->DistrictID = $DistrictID;
                     $property->save();
                     if ($property->category_id = 9) {
                         $prefix = 'S';
