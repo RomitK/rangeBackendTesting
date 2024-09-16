@@ -1861,9 +1861,10 @@ echo $curl_scraped_page;
                         $phoneNumber = null;   // e.g., 6238699
 
                         if (preg_match($pattern, $fullPhoneNumber, $matches)) {
-                            $countryCode = $matches[1];   // e.g., +971
-                            $areaCode = $matches[2];      // e.g., 58
-                            $phoneNumber = $matches[3];   // e.g., 6238699
+                            // Remove the + from country code (if present)
+                            $countryCode = ltrim($matches[1], '+');   // e.g., 971
+                            $areaCode = isset($matches[2]) ? $matches[2] : '';    // e.g., 58 (optional, depends on format)
+                            $phoneNumber = isset($matches[3]) ? $matches[3] : ''; // e.g., 6238699
                         } else {
                             // Handle error case where number doesn't match expected format
                             Log::info('Invalid phone number format');
@@ -1880,9 +1881,9 @@ echo $curl_scraped_page;
                         // Manually encode the special characters in the access code
                         $name = $request->name;
                         $email = $request->email;
-                        $countryCode = '971';
-                        $areaCode = '58';
-                        $phoneNumber = '6238697';
+                        // $countryCode = '971';
+                        // $areaCode = '58';
+                        // $phoneNumber = '6238697';
                         $name = urlencode($name);
                         $countryCode = urlencode($countryCode);
                         $areaCode = urlencode($areaCode);
@@ -1891,17 +1892,7 @@ echo $curl_scraped_page;
                         $Remarks = urlencode($Remarks);
 
                         $accessCode = '$R@nGe!NteRn@t!on@l';
-                        // $property = (object) [
-                        //     'CountryID' => '65946',
-                        //     'StateID' => '55367',
-                        //     'CityID' => '54788',
-                        //     'DistrictID' => '80120',
-                        //     'CommunityID' => '199636',
-                        //     'SubCommunityID' => '201991',
-                        //     'PropertyID' => '2264',
-                        //     'UnitID' => '7404',
-                        //     'UnitType' => '19',
-                        // ];
+                       
                         // Define parameters as key-value pairs
                         $params = [
                             'GroupCode' => '5084',
