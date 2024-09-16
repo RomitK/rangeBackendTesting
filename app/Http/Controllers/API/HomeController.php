@@ -1880,7 +1880,9 @@ echo $curl_scraped_page;
                         // Manually encode the special characters in the access code
                         $name = "fsf";
                         $email = "aqsa@xpertise.ae";
-
+                        $countryCode = '971';
+                        $areaCode = '58';
+                        $phoneNumber = '6238697';
                         $name = urlencode($name);
                         $countryCode = urlencode($countryCode);
                         $areaCode = urlencode($areaCode);
