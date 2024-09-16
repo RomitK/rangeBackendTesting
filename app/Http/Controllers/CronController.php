@@ -45,26 +45,83 @@ class CronController extends Controller
     {
 
 
-        $accessCode = '$R@nGe!NteRn@t!on@l';
-                        $name = 'AQSA';
-                        $email = 'aqsa@xpertise.ae';
+       
 
-                        $Remarks = "Hi, I am interested in your property on website:";
-                        $countryCode = null;   // e.g., +971
-                        $areaCode = null;      // e.g., 58
-                        $phoneNumber = null;   // e.g., 6238699
+// Example dynamic values
+$accessCode = '$R@nGe!NteRn@t!on@l';
+$name = "fsf";
+$email = "aqsa@xpertise.ae";
+$Remarks = 'Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location';
+$countryCode = '+971';
+$areaCode = '58';
+$phoneNumber = '6238697';
+$property = (object) [
+    'CountryID' => '65946',
+    'StateID' => '',
+    'CityID' => '54788',
+    'DistrictID' => '80120',
+    'CommunityID' => '199636',
+    'SubCommunityID' => '201991',
+    'PropertyID' => '2264',
+    'UnitID' => '7404',
+    'UnitType' => '19'
+];
 
+// URL encode parameters
+$responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?' .
+    'AccessCode=' . rawurlencode($accessCode) .
+    '&GroupCode=' . rawurlencode('5084') .
+    '&TitleID=' . rawurlencode('79743') .
+    '&FirstName=' . rawurlencode($name) .
+    '&FamilyName=' .
+    '&MobileCountryCode=' . rawurlencode($countryCode) .
+    '&MobileAreaCode=' . rawurlencode($areaCode) .
+    '&MobilePhone=' . rawurlencode($phoneNumber) .
+    '&TelephoneCountryCode=' .
+    '&TelephoneAreaCode=' .
+    '&Telephone=' .
+    '&Email=' . rawurlencode($email) .
+    '&NationalityID=' .
+    '&CompanyID=' .
+    '&Remarks=' . rawurlencode($Remarks) .
+    '&RequirementType=' . rawurlencode('91212') .
+    '&ContactType=' . rawurlencode('1') .
+    '&CountryID=' . rawurlencode($property->CountryID) .
+    '&StateID=' . rawurlencode($property->StateID) .
+    '&CityID=' . rawurlencode($property->CityID) .
+    '&DistrictID=' . rawurlencode($property->DistrictID) .
+    '&CommunityID=' . rawurlencode($property->CommunityID) .
+    '&SubCommunityID=' . rawurlencode($property->SubCommunityID) .
+    '&PropertyID=' . rawurlencode($property->PropertyID) .
+    '&UnitID=' . rawurlencode($property->UnitID) .
+    '&UnitType=' . rawurlencode($property->UnitType) .
+    '&MethodOfContact=' . rawurlencode('196061') .
+    '&MediaType=' . rawurlencode('79266') .
+    '&MediaName=' . rawurlencode('78340') .
+    '&ReferredByID=' . rawurlencode('1000') .
+    '&ReferredToID=' . rawurlencode('1219') .
+    '&DeactivateNotification=' . rawurlencode('0.0.0.0') .
+    '&Bedroom=' . rawurlencode('2') .
+    '&Budget=' .
+    '&Budget2=' .
+    '&RequirementCountryID=' .
+    '&ExistingClient=' .
+    '&CompaignSource=' .
+    '&CompaignMedium=' .
+    '&Company=' .
+    '&NumberOfEmployee=' .
+    '&LeadStageId=' . rawurlencode('2') .
+    '&ActivityDate=' .
+    '&ActivityTime=' .
+    '&ActivityTypeId=' .
+    '&ActivitySubject=' .
+    '&ActivityRemarks=';
 
+Log::info("Generated URL: " . $responseUrl);
 
-                        $responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode='.$accessCode.'&GroupCode=5084&TitleID=79743&FirstName='.$name.'&FamilyName=&MobileCountryCode='.$countryCode.'&MobileAreaCode='.$areaCode.'&MobilePhone='.$phoneNumber.'&TelephoneCountryCode=&TelephoneAreaCode=&Telephone=&Email='.$email.'&NationalityID=&CompanyID=&Remarks='.$Remarks.'&RequirementType=91212&ContactType=1&CountryID=fsdfs&StateID=fsfsd&CityID=sfsf&DistrictID=222&CommunityID=646&SubCommunityID=3534&PropertyID=fsdf&UnitID=dasda&UnitType=122&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0& Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=';
-                        //$responseUrl = htmlspecialchars($responseUrl, ENT_QUOTES, 'UTF-8');
-                        
-                        // Log the constructed URL
-                        Log::info("goyzer-lead");
-                        Log::info($responseUrl);
-
-  
-
+// Optionally decode if necessary
+$decodedResponseUrl = urldecode($responseUrl);
+Log::info("Decoded URL: " . $decodedResponseUrl);
     
   
     }
