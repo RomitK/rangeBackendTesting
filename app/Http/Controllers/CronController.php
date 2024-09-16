@@ -67,66 +67,67 @@ $property = (object) [
     'UnitType' => '19'
 ];
 
-$responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?' .
-    http_build_query([
-        'AccessCode' => $accessCode,
-        'GroupCode' => '5084',
-        'TitleID' => '79743',
-        'FirstName' => $name,
-        'FamilyName' => '',
-        'MobileCountryCode' => $countryCode,
-        'MobileAreaCode' => $areaCode,
-        'MobilePhone' => $phoneNumber,
-        'TelephoneCountryCode' => '',
-        'TelephoneAreaCode' => '',
-        'Telephone' => '',
-        'Email' => $email,
-        'NationalityID' => '',
-        'CompanyID' => '',
-        'Remarks' => $Remarks,
-        'RequirementType' => '91212',
-        'ContactType' => '1',
-        'CountryID' => $property->CountryID,
-        'StateID' => $property->StateID,
-        'CityID' => $property->CityID,
-        'DistrictID' => $property->DistrictID,
-        'CommunityID' => $property->CommunityID,
-        'SubCommunityID' => $property->SubCommunityID,
-        'PropertyID' => $property->PropertyID,
-        'UnitID' => $property->UnitID,
-        'UnitType' => $property->UnitType,
-        'MethodOfContact' => '196061',
-        'MediaType' => '79266',
-        'MediaName' => '78340',
-        'ReferredByID' => '1000',
-        'ReferredToID' => '1219',
-        'DeactivateNotification' => '0.0.0.0',
-        'Bedroom' => '2',
-        'Budget' => '',
-        'Budget2' => '',
-        'RequirementCountryID' => '',
-        'ExistingClient' => '',
-        'CompaignSource' => '',
-        'CompaignMedium' => '',
-        'Company' => '',
-        'NumberOfEmployee' => '',
-        'LeadStageId' => '2',
-        'ActivityDate' => '',
-        'ActivityTime' => '',
-        'ActivityTypeId' => '',
-        'ActivitySubject' => '',
-        'ActivityRemarks' => ''
-    ]);
+// Generate URL parameters using http_build_query
+$queryParams = http_build_query([
+    'AccessCode' => $accessCode,
+    'GroupCode' => '5084',
+    'TitleID' => '79743',
+    'FirstName' => $name,
+    'FamilyName' => '',
+    'MobileCountryCode' => $countryCode,
+    'MobileAreaCode' => $areaCode,
+    'MobilePhone' => $phoneNumber,
+    'TelephoneCountryCode' => '',
+    'TelephoneAreaCode' => '',
+    'Telephone' => '',
+    'Email' => $email,
+    'NationalityID' => '',
+    'CompanyID' => '',
+    'Remarks' => $Remarks,
+    'RequirementType' => '91212',
+    'ContactType' => '1',
+    'CountryID' => $property->CountryID,
+    'StateID' => $property->StateID,
+    'CityID' => $property->CityID,
+    'DistrictID' => $property->DistrictID,
+    'CommunityID' => $property->CommunityID,
+    'SubCommunityID' => $property->SubCommunityID,
+    'PropertyID' => $property->PropertyID,
+    'UnitID' => $property->UnitID,
+    'UnitType' => $property->UnitType,
+    'MethodOfContact' => '196061',
+    'MediaType' => '79266',
+    'MediaName' => '78340',
+    'ReferredByID' => '1000',
+    'ReferredToID' => '1219',
+    'DeactivateNotification' => '0.0.0.0',
+    'Bedroom' => '2',
+    'Budget' => '',
+    'Budget2' => '',
+    'RequirementCountryID' => '',
+    'ExistingClient' => '',
+    'CompaignSource' => '',
+    'CompaignMedium' => '',
+    'Company' => '',
+    'NumberOfEmployee' => '',
+    'LeadStageId' => '2',
+    'ActivityDate' => '',
+    'ActivityTime' => '',
+    'ActivityTypeId' => '',
+    'ActivitySubject' => '',
+    'ActivityRemarks' => ''
+]);
+
+// Construct the full URL
+$responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?' . $queryParams;
 
 Log::info("Generated URL: " . $responseUrl);
 
 // Optionally decode if necessary
-$decodedResponseUrl = urldecode($responseUrl);
+$fixedResponseUrl = str_replace('&amp;', '&', $responseUrl);
 
-$fixedResponseUrl = str_replace('&amp;', '&', $decodedResponseUrl);
-
-Log::info("Decoded URL: " . $fixedResponseUrl);
-    
+Log::info("Fixed URL: " . $fixedResponseUrl);
+ 
   
     }
     public function testEmail()
