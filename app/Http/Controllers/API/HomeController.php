@@ -1873,68 +1873,94 @@ echo $curl_scraped_page;
                         
                         $Remarks = "Hi, I am interested in your property on website: $propertySlug";
     
-                        $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
-                            'AccessCode' => '$R@nGe!NteRn@t!on@l',
-                            'GroupCode' => '5084',
-                            'TitleID' => '79743',
-                            'FirstName' => $request->name,
-                            'FamilyName' => '',
-                            'MobileCountryCode' => $countryCode,
-                            'MobileAreaCode' => $areaCode,
-                            'MobilePhone' => $phoneNumber,
-                            'TelephoneCountryCode' => '',
-                            'TelephoneAreaCode' => '',
-                            'Telephone' => '',
-                            'Email' => $request->email,
-                            'NationalityID' => '',
-                            'CompanyID' => '',
-                            'Remarks' => $Remarks,
-                            'RequirementType' => '91212',
-                            'ContactType' => '1',
-                            'CountryID' => $property->CountryID,
-                            'StateID' =>  $property->StateID,
-                            'CityID' =>  $property->CityID,
-                            'DistrictID' => $property->DistrictID,
-                            'CommunityID' => $property->CommunityID,
-                            'SubCommunityID' => $property->SubCommunityID,
-                            'PropertyID' => $property->PropertyID,
-                            'UnitID' => $property->UnitID,
-                            'UnitType' => $property->UnitType,
-                            'MethodOfContact' => '196061',
-                            'MediaType' => '79266',
-                            'MediaName' => '78340',
-                            'ReferredByID' => '1000',
-                            //'ReferredToID' =>  $property->ReferredToID,
-                            'ReferredToID' =>  1219,
-                            'DeactivateNotification' => '0.0.0.0',
-                            'Bedroom' => $property->bedrooms,
-                            'Budget' => '',
-                            'Budget2' => '',
-                            'RequirementCountryID' => '',
-                            'ExistingClient' => '',
-                            'CompaignSource' => '',
-                            'CompaignMedium' => '',
-                            'Company' => '',
-                            'NumberOfEmployee' => '',
-                            'LeadStageId' => '2',
-                            'ActivityDate' => '',
-                            'ActivityTime' => '',
-                            'ActivityTypeId' => '',
-                            'ActivitySubject' => '',
-                            'ActivityRemarks' => '',
-                        ]);
+                        // $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
+                        //     'AccessCode' => '$R@nGe!NteRn@t!on@l',
+                        //     'GroupCode' => '5084',
+                        //     'TitleID' => '79743',
+                        //     'FirstName' => $request->name,
+                        //     'FamilyName' => '',
+                        //     'MobileCountryCode' => $countryCode,
+                        //     'MobileAreaCode' => $areaCode,
+                        //     'MobilePhone' => $phoneNumber,
+                        //     'TelephoneCountryCode' => '',
+                        //     'TelephoneAreaCode' => '',
+                        //     'Telephone' => '',
+                        //     'Email' => $request->email,
+                        //     'NationalityID' => '',
+                        //     'CompanyID' => '',
+                        //     'Remarks' => $Remarks,
+                        //     'RequirementType' => '91212',
+                        //     'ContactType' => '1',
+                        //     'CountryID' => $property->CountryID,
+                        //     'StateID' =>  $property->StateID,
+                        //     'CityID' =>  $property->CityID,
+                        //     'DistrictID' => $property->DistrictID,
+                        //     'CommunityID' => $property->CommunityID,
+                        //     'SubCommunityID' => $property->SubCommunityID,
+                        //     'PropertyID' => $property->PropertyID,
+                        //     'UnitID' => $property->UnitID,
+                        //     'UnitType' => $property->UnitType,
+                        //     'MethodOfContact' => '196061',
+                        //     'MediaType' => '79266',
+                        //     'MediaName' => '78340',
+                        //     'ReferredByID' => '1000',
+                        //     //'ReferredToID' =>  $property->ReferredToID,
+                        //     'ReferredToID' =>  1219,
+                        //     'DeactivateNotification' => '0.0.0.0',
+                        //     'Bedroom' => $property->bedrooms,
+                        //     'Budget' => '',
+                        //     'Budget2' => '',
+                        //     'RequirementCountryID' => '',
+                        //     'ExistingClient' => '',
+                        //     'CompaignSource' => '',
+                        //     'CompaignMedium' => '',
+                        //     'Company' => '',
+                        //     'NumberOfEmployee' => '',
+                        //     'LeadStageId' => '2',
+                        //     'ActivityDate' => '',
+                        //     'ActivityTime' => '',
+                        //     'ActivityTypeId' => '',
+                        //     'ActivitySubject' => '',
+                        //     'ActivityRemarks' => '',
+                        // ]);
                         
+                        // Log::info("goyzer-lead");
+                        // Log::info($response);
+                        // if ($response->successful()) {
+                            
+                        //     Log::info("success");
+                        //     Log::info($response->body());
+                            
+                        // } else {
+                        //     Log::info("error");
+                        //     Log::info('response->status-'.$response->status());
+                        // }
+
+
+                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode=$R@nGe!NteRn@t!on@l&GroupCode=5084&
+                                TitleID=79743&FirstName=$request->name&FamilyName=&MobileCountryCode=$countryCode&MobileAreaCode=$areaCode&MobilePhone=$phoneNumber&TelephoneCountryCode=&
+                                TelephoneAreaCode=&Telephone=&Email=$request->nam&NationalityID=&CompanyID=&
+                                Remarks=$Remarks&RequirementType=91212&
+                                ContactType=1&CountryID=$property->CountryID&StateID=$property->StateID&CityID=$property->CityID&DistrictID=$property->DistrictID&
+                                CommunityID=$property->CommunityID&SubCommunityID=$property->SubCommunityID&PropertyID=$property->PropertyID&UnitID=$property->UnitID&
+                                UnitType=$property->UnitType&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0&
+                                Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=";
+
+                        // Log the constructed URL
                         Log::info("goyzer-lead");
-                        Log::info($response);
+                        Log::info($responseUrl);
+
+                        // Send the HTTP request
+                        $response = Http::get($responseUrl);
+
                         if ($response->successful()) {
-                            
-                            Log::info("success");
+                            Log::info("Success");
                             Log::info($response->body());
-                            
                         } else {
-                            Log::info("error");
-                            Log::info('response->status-'.$response->status());
+                            Log::info("Error");
+                            Log::info('Response status: ' . $response->status());
                         }
+
                     }
                    // CRMLeadJob::dispatch($data);
                 }
