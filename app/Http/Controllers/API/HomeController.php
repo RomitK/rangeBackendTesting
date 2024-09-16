@@ -1935,104 +1935,21 @@ echo $curl_scraped_page;
                         //     Log::info("error");
                         //     Log::info('response->status-'.$response->status());
                         // }
-                        // Assuming these are coming from your request or variables
-$accessCode = '$R@nGe!NteRn@t!on@l'; // Original access code
-$name = urlencode($request->name);  // URL encode the name
-$email = urlencode($request->email);  // URL encode the email
-$remarks = urlencode('Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location');  // URL encode the remarks
+                        $accessCode = '$R@nGe!NteRn@t!on@l';
+                        $name = $request->name;
+                        $email = urlencode($request->email);
+                        $responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode='.$accessCode.'&GroupCode=5084&TitleID=79743&FirstName='.$name.'&FamilyName=&MobileCountryCode='.$countryCode.'&MobileAreaCode='.$areaCode.'&MobilePhone='.$phoneNumber.'&TelephoneCountryCode=&TelephoneAreaCode=&Telephone=&Email='.$email.'&NationalityID=&CompanyID=&Remarks='.$Remarks.'&RequirementType=91212&ContactType=1&CountryID='.$property->CountryID.'&StateID='.$property->StateID.'&CityID='.$property->CityID.'&DistrictID='.$property->DistrictID.'&CommunityID='.$property->CommunityID.'&SubCommunityID='.$property->SubCommunityID.'&PropertyID='.$property->PropertyID.'&UnitID='.$property->UnitID.'&UnitType='.$property->UnitType.'&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0& Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=';
 
-// URL encode other dynamic values
-$countryCode = urlencode($countryCode);
-$areaCode = urlencode($areaCode);
-$phoneNumber = urlencode($phoneNumber);
-
-// Prepare the URL-encoded access code separately
-$encodedAccessCode = urlencode($accessCode);
-
-// Construct the URL with the encoded parameters
-$responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?"
-    . "AccessCode=$encodedAccessCode"
-    . "&GroupCode=5084"
-    . "&TitleID=79743"
-    . "&FirstName=$name"
-    . "&FamilyName="
-    . "&MobileCountryCode=$countryCode"
-    . "&MobileAreaCode=$areaCode"
-    . "&MobilePhone=$phoneNumber"
-    . "&TelephoneCountryCode="
-    . "&TelephoneAreaCode="
-    . "&Telephone="
-    . "&Email=$email"
-    . "&NationalityID="
-    . "&CompanyID="
-    . "&Remarks=$remarks"
-    . "&RequirementType=91212"
-    . "&ContactType=1"
-    . "&CountryID={$property->CountryID}"
-    . "&StateID={$property->StateID}"
-    . "&CityID={$property->CityID}"
-    . "&DistrictID={$property->DistrictID}"
-    . "&CommunityID={$property->CommunityID}"
-    . "&SubCommunityID={$property->SubCommunityID}"
-    . "&PropertyID={$property->PropertyID}"
-    . "&UnitID={$property->UnitID}"
-    . "&UnitType={$property->UnitType}"
-    . "&MethodOfContact=196061"
-    . "&MediaType=79266"
-    . "&MediaName=78340"
-    . "&ReferredByID=1000"
-    . "&ReferredToID=1219"
-    . "&DeactivateNotification=0.0.0.0"
-    . "&Bedroom=2"
-    . "&Budget="
-    . "&Budget2="
-    . "&RequirementCountryID="
-    . "&ExistingClient="
-    . "&CompaignSource="
-    . "&CompaignMedium="
-    . "&Company="
-    . "&NumberOfEmployee="
-    . "&LeadStageId=2"
-    . "&ActivityDate="
-    . "&ActivityTime="
-    . "&ActivityTypeId="
-    . "&ActivitySubject="
-    . "&ActivityRemarks=";
-
-// Log the URL in its encoded form
-Log::info("Generated URL: " . $responseUrl);
-
-// If needed, you can decode it for readability (optional)
-$decodedResponseUrl = htmlspecialchars_decode($responseUrl, ENT_QUOTES);
-Log::info("Decoded URL: " . $decodedResponseUrl);
+                        // Log the constructed URL
+                        Log::info("goyzer-lead");
+                        Log::info($responseUrl);
 
                         // Send the HTTP request
-                        $response = Http::get($decodedResponseUrl);
+                        $response = Http::get($responseUrl);
 
                         if ($response->successful()) {
                             Log::info("Success");
                             Log::info($response->body());
-
-
-                            $responseXml = $response->body();
-
-                            // Convert XML response to a SimpleXMLElement object
-                            $xmlObject = simplexml_load_string($responseXml);
-
-                            // Register namespaces (if any) for the XML (in this case, the default one)
-                            $xmlObject->registerXPathNamespace('ns', 'http://webapi.goyzer.com/');
-
-                            // Find and log the message
-                            $messages = $xmlObject->xpath('//ns:Message');
-
-                            if (!empty($messages)) {
-                                foreach ($messages as $message) {
-                                    Log::info("Goyzer Response Message: " . (string)$message);
-                                }
-                            } else {
-                                Log::info("No message found in the response.");
-                            }
-
                         } else {
                             Log::info("Error");
                             Log::info('Response status: ' . $response->status());
