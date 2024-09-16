@@ -45,6 +45,11 @@ class CronController extends Controller
     {
 
 
+        $staticUrl = 'https://example.com/test?param1=value1&param2=value2';
+echo "Static URL: " . $staticUrl . "\n";
+
+
+
        
 
 // Example dynamic values
@@ -66,24 +71,23 @@ $property = (object) [
     'UnitID' => '7404',
     'UnitType' => '19'
 ];
-
-// Generate URL parameters using http_build_query
-$queryParams = http_build_query([
-    'AccessCode' => $accessCode,
+$baseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2';
+$queryParams = [
+    'AccessCode' => urlencode($accessCode),
     'GroupCode' => '5084',
     'TitleID' => '79743',
-    'FirstName' => $name,
+    'FirstName' => urlencode($name),
     'FamilyName' => '',
-    'MobileCountryCode' => $countryCode,
-    'MobileAreaCode' => $areaCode,
-    'MobilePhone' => $phoneNumber,
+    'MobileCountryCode' => urlencode($countryCode),
+    'MobileAreaCode' => urlencode($areaCode),
+    'MobilePhone' => urlencode($phoneNumber),
     'TelephoneCountryCode' => '',
     'TelephoneAreaCode' => '',
     'Telephone' => '',
-    'Email' => $email,
+    'Email' => urlencode($email),
     'NationalityID' => '',
     'CompanyID' => '',
-    'Remarks' => $Remarks,
+    'Remarks' => urlencode($Remarks),
     'RequirementType' => '91212',
     'ContactType' => '1',
     'CountryID' => $property->CountryID,
@@ -116,17 +120,19 @@ $queryParams = http_build_query([
     'ActivityTypeId' => '',
     'ActivitySubject' => '',
     'ActivityRemarks' => ''
-]);
+];
+
+// Build the query string
+$queryString = http_build_query($queryParams);
 
 // Construct the full URL
-$responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?' . $queryParams;
+$responseUrl = $baseUrl . '?' . $queryString;
 
 Log::info("Generated URL: " . $responseUrl);
 
-// Optionally decode if necessary
-$fixedResponseUrl = str_replace('&amp;', '&', $responseUrl);
+// Output URL directly to check encoding
+echo "Generated URL: " . $responseUrl . "\n";
 
-Log::info("Fixed URL: " . $fixedResponseUrl);
  
   
     }
