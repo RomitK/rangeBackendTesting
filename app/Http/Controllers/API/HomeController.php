@@ -1950,7 +1950,7 @@ echo $curl_scraped_page;
 
                         if ($response->successful()) {
                             Log::info("success");
-                            Log($response->body());
+                           
                         } else {
                             Log($response->status());
                         }
