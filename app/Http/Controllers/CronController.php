@@ -71,68 +71,68 @@ $property = (object) [
     'UnitID' => '7404',
     'UnitType' => '19'
 ];
-$baseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2';
-$queryParams = [
-    'AccessCode' => urlencode($accessCode),
-    'GroupCode' => '5084',
-    'TitleID' => '79743',
-    'FirstName' => urlencode($name),
-    'FamilyName' => '',
-    'MobileCountryCode' => urlencode($countryCode),
-    'MobileAreaCode' => urlencode($areaCode),
-    'MobilePhone' => urlencode($phoneNumber),
-    'TelephoneCountryCode' => '',
-    'TelephoneAreaCode' => '',
-    'Telephone' => '',
-    'Email' => urlencode($email),
-    'NationalityID' => '',
-    'CompanyID' => '',
-    'Remarks' => urlencode($Remarks),
-    'RequirementType' => '91212',
-    'ContactType' => '1',
-    'CountryID' => $property->CountryID,
-    'StateID' => $property->StateID,
-    'CityID' => $property->CityID,
-    'DistrictID' => $property->DistrictID,
-    'CommunityID' => $property->CommunityID,
-    'SubCommunityID' => $property->SubCommunityID,
-    'PropertyID' => $property->PropertyID,
-    'UnitID' => $property->UnitID,
-    'UnitType' => $property->UnitType,
-    'MethodOfContact' => '196061',
-    'MediaType' => '79266',
-    'MediaName' => '78340',
-    'ReferredByID' => '1000',
-    'ReferredToID' => '1219',
-    'DeactivateNotification' => '0.0.0.0',
-    'Bedroom' => '2',
-    'Budget' => '',
-    'Budget2' => '',
-    'RequirementCountryID' => '',
-    'ExistingClient' => '',
-    'CompaignSource' => '',
-    'CompaignMedium' => '',
-    'Company' => '',
-    'NumberOfEmployee' => '',
-    'LeadStageId' => '2',
-    'ActivityDate' => '',
-    'ActivityTime' => '',
-    'ActivityTypeId' => '',
-    'ActivitySubject' => '',
-    'ActivityRemarks' => ''
-];
-
-// Build the query string
-$queryString = http_build_query($queryParams);
-
-// Construct the full URL
-$responseUrl = $baseUrl . '?' . $queryString;
-
-Log::info("Generated URL: " . $responseUrl);
-
-// Output URL directly to check encoding
-echo "Generated URL: " . $responseUrl . "\n";
-
+ $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
+                            'AccessCode' => '$R@nGe!NteRn@t!on@l',
+                            'GroupCode' => '5084',
+                            'TitleID' => '79743',
+                            'FirstName' => $name,
+                            'FamilyName' => '',
+                            'MobileCountryCode' => $countryCode,
+                            'MobileAreaCode' => $areaCode,
+                            'MobilePhone' => $phoneNumber,
+                            'TelephoneCountryCode' => '',
+                            'TelephoneAreaCode' => '',
+                            'Telephone' => '',
+                            'Email' => $email,
+                            'NationalityID' => '',
+                            'CompanyID' => '',
+                            'Remarks' => $Remarks,
+                            'RequirementType' => '91212',
+                            'ContactType' => '1',
+                            'CountryID' => $property->CountryID,
+                            'StateID' =>  $property->StateID,
+                            'CityID' =>  $property->CityID,
+                            'DistrictID' => $property->DistrictID,
+                            'CommunityID' => $property->CommunityID,
+                            'SubCommunityID' => $property->SubCommunityID,
+                            'PropertyID' => $property->PropertyID,
+                            'UnitID' => $property->UnitID,
+                            'UnitType' => $property->UnitType,
+                            'MethodOfContact' => '196061',
+                            'MediaType' => '79266',
+                            'MediaName' => '78340',
+                            'ReferredByID' => '1000',
+                            //'ReferredToID' =>  $property->ReferredToID,
+                            'ReferredToID' =>  1219,
+                            'DeactivateNotification' => '0.0.0.0',
+                            'Bedroom' => $property->bedrooms,
+                            'Budget' => '',
+                            'Budget2' => '',
+                            'RequirementCountryID' => '',
+                            'ExistingClient' => '',
+                            'CompaignSource' => '',
+                            'CompaignMedium' => '',
+                            'Company' => '',
+                            'NumberOfEmployee' => '',
+                            'LeadStageId' => '2',
+                            'ActivityDate' => '',
+                            'ActivityTime' => '',
+                            'ActivityTypeId' => '',
+                            'ActivitySubject' => '',
+                            'ActivityRemarks' => '',
+                        ]);
+                        
+                        Log::info("goyzer-lead");
+                        Log::info($response);
+                        if ($response->successful()) {
+                            
+                            Log::info("success");
+                            print_r($response->body());
+                            
+                        } else {
+                            print_r($response->status());
+                           
+                        }
  
   
     }
