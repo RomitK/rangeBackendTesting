@@ -1995,11 +1995,20 @@ echo $curl_scraped_page;
                             . "&ActivitySubject="
                             . "&ActivityRemarks=";
                         // Log the constructed URL
-                        Log::info("goyzer-lead");
-                        Log::info($responseUrl);
+                        // Log::info("goyzer-lead");
+                        // Log::info($responseUrl);
+
+                        Log::info("Generated Encoded URL: " . $responseUrl);
+
+                        // Decode the URL for readability
+                        $decodedUrl = urldecode($responseUrl);
+
+                        // Log the URL in decoded form
+                        Log::info("Decoded URL: " . $decodedUrl);
+
 
                         // Send the HTTP request
-                        $response = Http::get($responseUrl);
+                        $response = Http::get($decodedUrl);
 
                         if ($response->successful()) {
                             Log::info("Success");
