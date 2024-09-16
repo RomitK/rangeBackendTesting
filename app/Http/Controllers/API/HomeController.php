@@ -1908,7 +1908,7 @@ echo $curl_scraped_page;
                             'Email' => $email,
                             'NationalityID' => '',
                             'CompanyID' => '',
-                            'Remarks' => '',
+                            'Remarks' => $Remarks,
                             'RequirementType' => '91212',
                             'ContactType' => '1',
                             'CountryID' => $property->CountryID,
