@@ -45,67 +45,28 @@ class CronController extends Controller
     {
 
 
-        $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
-            'AccessCode' => '$R@nGe!NteRn@t!on@l',
-            'GroupCode' => '5084',
-            'TitleID' => '79743',
-            'FirstName' => 'John',
-            'FamilyName' => 'Doe',
-            'MobileCountryCode' => '971',
-            'TelephoneCountryCode'=>'',
-            'TelephoneAreaCode'=> '',
-            'Telephone'=>'',
-            'NationalityID'=>'',
-            'CompanyID'=>'',
-            'Remarks'=>'',
-            'DistrictID'=>'',
-            'CommunityID'=>'',
-            'SubCommunityID'=>'',
-            'PropertyID'=>'',
-            'Budget'=>'',
-            'MobileAreaCode' => '58',
-            'MobilePhone' => '75555555',
-            'Email' => 'aqsaA@4999xpertise.ae',
-            'RequirementType' => '91212',
-            'ContactType' => '0',
-            'CountryID' => '65946',
-            'StateID' => '55367',
-            'CityID' => '54788',
-            'UnitID' => '7968',
-            'UnitType' => '19',
-            'MethodOfContact' => '196061',
-            'MediaType' => '79266',
-            'MediaName' => '78340',
-            'ReferredByID' => '1219',
-            'ReferredToID' => '1219',
-            'DeactivateNotification' => '1.0.0.0',
-            'Bedroom' => '2',
-            'Budget' => '',
-            'Budget2' => '',
-            'RequirementCountryID' => '',
-            'ExistingClient' => '',
-            'CompaignSource' => '',
-            'CompaignMedium' => '',
-            'Company' => '',
-            'NumberOfEmployee' => '',
-            'LeadStageId' => '2',
-            'ActivityDate' => '',
-            'ActivityTime' => '',
-            'ActivityTypeId' => '',
-            'ActivitySubject' => '',
-            'ActivityRemarks' => '',
-        // Add other parameters as necessary
-    ]);
+        $accessCode = '$R@nGe!NteRn@t!on@l';
+                        $name = 'AQSA';
+                        $email = 'aqsa@xpertise.ae';
+
+                        $Remarks = "Hi, I am interested in your property on website:";
+                        $countryCode = null;   // e.g., +971
+                        $areaCode = null;      // e.g., 58
+                        $phoneNumber = null;   // e.g., 6238699
+
+
+
+                        $responseUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode='.$accessCode.'&GroupCode=5084&TitleID=79743&FirstName='.$name.'&FamilyName=&MobileCountryCode='.$countryCode.'&MobileAreaCode='.$areaCode.'&MobilePhone='.$phoneNumber.'&TelephoneCountryCode=&TelephoneAreaCode=&Telephone=&Email='.$email.'&NationalityID=&CompanyID=&Remarks='.$Remarks.'&RequirementType=91212&ContactType=1&CountryID=fsdfs&StateID=fsfsd&CityID=sfsf&DistrictID=222&CommunityID=646&SubCommunityID=3534&PropertyID=fsdf&UnitID=dasda&UnitType=122&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0& Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=';
+                        //$responseUrl = htmlspecialchars($responseUrl, ENT_QUOTES, 'UTF-8');
+                        
+                        // Log the constructed URL
+                        Log::info("goyzer-lead");
+                        Log::info($responseUrl);
+
+  
 
     
-    if ($response->successful()) {
-          
-        return $this->success('Accommodations',$response->body() , 200); // Handle successful response
-    } else {
-        dd('error');
-        return $response->status();  // Handle error
-    }
-        
+  
     }
     public function testEmail()
     {
