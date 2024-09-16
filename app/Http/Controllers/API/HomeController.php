@@ -1873,6 +1873,12 @@ echo $curl_scraped_page;
                         $Remarks = 'Hi, I am interested in your property on website:'.$propertySlug;
                       
                     
+                        // Example dynamic values
+                       
+                        $Remarks = 'Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location';
+                       
+                        // Manually encode the special characters in the access code
+                        $accessCode = urlencode('$R@nGe!NteRn@t!on@l');  // Encodes special characters
                         $name = urlencode($request->name);
                         $countryCode = urlencode($countryCode);
                         $areaCode = urlencode($areaCode);
@@ -1935,7 +1941,9 @@ echo $curl_scraped_page;
                         // Manually build the query string
                         $queryString = '';
                         foreach ($params as $key => $value) {
-                            $queryString .= urlencode($key) . '=' . urlencode($value) . '&';
+                            
+                                $queryString .= urlencode($key) . '=' . urlencode($value) . '&';
+                        
                         }
                         $queryString = rtrim($queryString, '&');
 
@@ -1950,9 +1958,10 @@ echo $curl_scraped_page;
 
                         if ($response->successful()) {
                             Log::info("success");
-                           
+                            // print_r($response->body());
                         } else {
-                            Log($response->status());
+                            Log::info($response->status());
+                           // print_r($response->status());
                         }
 
                     }
