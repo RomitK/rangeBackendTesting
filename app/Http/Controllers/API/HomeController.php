@@ -1489,7 +1489,6 @@ echo $curl_scraped_page;
                 $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
 
                 Log::info($data);
-             
             }
             $lead = new Lead;
             $lead->email = $request->email;
@@ -1831,6 +1830,7 @@ echo $curl_scraped_page;
 
                         $link = $property->saleoffer_link;
                     }
+                    
 
                     $data['message'] = "Property URL-" . $property->slug;
                     //$data = $this->CRMCampaignManagement($data, 267, 481, "", '', true, $property->name);
@@ -1840,8 +1840,102 @@ echo $curl_scraped_page;
                         $email = "";
                     }
                     $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
-
                     Log::info($data);
+
+                    if($property->property_source == 'xml'){
+
+
+                        $fullPhoneNumber = $request->fullPhoneNumber; // e.g., ' +971 58 6238699 '
+
+                        // Remove leading/trailing spaces
+                        $fullPhoneNumber = trim($fullPhoneNumber);
+
+                        // Remove all spaces within the phone number
+                        $fullPhoneNumber = preg_replace('/\s+/', '', $fullPhoneNumber);
+
+                        // Now you can proceed with separating the country code, area code, and phone number
+                        $pattern = '/^(\+?\d{1,3})(\d{2})(\d{6,})$/';
+
+                        $countryCode = null;   // e.g., +971
+                        $areaCode = null;      // e.g., 58
+                        $phoneNumber = null;   // e.g., 6238699
+
+                        if (preg_match($pattern, $fullPhoneNumber, $matches)) {
+                            $countryCode = $matches[1];   // e.g., +971
+                            $areaCode = $matches[2];      // e.g., 58
+                            $phoneNumber = $matches[3];   // e.g., 6238699
+                        } else {
+                            // Handle error case where number doesn't match expected format
+                            Log::info('Invalid phone number format');
+                        }
+
+                        $propertySlug = "https://www.range.ae/properties/".$property->slug;
+                        
+                        $Remarks = "Hi, I am interested in your property on website: $propertySlug";
+    
+                        $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
+                            'AccessCode' => '$R@nGe!NteRn@t!on@l',
+                            'GroupCode' => '5084',
+                            'TitleID' => '79743',
+                            'FirstName' => $request->name,
+                            'FamilyName' => '',
+                            'MobileCountryCode' => $countryCode,
+                            'MobileAreaCode' => $areaCode,
+                            'MobilePhone' => $phoneNumber,
+                            'TelephoneCountryCode' => '',
+                            'TelephoneAreaCode' => '',
+                            'Telephone' => '',
+                            'Email' => $request->email,
+                            'NationalityID' => '',
+                            'CompanyID' => '',
+                            'Remarks' => $Remarks,
+                            'RequirementType' => '91212',
+                            'ContactType' => '1',
+                            'CountryID' => $property->CountryID,
+                            'StateID' =>  $property->StateID,
+                            'CityID' =>  $property->CityID,
+                            'DistrictID' => $property->DistrictID,
+                            'CommunityID' => $property->CommunityID,
+                            'SubCommunityID' => $property->SubCommunityID,
+                            'PropertyID' => $property->PropertyID,
+                            'UnitID' => $property->UnitID,
+                            'UnitType' => $property->UnitType,
+                            'MethodOfContact' => '196061',
+                            'MediaType' => '79266',
+                            'MediaName' => '78340',
+                            'ReferredByID' => '1000',
+                            //'ReferredToID' =>  $property->ReferredToID,
+                            'ReferredToID' =>  1219,
+                            'DeactivateNotification' => '0.0.0.0',
+                            'Bedroom' => $property->bedrooms,
+                            'Budget' => '',
+                            'Budget2' => '',
+                            'RequirementCountryID' => '',
+                            'ExistingClient' => '',
+                            'CompaignSource' => '',
+                            'CompaignMedium' => '',
+                            'Company' => '',
+                            'NumberOfEmployee' => '',
+                            'LeadStageId' => '2',
+                            'ActivityDate' => '',
+                            'ActivityTime' => '',
+                            'ActivityTypeId' => '',
+                            'ActivitySubject' => '',
+                            'ActivityRemarks' => '',
+                        ]);
+                        
+                        Log::info("goyzer-lead");
+                        Log::info($response);
+                        if ($response->successful()) {
+                            
+                            Log::info("success");
+                            Log::info($response->body());
+                            
+                        } else {
+                            Log::info("error");
+                            Log::info('response->status-'.$response->status());
+                        }
+                    }
                    // CRMLeadJob::dispatch($data);
                 }
                 return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
