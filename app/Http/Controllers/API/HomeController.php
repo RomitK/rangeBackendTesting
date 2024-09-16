@@ -1935,77 +1935,76 @@ echo $curl_scraped_page;
                         //     Log::info("error");
                         //     Log::info('response->status-'.$response->status());
                         // }
-                        $accessCode = '$R@nGe!NteRn@t!on@l';  // Do not URL encode the access code
-                        $name = urlencode($request->name);               // URL encode the name to ensure it's safe
-                        $email = urlencode($request->email);             // URL encode the email
-                        $remarks = urlencode($Remarks);                  // URL encode remarks if it's a string
+                        // Assuming these are coming from your request or variables
+$accessCode = '$R@nGe!NteRn@t!on@l'; // Original access code
+$name = urlencode($request->name);  // URL encode the name
+$email = urlencode($request->email);  // URL encode the email
+$remarks = urlencode('Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location');  // URL encode the remarks
 
-                        // URL encode other dynamic values if needed
-                        $countryCode = urlencode($countryCode);
-                        $areaCode = urlencode($areaCode);
-                        $phoneNumber = urlencode($phoneNumber);
+// URL encode other dynamic values
+$countryCode = urlencode($countryCode);
+$areaCode = urlencode($areaCode);
+$phoneNumber = urlencode($phoneNumber);
 
-                        // Prepare the response URL, making sure all dynamic content is URL-encoded
-                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?"
-                            . "AccessCode=$accessCode"
-                            . "&GroupCode=5084"
-                            . "&TitleID=79743"
-                            . "&FirstName=$name"
-                            . "&FamilyName="
-                            . "&MobileCountryCode=$countryCode"
-                            . "&MobileAreaCode=$areaCode"
-                            . "&MobilePhone=$phoneNumber"
-                            . "&TelephoneCountryCode="
-                            . "&TelephoneAreaCode="
-                            . "&Telephone="
-                            . "&Email=$email"
-                            . "&NationalityID="
-                            . "&CompanyID="
-                            . "&Remarks=$remarks"
-                            . "&RequirementType=91212"
-                            . "&ContactType=1"
-                            . "&CountryID={$property->CountryID}"
-                            . "&StateID={$property->StateID}"
-                            . "&CityID={$property->CityID}"
-                            . "&DistrictID={$property->DistrictID}"
-                            . "&CommunityID={$property->CommunityID}"
-                            . "&SubCommunityID={$property->SubCommunityID}"
-                            . "&PropertyID={$property->PropertyID}"
-                            . "&UnitID={$property->UnitID}"
-                            . "&UnitType={$property->UnitType}"
-                            . "&MethodOfContact=196061"
-                            . "&MediaType=79266"
-                            . "&MediaName=78340"
-                            . "&ReferredByID=1000"
-                            . "&ReferredToID=1219"
-                            . "&DeactivateNotification=0.0.0.0"
-                            . "&Bedroom=2"
-                            . "&Budget="
-                            . "&Budget2="
-                            . "&RequirementCountryID="
-                            . "&ExistingClient="
-                            . "&CompaignSource="
-                            . "&CompaignMedium="
-                            . "&Company="
-                            . "&NumberOfEmployee="
-                            . "&LeadStageId=2"
-                            . "&ActivityDate="
-                            . "&ActivityTime="
-                            . "&ActivityTypeId="
-                            . "&ActivitySubject="
-                            . "&ActivityRemarks=";
-                        // Log the constructed URL
-                        // Log::info("goyzer-lead");
-                        // Log::info($responseUrl);
+// Prepare the URL-encoded access code separately
+$encodedAccessCode = urlencode($accessCode);
 
-                        Log::info("Generated Encoded URL: " . $responseUrl);
+// Construct the URL with the encoded parameters
+$responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?"
+    . "AccessCode=$encodedAccessCode"
+    . "&GroupCode=5084"
+    . "&TitleID=79743"
+    . "&FirstName=$name"
+    . "&FamilyName="
+    . "&MobileCountryCode=$countryCode"
+    . "&MobileAreaCode=$areaCode"
+    . "&MobilePhone=$phoneNumber"
+    . "&TelephoneCountryCode="
+    . "&TelephoneAreaCode="
+    . "&Telephone="
+    . "&Email=$email"
+    . "&NationalityID="
+    . "&CompanyID="
+    . "&Remarks=$remarks"
+    . "&RequirementType=91212"
+    . "&ContactType=1"
+    . "&CountryID={$property->CountryID}"
+    . "&StateID={$property->StateID}"
+    . "&CityID={$property->CityID}"
+    . "&DistrictID={$property->DistrictID}"
+    . "&CommunityID={$property->CommunityID}"
+    . "&SubCommunityID={$property->SubCommunityID}"
+    . "&PropertyID={$property->PropertyID}"
+    . "&UnitID={$property->UnitID}"
+    . "&UnitType={$property->UnitType}"
+    . "&MethodOfContact=196061"
+    . "&MediaType=79266"
+    . "&MediaName=78340"
+    . "&ReferredByID=1000"
+    . "&ReferredToID=1219"
+    . "&DeactivateNotification=0.0.0.0"
+    . "&Bedroom=2"
+    . "&Budget="
+    . "&Budget2="
+    . "&RequirementCountryID="
+    . "&ExistingClient="
+    . "&CompaignSource="
+    . "&CompaignMedium="
+    . "&Company="
+    . "&NumberOfEmployee="
+    . "&LeadStageId=2"
+    . "&ActivityDate="
+    . "&ActivityTime="
+    . "&ActivityTypeId="
+    . "&ActivitySubject="
+    . "&ActivityRemarks=";
 
-                        // Decode the URL for readability
-                        $decodedUrl = urldecode($responseUrl);
+// Log the URL in its encoded form
+Log::info("Generated URL: " . $responseUrl);
 
-                        // Log the URL in decoded form
-                        Log::info("Decoded URL: " . $decodedUrl);
-
+// If needed, you can decode it for readability (optional)
+$decodedUrl = urldecode($responseUrl);
+Log::info("Decoded URL: " . $decodedUrl);
 
                         // Send the HTTP request
                         $response = Http::get($decodedUrl);
