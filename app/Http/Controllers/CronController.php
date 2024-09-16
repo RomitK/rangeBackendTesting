@@ -122,7 +122,10 @@ Log::info("Generated URL: " . $responseUrl);
 
 // Optionally decode if necessary
 $decodedResponseUrl = urldecode($responseUrl);
-Log::info("Decoded URL: " . $decodedResponseUrl);
+
+$fixedResponseUrl = str_replace('&amp;', '&', $decodedResponseUrl);
+
+Log::info("Decoded URL: " . $fixedResponseUrl);
     
   
     }
