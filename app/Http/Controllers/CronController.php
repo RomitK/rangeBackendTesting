@@ -44,96 +44,124 @@ class CronController extends Controller
     public function contactInsert()
     {
 
-
-        $staticUrl = 'https://example.com/test?param1=value1&param2=value2';
-echo "Static URL: " . $staticUrl . "\n";
-
-
-
-       
-
 // Example dynamic values
 $accessCode = '$R@nGe!NteRn@t!on@l';
 $name = "fsf";
 $email = "aqsa@xpertise.ae";
 $Remarks = 'Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location';
-$countryCode = '+971';
+$countryCode = '971';
 $areaCode = '58';
 $phoneNumber = '6238697';
 $property = (object) [
     'CountryID' => '65946',
-    'StateID' => '',
+    'StateID' => '55367',
     'CityID' => '54788',
     'DistrictID' => '80120',
     'CommunityID' => '199636',
     'SubCommunityID' => '201991',
     'PropertyID' => '2264',
     'UnitID' => '7404',
-    'UnitType' => '19'
+    'UnitType' => '19',
 ];
- $response = Http::get('https://webapi.goyzer.com/Company.asmx/ContactInsert2', [
-                            'AccessCode' => '$R@nGe!NteRn@t!on@l',
-                            'GroupCode' => '5084',
-                            'TitleID' => '79743',
-                            'FirstName' => $name,
-                            'FamilyName' => '',
-                            'MobileCountryCode' => $countryCode,
-                            'MobileAreaCode' => $areaCode,
-                            'MobilePhone' => $phoneNumber,
-                            'TelephoneCountryCode' => '',
-                            'TelephoneAreaCode' => '',
-                            'Telephone' => '',
-                            'Email' => $email,
-                            'NationalityID' => '',
-                            'CompanyID' => '',
-                            'Remarks' => $Remarks,
-                            'RequirementType' => '91212',
-                            'ContactType' => '1',
-                            'CountryID' => $property->CountryID,
-                            'StateID' =>  $property->StateID,
-                            'CityID' =>  $property->CityID,
-                            'DistrictID' => $property->DistrictID,
-                            'CommunityID' => $property->CommunityID,
-                            'SubCommunityID' => $property->SubCommunityID,
-                            'PropertyID' => $property->PropertyID,
-                            'UnitID' => $property->UnitID,
-                            'UnitType' => $property->UnitType,
-                            'MethodOfContact' => '196061',
-                            'MediaType' => '79266',
-                            'MediaName' => '78340',
-                            'ReferredByID' => '1000',
-                            //'ReferredToID' =>  $property->ReferredToID,
-                            'ReferredToID' =>  1219,
-                            'DeactivateNotification' => '0.0.0.0',
-                            'Bedroom' => 2,
-                            'Budget' => '',
-                            'Budget2' => '',
-                            'RequirementCountryID' => '',
-                            'ExistingClient' => '',
-                            'CompaignSource' => '',
-                            'CompaignMedium' => '',
-                            'Company' => '',
-                            'NumberOfEmployee' => '',
-                            'LeadStageId' => '2',
-                            'ActivityDate' => '',
-                            'ActivityTime' => '',
-                            'ActivityTypeId' => '',
-                            'ActivitySubject' => '',
-                            'ActivityRemarks' => '',
-                        ]);
-                        
-                        Log::info("goyzer-lead");
-                        Log::info($response);
-                        if ($response->successful()) {
-                            
-                            Log::info("success");
-                            print_r($response->body());
-                            
-                        } else {
-                            print_r($response->status());
-                           
-                        }
- 
+
+
+
+// Define parameters with URL encoding
+$accessCode = urlencode('$R@nGe!NteRn@t!on@l');
+$name = urlencode($name);
+$countryCode = urlencode($countryCode);
+$areaCode = urlencode($areaCode);
+$phoneNumber = urlencode($phoneNumber);
+$email = $email;
+$Remarks = $Remarks;
+
+// Manually encode the special characters in the access code
+$accessCode = urlencode('$R@nGe!NteRn@t!on@l');  // Encodes special characters
+$name = urlencode($name);
+$countryCode = urlencode($countryCode);
+$areaCode = urlencode($areaCode);
+$phoneNumber = urlencode($phoneNumber);
+$email = urlencode($email);
+$Remarks = urlencode($Remarks);
+
+$accessCode = '$R@nGe!NteRn@t!on@l';
+$accessCode = '$R@nGe!NteRn@t!on@l';
+
+// Define parameters as key-value pairs
+$params = [
+    'GroupCode' => '5084',
+    'TitleID' => '79743',
+    'FirstName' => $name,
+    'FamilyName' => $name,
+    'MobileCountryCode' => $countryCode,
+    'MobileAreaCode' => $areaCode,
+    'MobilePhone' => $phoneNumber,
+    'TelephoneCountryCode' => '',
+    'TelephoneAreaCode' => '',
+    'Telephone' => '',
+    'Email' => $email,
+    'NationalityID' => '',
+    'CompanyID' => '',
+    'Remarks' => '',
+    'RequirementType' => '91212',
+    'ContactType' => '1',
+    'CountryID' => $property->CountryID,
+    'StateID' => $property->StateID,
+    'CityID' => $property->CityID,
+    'DistrictID' => $property->DistrictID,
+    'CommunityID' => $property->CommunityID,
+    'SubCommunityID' => $property->SubCommunityID,
+    'PropertyID' => $property->PropertyID,
+    'UnitID' => $property->UnitID,
+    'UnitType' => $property->UnitType,
+    'MethodOfContact' => '196061',
+    'MediaType' => '79266',
+    'MediaName' => '78340',
+    'ReferredByID' => '1000',
+    'ReferredToID' => '1219',
+    'DeactivateNotification' => '0.0.0.0',
+    'Bedroom' => '2',
+    'Budget' => '',
+    'Budget2' => '',
+    'RequirementCountryID' => '',
+    'ExistingClient' => '',
+    'CompaignSource' => '',
+    'CompaignMedium' => '',
+    'Company' => '',
+    'NumberOfEmployee' => '',
+    'LeadStageId' => '2',
+    'ActivityDate' => '',
+    'ActivityTime' => '',
+    'ActivityTypeId' => '',
+    'ActivitySubject' => '',
+    'ActivityRemarks' => ''
+];
+
+// Manually build the query string
+$queryString = '';
+foreach ($params as $key => $value) {
+    
+        $queryString .= urlencode($key) . '=' . urlencode($value) . '&';
+   
+}
+$queryString = rtrim($queryString, '&');
+
+// Construct the final URL
+$finalUrl = 'https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode='.$accessCode.'&'.$queryString;
+
+Log::info('Final URL');
+Log::info($finalUrl);
+
+// Send the request
+$response = Http::get($finalUrl);
+
+if ($response->successful()) {
+    Log::info("success");
+    print_r($response->body());
+} else {
+    print_r($response->status());
+}
+
   
     }
     public function testEmail()
