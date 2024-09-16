@@ -2003,11 +2003,11 @@ $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?"
 Log::info("Generated URL: " . $responseUrl);
 
 // If needed, you can decode it for readability (optional)
-$decodedUrl = urldecode($responseUrl);
-Log::info("Decoded URL: " . $decodedUrl);
+$decodedResponseUrl = htmlspecialchars_decode($responseUrl, ENT_QUOTES);
+Log::info("Decoded URL: " . $decodedResponseUrl);
 
                         // Send the HTTP request
-                        $response = Http::get($decodedUrl);
+                        $response = Http::get($decodedResponseUrl);
 
                         if ($response->successful()) {
                             Log::info("Success");
