@@ -1891,17 +1891,17 @@ echo $curl_scraped_page;
                         $Remarks = urlencode($Remarks);
 
                         $accessCode = '$R@nGe!NteRn@t!on@l';
-                        $property = (object) [
-                            'CountryID' => '65946',
-                            'StateID' => '55367',
-                            'CityID' => '54788',
-                            'DistrictID' => '80120',
-                            'CommunityID' => '199636',
-                            'SubCommunityID' => '201991',
-                            'PropertyID' => '2264',
-                            'UnitID' => '7404',
-                            'UnitType' => '19',
-                        ];
+                        // $property = (object) [
+                        //     'CountryID' => '65946',
+                        //     'StateID' => '55367',
+                        //     'CityID' => '54788',
+                        //     'DistrictID' => '80120',
+                        //     'CommunityID' => '199636',
+                        //     'SubCommunityID' => '201991',
+                        //     'PropertyID' => '2264',
+                        //     'UnitID' => '7404',
+                        //     'UnitType' => '19',
+                        // ];
                         // Define parameters as key-value pairs
                         $params = [
                             'GroupCode' => '5084',
