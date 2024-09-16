@@ -1878,8 +1878,8 @@ echo $curl_scraped_page;
                         $Remarks = 'Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location';
                        
                         // Manually encode the special characters in the access code
-                        $name = "fsf";
-                        $email = "aqsa@xpertise.ae";
+                        $name = $request->name;
+                        $email = $request->email;
                         $countryCode = '971';
                         $areaCode = '58';
                         $phoneNumber = '6238697';
