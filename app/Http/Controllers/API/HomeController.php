@@ -1935,11 +1935,65 @@ echo $curl_scraped_page;
                         //     Log::info("error");
                         //     Log::info('response->status-'.$response->status());
                         // }
-                        $accessCode = urlencode('$R@nGe!NteRn@t!on@l');
-                        $name = urlencode($request->name);
-                        $email = urlencode($request->email);
-                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode=$accessCode&GroupCode=5084&TitleID=79743&FirstName=$name&FamilyName=&MobileCountryCode=$countryCode&MobileAreaCode=$areaCode&MobilePhone=$phoneNumber&TelephoneCountryCode=&TelephoneAreaCode=&Telephone=&Email=$email&NationalityID=&CompanyID=&Remarks=$Remarks&RequirementType=91212&ContactType=1&CountryID=$property->CountryID&StateID=$property->StateID&CityID=$property->CityID&DistrictID=$property->DistrictID&CommunityID=$property->CommunityID&SubCommunityID=$property->SubCommunityID&PropertyID=$property->PropertyID&UnitID=$property->UnitID&UnitType=$property->UnitType&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0& Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=";
+                        $accessCode = urlencode('$R@nGe!NteRn@t!on@l');  // URL encode special characters in the access code
+                        $name = urlencode($request->name);               // URL encode the name to ensure it's safe
+                        $email = urlencode($request->email);             // URL encode the email
+                        $remarks = urlencode($Remarks);                  // URL encode remarks if it's a string
 
+                        // URL encode other dynamic values if needed
+                        $countryCode = urlencode($countryCode);
+                        $areaCode = urlencode($areaCode);
+                        $phoneNumber = urlencode($phoneNumber);
+
+                        // Prepare the response URL, making sure all dynamic content is URL-encoded
+                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?"
+                            . "AccessCode=$accessCode"
+                            . "&GroupCode=5084"
+                            . "&TitleID=79743"
+                            . "&FirstName=$name"
+                            . "&FamilyName="
+                            . "&MobileCountryCode=$countryCode"
+                            . "&MobileAreaCode=$areaCode"
+                            . "&MobilePhone=$phoneNumber"
+                            . "&TelephoneCountryCode="
+                            . "&TelephoneAreaCode="
+                            . "&Telephone="
+                            . "&Email=$email"
+                            . "&NationalityID="
+                            . "&CompanyID="
+                            . "&Remarks=$remarks"
+                            . "&RequirementType=91212"
+                            . "&ContactType=1"
+                            . "&CountryID={$property->CountryID}"
+                            . "&StateID={$property->StateID}"
+                            . "&CityID={$property->CityID}"
+                            . "&DistrictID={$property->DistrictID}"
+                            . "&CommunityID={$property->CommunityID}"
+                            . "&SubCommunityID={$property->SubCommunityID}"
+                            . "&PropertyID={$property->PropertyID}"
+                            . "&UnitID={$property->UnitID}"
+                            . "&UnitType={$property->UnitType}"
+                            . "&MethodOfContact=196061"
+                            . "&MediaType=79266"
+                            . "&MediaName=78340"
+                            . "&ReferredByID=1000"
+                            . "&ReferredToID=1219"
+                            . "&DeactivateNotification=0.0.0.0"
+                            . "&Bedroom=2"
+                            . "&Budget="
+                            . "&Budget2="
+                            . "&RequirementCountryID="
+                            . "&ExistingClient="
+                            . "&CompaignSource="
+                            . "&CompaignMedium="
+                            . "&Company="
+                            . "&NumberOfEmployee="
+                            . "&LeadStageId=2"
+                            . "&ActivityDate="
+                            . "&ActivityTime="
+                            . "&ActivityTypeId="
+                            . "&ActivitySubject="
+                            . "&ActivityRemarks=";
                         // Log the constructed URL
                         Log::info("goyzer-lead");
                         Log::info($responseUrl);
