@@ -1937,14 +1937,7 @@ echo $curl_scraped_page;
                         // }
                         $accessCode = '$R@nGe!NteRn@t!on@l';
 
-                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode=$accessCode&GroupCode=5084&
-                                TitleID=79743&FirstName=$request->name&FamilyName=&MobileCountryCode=$countryCode&MobileAreaCode=$areaCode&MobilePhone=$phoneNumber&TelephoneCountryCode=&
-                                TelephoneAreaCode=&Telephone=&Email=$request->nam&NationalityID=&CompanyID=&
-                                Remarks=$Remarks&RequirementType=91212&
-                                ContactType=1&CountryID=$property->CountryID&StateID=$property->StateID&CityID=$property->CityID&DistrictID=$property->DistrictID&
-                                CommunityID=$property->CommunityID&SubCommunityID=$property->SubCommunityID&PropertyID=$property->PropertyID&UnitID=$property->UnitID&
-                                UnitType=$property->UnitType&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0&
-                                Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=";
+                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode=$accessCode&GroupCode=5084&TitleID=79743&FirstName=$request->name&FamilyName=&MobileCountryCode=$countryCode&MobileAreaCode=$areaCode&MobilePhone=$phoneNumber&TelephoneCountryCode=&TelephoneAreaCode=&Telephone=&Email=$request->nam&NationalityID=&CompanyID=&Remarks=$Remarks&RequirementType=91212&ContactType=1&CountryID=$property->CountryID&StateID=$property->StateID&CityID=$property->CityID&DistrictID=$property->DistrictID&CommunityID=$property->CommunityID&SubCommunityID=$property->SubCommunityID&PropertyID=$property->PropertyID&UnitID=$property->UnitID&UnitType=$property->UnitType&MethodOfContact=196061&MediaType=79266&MediaName=78340&ReferredByID=1000&ReferredToID=1219&DeactivateNotification=0.0.0.0& Bedroom=2&Budget=&Budget2=&RequirementCountryID=&ExistingClient=&CompaignSource=&CompaignMedium=&Company=&NumberOfEmployee=&LeadStageId=2&ActivityDate=&ActivityTime=&ActivityTypeId=&ActivitySubject=&ActivityRemarks=";
 
                         // Log the constructed URL
                         Log::info("goyzer-lead");
