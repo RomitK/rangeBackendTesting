@@ -1935,7 +1935,7 @@ echo $curl_scraped_page;
                         //     Log::info("error");
                         //     Log::info('response->status-'.$response->status());
                         // }
-                        $accessCode = urlencode('$R@nGe!NteRn@t!on@l');  // URL encode special characters in the access code
+                        $accessCode = '$R@nGe!NteRn@t!on@l';  // Do not URL encode the access code
                         $name = urlencode($request->name);               // URL encode the name to ensure it's safe
                         $email = urlencode($request->email);             // URL encode the email
                         $remarks = urlencode($Remarks);                  // URL encode remarks if it's a string
@@ -2004,6 +2004,27 @@ echo $curl_scraped_page;
                         if ($response->successful()) {
                             Log::info("Success");
                             Log::info($response->body());
+
+
+                            $responseXml = $response->body();
+
+                            // Convert XML response to a SimpleXMLElement object
+                            $xmlObject = simplexml_load_string($responseXml);
+
+                            // Register namespaces (if any) for the XML (in this case, the default one)
+                            $xmlObject->registerXPathNamespace('ns', 'http://webapi.goyzer.com/');
+
+                            // Find and log the message
+                            $messages = $xmlObject->xpath('//ns:Message');
+
+                            if (!empty($messages)) {
+                                foreach ($messages as $message) {
+                                    Log::info("Goyzer Response Message: " . (string)$message);
+                                }
+                            } else {
+                                Log::info("No message found in the response.");
+                            }
+
                         } else {
                             Log::info("Error");
                             Log::info('Response status: ' . $response->status());
