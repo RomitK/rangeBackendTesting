@@ -1935,9 +1935,9 @@ echo $curl_scraped_page;
                         //     Log::info("error");
                         //     Log::info('response->status-'.$response->status());
                         // }
+                        $accessCode = '$R@nGe!NteRn@t!on@l';
 
-
-                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode=$R@nGe!NteRn@t!on@l&GroupCode=5084&
+                        $responseUrl = "https://webapi.goyzer.com/Company.asmx/ContactInsert2?AccessCode=$accessCode&GroupCode=5084&
                                 TitleID=79743&FirstName=$request->name&FamilyName=&MobileCountryCode=$countryCode&MobileAreaCode=$areaCode&MobilePhone=$phoneNumber&TelephoneCountryCode=&
                                 TelephoneAreaCode=&Telephone=&Email=$request->nam&NationalityID=&CompanyID=&
                                 Remarks=$Remarks&RequirementType=91212&
