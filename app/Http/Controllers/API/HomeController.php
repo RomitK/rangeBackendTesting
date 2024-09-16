@@ -1873,11 +1873,6 @@ echo $curl_scraped_page;
                         $propertySlug = "https://www.range.ae/properties/".$property->slug;
                         $Remarks = 'Hi, I am interested in your property on website:'.$propertySlug;
                       
-                    
-                        // Example dynamic values
-                       
-                        $Remarks = 'Hi, I am interested in your property on website: https://www.range.ae/properties/spacious-1-br-apt-study-prime-location';
-                       
                         // Manually encode the special characters in the access code
                         $name = $request->name;
                         $email = $request->email;
@@ -1946,9 +1941,12 @@ echo $curl_scraped_page;
                         // Manually build the query string
                         $queryString = '';
                         foreach ($params as $key => $value) {
-                            
+                            // Only urlencode the key and value except for Remarks
+                            if ($key === 'Remarks') {
+                                $queryString .= $key . '=' . $value . '&';
+                            } else {
                                 $queryString .= urlencode($key) . '=' . urlencode($value) . '&';
-                        
+                            }
                         }
                         $queryString = rtrim($queryString, '&');
 
