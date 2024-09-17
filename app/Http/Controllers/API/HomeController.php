@@ -1973,7 +1973,7 @@ echo $curl_scraped_page;
                         }
 
                     }
-                   // CRMLeadJob::dispatch($data);
+                    CRMLeadJob::dispatch($data);
                 }
                 return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
             } else {
