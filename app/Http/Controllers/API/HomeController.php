@@ -1973,7 +1973,27 @@ echo $curl_scraped_page;
                         }
 
                     }
-                    CRMLeadJob::dispatch($data);
+                    $response = Http::withHeaders([
+                        'authorization-token' => '3MPHJP0BC63435345341',
+                    ])->post(config('app.crm_url'), $data);
+        
+        
+                    if ($response->successful()) {
+                        // Request was successful, handle the response
+                        $responseData = $response->json(); // If expecting JSON response
+                        Log::info('CRM DONE');
+                        Log::info($responseData);
+                        // Process the response data here
+                    } else {
+                        // Request failed, handle the error
+                        $errorCode = $response->status();
+                        $errorMessage = $response->body(); // Get the error message
+                        // Handle the error here
+        
+                        Log::info('CRM ERROR DONE');
+                        Log::info($errorMessage);
+                    }
+                    // CRMLeadJob::dispatch($data);
                 }
                 return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
             } else {
