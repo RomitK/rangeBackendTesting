@@ -1846,7 +1846,9 @@ echo $curl_scraped_page;
                     }
                     $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
                     Log::info($data);
+                    CRMLeadJob::dispatch($data);
 
+                    
                     if($property->property_source == 'xml'){
 
 
@@ -1924,7 +1926,7 @@ echo $curl_scraped_page;
                             'MediaType' => '79266',
                             'MediaName' => '78340',
                             'ReferredByID' => '1000',
-                            'ReferredToID' => 1219,
+                            'ReferredToID' => $property->ReferredToID,
                             'DeactivateNotification' => '0.0.0.0',
                             'Bedroom' => '2',
                             'Budget' => '',
@@ -1973,27 +1975,8 @@ echo $curl_scraped_page;
                         }
 
                     }
-                    $response = Http::withHeaders([
-                        'authorization-token' => '3MPHJP0BC63435345341',
-                    ])->post(config('app.crm_url'), $data);
-        
-        
-                    if ($response->successful()) {
-                        // Request was successful, handle the response
-                        $responseData = $response->json(); // If expecting JSON response
-                        Log::info('CRM DONE');
-                        Log::info($responseData);
-                        // Process the response data here
-                    } else {
-                        // Request failed, handle the error
-                        $errorCode = $response->status();
-                        $errorMessage = $response->body(); // Get the error message
-                        // Handle the error here
-        
-                        Log::info('CRM ERROR DONE');
-                        Log::info($errorMessage);
-                    }
-                    // CRMLeadJob::dispatch($data);
+
+                    
                 }
                 return $this->success('Form Submit', ['verify' => true, 'link' => $link], 200);
             } else {
