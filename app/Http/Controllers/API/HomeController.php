@@ -45,6 +45,11 @@ use PDF;
 
 class HomeController extends Controller
 {
+
+    public function websiteWhatsappResponse(Request $request)
+    {
+        return $this->success('Data', $request->all(), 200);
+    }
     
     public function sendSMS()
     {
