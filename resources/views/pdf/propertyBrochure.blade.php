@@ -405,7 +405,10 @@
 </style>
 
 <body>
+    
+    
     @php
+        $exchange_rate = 1;
         $handOver = null;
         if ($property->project) {
             $dateStr = $property->project->completion_date;
