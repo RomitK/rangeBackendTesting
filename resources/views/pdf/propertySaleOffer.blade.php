@@ -545,7 +545,7 @@
     </table>
     {{-- <div class="page_break"></div> --}}
     <!--- First Page End --->
-    @if (count($property->project->mPaymentPlans) > 0)
+    @if (count($property->project->mPaymentPlans) > 0 && $property->category_id != 9)
         <!--- 2 Page Start --->
         <table class="mainTable ">
             <tr>
