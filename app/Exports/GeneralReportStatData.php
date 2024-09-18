@@ -67,11 +67,12 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
 
         $totalProjectPermitCount = 0;
         $this->projectPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Project Permit Status', 'Count']);
+        $collection->push(['Project Permit Status', 'Available','NA','Rejected'	,'Requested','Total']);
 
         foreach ($this->data['projectPermitCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
+            $count = (int) $data['count']['available'] + (int) $data['count']['NA'] + (int) $data['count']['rejected'] + (int) $data['count']['requested'];
+          
+            $collection->push([$data['status'], (int) $data['count']['available'] , (int) $data['count']['NA'] , (int) $data['count']['rejected'] , (int) $data['count']['requested'] , (string)$count]);
             $totalProjectPermitCount += $count; // Sum the counts
         }
 
