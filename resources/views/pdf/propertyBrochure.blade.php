@@ -443,7 +443,12 @@
         array_shift($gallery);
         $amenities = $property->amenities()->get()->toArray();
 
-        [$amenitiePieces2, $amenitiePieces1] = array_chunk($amenities, ceil(count($amenities) / 2));
+        if (count($amenities) > 0) {
+            [$amenitiePieces2, $amenitiePieces1] = array_chunk($amenities, ceil(count($amenities) / 2));
+        } else {
+            $amenitiePieces1 = [];
+            $amenitiePieces2 = [];
+        }
     @endphp
     <header class="header">
 

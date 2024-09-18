@@ -148,8 +148,9 @@ class PropertyController extends Controller
 
 
 
-            return redirect()->route('dashboard.properties.index', $queryStr)->with('success', 'Property Brochure/SaleOffer has been updated successfully.');
+            //return redirect()->route('dashboard.properties.index', $queryStr)->with('success', 'Property Brochure/SaleOffer has been updated successfully.');
         } catch (\Exception $error) {
+            dd($error->getMessage());
             return redirect()->route('dashboard.properties.index')->with('error', $error->getMessage());
         }
     }

@@ -311,6 +311,7 @@
 <body>
     <!--- first Page Start --->
     @php
+
         $handOver = null;
         if ($property->project) {
             $dateStr = $property->project->completion_date;
