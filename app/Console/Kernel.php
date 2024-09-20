@@ -10,7 +10,9 @@ use App\Jobs\{
     WeeklyWebsiteStateReportJob,
     MonthlyWebsiteStateReportJob,
     InactivePropertyJob,
-    LatestCurrencyJob
+    LatestCurrencyJob,
+    GoyzerSaleProperties,
+    GoyzerRentalProperties
 };
 
 class Kernel extends ConsoleKernel
@@ -32,7 +34,9 @@ class Kernel extends ConsoleKernel
         $schedule->job(new LatestCurrencyJob)->daily()->at('01:00');
 
 
-        
+        $schedule->job(new GoyzerSaleProperties)->everyThreeHours($minutes = 0);
+        $schedule->job(new GoyzerRentalProperties)->everyFourHours($minutes = 30);
+
         $schedule->job(new WeeklyWebsiteStateReportJob)->weeklyOn(1, '9:00')->timezone('Asia/Dubai');
         $schedule->job(new MonthlyWebsiteStateReportJob)->monthly()->at('9:00')->timezone('Asia/Dubai');
 
