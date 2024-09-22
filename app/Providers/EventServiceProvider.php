@@ -19,8 +19,16 @@ use App\Observers\{
     ProjectObserver
 };
 
-use Illuminate\Queue\Events\JobFailed;
-use App\Listeners\SendJobFailedNotification;
+use Illuminate\Queue\Events\{
+    JobFailed,
+    JobProcessed,
+    JobProcessing
+};
+use App\Listeners\{
+    SendJobStartedNotification,
+    SendJobCompletedNotification,
+    SendJobFailedNotification
+};
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -32,6 +40,12 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        JobProcessing::class => [
+            SendJobStartedNotification::class,
+        ],
+        JobProcessed::class => [
+            SendJobCompletedNotification::class,
         ],
         JobFailed::class => [
             SendJobFailedNotification::class,

@@ -7,17 +7,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class JobFailedNotification extends Notification
+class JobStartedNotification extends Notification
 {
     use Queueable;
 
     protected $job;
-    protected $exception;
 
-    public function __construct($job, $exception)
+    public function __construct($job)
     {
         $this->job = $job;
-        $this->exception = $exception;
     }
 
     public function via($notifiable)
@@ -31,11 +29,10 @@ class JobFailedNotification extends Notification
         $jobName = $payload['displayName'] ?? class_basename($payload['data']['commandName']);
 
         return (new MailMessage)
-            ->subject('Queue Job Failed')
-            ->line('A job has failed.')
+            ->subject('Queue Job Started')
+            ->line('A job has started.')
             ->line('Job Name: ' . $jobName)  // Include the job name here
             ->line('Job ID: ' . $this->job->getJobId())
-            ->line('Exception: ' . $this->exception->getMessage())
             ->line('Thank you for using our application!');
     }
 }
