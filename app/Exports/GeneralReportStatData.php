@@ -66,40 +66,79 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
 
 
         $totalProjectPermitCount = 0;
+        $availableCount = 0;
+        $naCount = 0;
+        $rejectedCount = 0;
+        $requestedCount = 0;
+
         $this->projectPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
         $collection->push(['Project Permit Status', 'Available','NA','Rejected'	,'Requested','Total']);
 
         foreach ($this->data['projectPermitCounts'] as $data) {
+
             $count = (int) $data['count']['available'] + (int) $data['count']['NA'] + (int) $data['count']['rejected'] + (int) $data['count']['requested'];
-          
+            
+            $availableCount  += (int) $data['count']['available'];
+            $naCount += (int) $data['count']['NA'];
+            $rejectedCount +=  (int) $data['count']['rejected'];
+            $requestedCount += (int) $data['count']['requested'];
+
             $collection->push([$data['status'], (int) $data['count']['available'] , (int) $data['count']['NA'] , (int) $data['count']['rejected'] , (int) $data['count']['requested'] , (string)$count]);
+            
             $totalProjectPermitCount += $count; // Sum the counts
         }
 
-        $collection->push(['Total', $totalProjectPermitCount]);
+        $collection->push(['Total', $availableCount, $naCount,  $rejectedCount, $requestedCount, $totalProjectPermitCount]);
 
 
         $totalPropertyPermitCount = 0;
+        $availableCount = 0;
+        $naCount = 0;
+        $rejectedCount = 0;
+        $requestedCount = 0;
+
         $this->propertyPermitNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Property Permit Status', 'Count']);
+        $collection->push(['Property Permit Status','Available','NA','Rejected'	,'Requested','Total']);
 
         foreach ($this->data['propertyPermitCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
+
+            $count = (int) $data['count']['available'] + (int) $data['count']['NA'] + (int) $data['count']['rejected'] + (int) $data['count']['requested'];
+            $collection->push([$data['status'], (int) $data['count']['available'] , (int) $data['count']['NA'] , (int) $data['count']['rejected'] , (int) $data['count']['requested'] , (string)$count]);
+            
+            $availableCount  += (int) $data['count']['available'];
+            $naCount += (int) $data['count']['NA'];
+            $rejectedCount +=  (int) $data['count']['rejected'];
+            $requestedCount += (int) $data['count']['requested'];
+
             $totalPropertyPermitCount += $count; // Sum the counts
+
         }
-        $collection->push(['Total', $totalPropertyPermitCount]);
+        $collection->push(['Total', $availableCount, $naCount,  $rejectedCount, $requestedCount, $totalPropertyPermitCount]);
+
 
         $totalPropertyCategoryCount = 0;
+        $availableCount = 0;
+        $naCount = 0;
+        $rejectedCount = 0;
+        $requestedCount = 0;
+
         $this->propertyCategoryNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
-        $collection->push(['Property Categories', 'Count']);
+        $collection->push(['Property Categories', 'Available','NA','Rejected'	,'Requested','Total']);
 
         foreach ($this->data['propertyCateoryCounts'] as $data) {
-            $count = (int)$data['count']; // Ensure the count is an integer
-            $collection->push([$data['status'], (string)$count]);
+
+            $count = (int) $data['count']['available'] + (int) $data['count']['NA'] + (int) $data['count']['rejected'] + (int) $data['count']['requested'];
+            $collection->push([$data['status'], (int) $data['count']['available'] , (int) $data['count']['NA'] , (int) $data['count']['rejected'] , (int) $data['count']['requested'] , (string)$count]);
+            
+            $availableCount  += (int) $data['count']['available'];
+            $naCount += (int) $data['count']['NA'];
+            $rejectedCount +=  (int) $data['count']['rejected'];
+            $requestedCount += (int) $data['count']['requested'];
+
             $totalPropertyCategoryCount += $count; // Sum the counts
         }
-        $collection->push(['Total', $totalPropertyCategoryCount]);
+        
+        $collection->push(['Total', $availableCount, $naCount,  $rejectedCount, $requestedCount, $totalPropertyCategoryCount]);
 
 
         $this->propertyAgentNameRowIndex = $collection->count() + 1; // 1-based index for Excel rows
@@ -236,16 +275,16 @@ class GeneralReportStatData implements FromCollection, WithHeadings, WithStyles,
 
 
 
-        $sheet->getStyle('A' . ($this->projectPermitNameRowIndex + 1) . ':B' . ($this->projectPermitNameRowIndex + 1))->applyFromArray([
+        $sheet->getStyle('A' . ($this->projectPermitNameRowIndex + 1) . ':F' . ($this->projectPermitNameRowIndex + 1))->applyFromArray([
             'font' => ['bold' => true],
         ]);
 
 
-        $sheet->getStyle('A' . ($this->propertyPermitNameRowIndex + 1) . ':B' . ($this->propertyPermitNameRowIndex + 1))->applyFromArray([
+        $sheet->getStyle('A' . ($this->propertyPermitNameRowIndex + 1) . ':F' . ($this->propertyPermitNameRowIndex + 1))->applyFromArray([
             'font' => ['bold' => true],
         ]);
 
-        $sheet->getStyle('A' . ($this->propertyCategoryNameRowIndex + 1) . ':B' . ($this->propertyCategoryNameRowIndex + 1))->applyFromArray([
+        $sheet->getStyle('A' . ($this->propertyCategoryNameRowIndex + 1) . ':F' . ($this->propertyCategoryNameRowIndex + 1))->applyFromArray([
             'font' => ['bold' => true],
         ]);
 
