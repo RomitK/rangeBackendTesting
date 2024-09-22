@@ -43,7 +43,7 @@ class GoyzerRentalProperties implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 3600; // 1 hour
-    //public $tries = 1; // Max attempts
+    public $tries = 1; // Max attempts
 
     /**
      * Create a new job instance.
