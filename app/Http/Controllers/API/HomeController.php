@@ -1511,7 +1511,7 @@ echo $curl_scraped_page;
             return $this->failure($exception->getMessage());
         }
     }
-    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '', $subSourceReference = '', $requestFormName = '')
+    public function CRMCampaignManagement($data, $campaignId, $sourceId, $subSourceId, $agentEmail = '', $needToCreateSubSource = false, $subSourceName = '', $subSourceReference = '', $requestFormName = '', $leadType = 'primary')
     {
         $data["campaignId"] = $campaignId;
         $data["sourceId"] = $sourceId;
@@ -1520,6 +1520,7 @@ echo $curl_scraped_page;
         $data['subSourceName'] = $subSourceName;
         $data['reference'] = $subSourceReference;
         $data['requestFormName'] = $requestFormName;
+        $data['lead_market']= $leadType;
         // Check if $agentEmail is empty, assign default value if so
         if (empty($agentEmail)) {
             $agentEmail = 'ian@xpertise.ae';
@@ -1844,7 +1845,12 @@ echo $curl_scraped_page;
                     if ($email == 'lester@range.ae') {
                         $email = "";
                     }
-                    $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName);
+                    if($property->property_source == 'xml'){
+                        $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName, 'secondary');
+                    }else{
+                        $data = $this->CRMCampaignManagement($data, 270, 498, '', $email, true, $property->name, $property->reference_number, $request->formName,);
+                    }
+                    
                     Log::info($data);
                     CRMLeadJob::dispatch($data);
 
