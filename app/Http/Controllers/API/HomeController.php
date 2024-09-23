@@ -803,7 +803,7 @@ echo $curl_scraped_page;
                     'id' => $community->id,
                     'slug' => $community->slug,
                     'name' => $community->name . "(" . $community->emirates . ")",
-                    'type' => 'properties?community_name=' . $community->name . "(" . $community->emirates . ")" . '&community_detail=&community-' . $community->id,
+                    'type' => 'properties?community_name=' . $community->name . "(" . $community->emirates . ")" . '&community_detail=community-' . $community->id,
                 ];
             })->toArray();
 
