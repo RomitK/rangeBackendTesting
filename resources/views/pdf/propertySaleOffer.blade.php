@@ -320,7 +320,7 @@
             $handOver = 'Q' . $yearQuarter . ' ' . date('Y', strtotime($dateStr));
         }
 
-        $a_fees = ($property->price * $exchange_rate ) / 0.04;
+        $a_fees = ($property->price * $exchange_rate ) * 0.04;
         $b_fees = 540 * $exchange_rate;
         $c_fees = 1000 * $exchange_rate;
         $d_fees = 1000 * $exchange_rate;
