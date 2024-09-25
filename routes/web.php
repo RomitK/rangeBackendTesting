@@ -84,6 +84,9 @@ Route::get('/clear-cache', function () {
 /*******************
  * FRONTEND ROUTES  *
  *******************/
+
+Route::get('/webQRCode', 'App\Http\Controllers\CronController@webQRCode');
+
 Route::get('/contactInsert', 'App\Http\Controllers\CronController@contactInsert');
 
 Route::get('/propertiesPermitNumber', 'App\Http\Controllers\CronController@propertiesPermitNumber');

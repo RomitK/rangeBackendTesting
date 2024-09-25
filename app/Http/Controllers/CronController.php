@@ -19,7 +19,8 @@ use App\Models\{
     PropertyGallery,
     Subcommunity,
     Project,
-    User
+    User,
+    WebsiteSetting
 
 };
 use Illuminate\Http\File;
@@ -38,9 +39,36 @@ use App\Jobs\{
     GoyzerSaleProperties,
     GoyzerRentalProperties
 };
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CronController extends Controller
 {
+    public function webQRCode()
+    {
+        try{
+            $url = "www.range.ae";
+            $qrCode = QrCode::format('png')->size(200)->generate($url);
+            $imageName = 'range_QR.png';
+            Storage::disk('agentQRFiles')->put($imageName, $qrCode);
+            $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
+
+            $key = 'WEB_QR';
+
+            $setting = WebsiteSetting::where('key', $key)->first();
+            $setting->clearMediaCollection('generalFiles');
+
+            $setting->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('generalFiles');
+            $value = WebsiteSetting::getWebQR();
+
+            WebsiteSetting::setSetting($key,$value);
+
+
+        }catch (\Exception $error) {
+            return response()->json(['error' => $error->getMessage()]);
+        }
+        
+    }
+
     public function contactInsert()
     {
 

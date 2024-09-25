@@ -89,5 +89,11 @@ class WebsiteSetting extends Model implements HasMedia
     {
         return self::where('key', 'footer_logo')->first()->getFirstMediaUrl('footer_logos');
     }
+
+    public static function getWebQR()
+    {
+        return self::where('key', 'WEB_QR')->first()->getFirstMediaUrl('generalFiles');
+    }
+
     
 }
