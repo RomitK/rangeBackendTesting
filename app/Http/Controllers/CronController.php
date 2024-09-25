@@ -46,27 +46,19 @@ class CronController extends Controller
     public function webQRCode()
     {
         try{
-            $url = "www.range.ae";
+            $key = 'WEB_QR';
+            $setting = WebsiteSetting::where('key', $key)->first();
+            $url = config('app.frontend_url');
+            
             $qrCode = QrCode::format('png')->size(200)->generate($url);
-            $imageName = 'range_QR.png';
+
+            $imageName = 'website.png';
             Storage::disk('websiteQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('websiteQRFiles')->url($imageName);
 
-            echo "qrCodeUrl-".$qrCodeUrl;
-            
-            $key = 'WEB_QR';
-
-            $setting = WebsiteSetting::where('key', $key)->first();
-            $setting->clearMediaCollection('generalFiles');
-
-            $setting->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('generalFiles');
+            $setting->clearMediaCollection('QRs');
+            $setting->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'generalFiles');
             $setting->save();
-
-
-            $value = WebsiteSetting::getWebQR();
-            echo $value;
-
-           // WebsiteSetting::setSetting($key,$value);
 
 
         }catch (\Exception $error) {
