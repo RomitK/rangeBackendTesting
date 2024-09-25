@@ -180,7 +180,8 @@ class AgentController extends Controller
             $agent->save();
 
             $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
-            $qrCode = QrCode::format('png')->size(200)->generate($url);
+
+            $qrCode = QrCode::format('png')->color(10, 88, 199)->size(200)->generate($url);
 
             $imageName = $agent->slug . '.png';
             Storage::disk('agentQRFiles')->put($imageName, $qrCode);
@@ -188,7 +189,7 @@ class AgentController extends Controller
             $agent->clearMediaCollection('QRs');
             $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
 
-$contact = [
+            $contact = [
                 'version' => '3.0',
                 'fn' =>$agent->name,
                 'tel' => $agent->contact_number,
