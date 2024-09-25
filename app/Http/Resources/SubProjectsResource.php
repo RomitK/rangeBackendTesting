@@ -27,9 +27,18 @@ class SubProjectsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $priceInINR = $this->currencyINR 
-        ? (is_int($this->starting_price) ? $this->currencyPrice : $this->starting_price * $this->currencyINR) 
-        : $this->starting_price;
+       // Ensure starting_price and currencyINR are treated as numbers
+$startingPrice = floatval($this->starting_price); // Convert to float
+$currencyINR = floatval($this->currencyINR); // Convert to float
+
+if ($this->currencyINR) {
+    $priceInINR = is_int($startingPrice) 
+        ? $this->currencyPrice 
+        : $startingPrice * $currencyINR;
+} else {
+    $priceInINR = $startingPrice; // Use starting_price directly if currencyINR is not set
+}
+
 
         if (Property::where('sub_project_id', $this->id)->where('website_status', config('constants.available'))->where('is_valid', 1)->exists()) {
             $property =  Property::where('sub_project_id', $this->id)->where('website_status', config('constants.available'))->where('is_valid', 1)->first()->slug;
