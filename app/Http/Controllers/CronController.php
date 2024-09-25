@@ -52,6 +52,8 @@ class CronController extends Controller
             Storage::disk('websiteQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('websiteQRFiles')->url($imageName);
 
+            echo "qrCodeUrl-".$qrCodeUrl;
+            
             $key = 'WEB_QR';
 
             $setting = WebsiteSetting::where('key', $key)->first();
@@ -62,6 +64,7 @@ class CronController extends Controller
 
 
             $value = WebsiteSetting::getWebQR();
+            echo $value;
 
            // WebsiteSetting::setSetting($key,$value);
 
