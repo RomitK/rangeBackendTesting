@@ -24,7 +24,7 @@ Route::get('/test', function () {
 });
 Route::namespace('App\Http\Controllers\API')->group(function () {
 
-    Route::get('/websiteWhatsappResponse', 'HomeController@websiteWhatsappResponse');
+    Route::post('/websiteWhatsappResponse', 'HomeController@websiteWhatsappResponse');
 
     Route::get('/currencyRates', 'CurrencyController@index');
 
