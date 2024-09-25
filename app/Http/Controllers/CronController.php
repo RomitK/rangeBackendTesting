@@ -58,6 +58,9 @@ class CronController extends Controller
             $setting->clearMediaCollection('generalFiles');
 
             $setting->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('generalFiles');
+            $setting->save();
+
+            
             $value = WebsiteSetting::getWebQR();
 
             WebsiteSetting::setSetting($key,$value);
