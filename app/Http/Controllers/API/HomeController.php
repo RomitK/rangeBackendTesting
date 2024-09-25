@@ -48,6 +48,8 @@ class HomeController extends Controller
 
     public function websiteWhatsappResponse(Request $request)
     {
+        Log::info('websiteWhatsappResponse');
+        Log::info($request->all());
         return $this->success('Data', $request->all(), 200);
     }
     
