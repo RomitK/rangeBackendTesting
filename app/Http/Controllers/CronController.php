@@ -136,7 +136,61 @@ class CronController extends Controller
             ];
         }
     }
+    public function getUpdatedProperties($newProjectOriginalAttributes, $originalAttributes)
+    {
+        Log::info('newProjectOriginalAttributes', $newProjectOriginalAttributes);
+        Log::info('originalAttributes', $originalAttributes);
 
+        // Convert specific attributes to integer arrays if they exist
+        $keysToConvert = ['developerIds', 'amenityIds', 'highlightIds'];
+
+        foreach ($keysToConvert as $key) {
+            if (isset($newProjectOriginalAttributes[$key]) && is_array($newProjectOriginalAttributes[$key])) {
+                $newProjectOriginalAttributes[$key] = array_map('intval', $newProjectOriginalAttributes[$key]);
+            }
+            if (isset($originalAttributes[$key]) && is_array($originalAttributes[$key])) {
+                $originalAttributes[$key] = array_map('intval', $originalAttributes[$key]);
+            }
+        }
+
+        // Determine the updated attributes
+        $updatedAttributes = [];
+
+        foreach ($newProjectOriginalAttributes as $key => $value) {
+            if (!in_array($key, ['created_at', 'updated_at'])) {
+                // Ensure the original attribute exists and compare based on type
+                if (array_key_exists($key, $originalAttributes)) {
+                    if (is_string($value) && $originalAttributes[$key] != $value) {
+                        $updatedAttributes[$key] = $value;
+                    } elseif (is_array($value) && serialize($originalAttributes[$key]) !== serialize($value)) {
+                        $updatedAttributes[$key] = $value;
+                    }
+                } else {
+                    // Handle case where $originalAttributes[$key] does not exist
+                    $updatedAttributes[$key] = $value;
+                }
+            }
+        }
+
+        // Construct the updated attributes strings
+        $updatedAttributesString = implode(', ', array_map(
+            fn ($value, $key) => "$key: " . (is_array($value) ? json_encode($value) : $value),
+            $updatedAttributes,
+            array_keys($updatedAttributes)
+        ));
+
+        $updatedCoumnAttributesString = implode(', ', array_keys($updatedAttributes));
+
+        // Encode the properties to JSON
+        $properties = json_encode([
+            'old' => $originalAttributes,
+            'new' => $newProjectOriginalAttributes,
+            'updateAttribute' => $updatedCoumnAttributesString,
+            'attribute' => $updatedAttributesString
+        ]);
+
+        return $properties;
+    }
 
     public function webQRCode()
     {
