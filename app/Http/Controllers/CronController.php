@@ -47,7 +47,7 @@ class CronController extends Controller
     public function makePropertiesUpdated()
     {
         
-        $projectIds = [275,283,290, 319, 341, 348, 362, 363];
+        $projectIds = [ 319, 413, 416, 419, 420, 431, 491, 494, 495];
         try {
             $properties = Property::whereIn('project_id', $projectIds)
             ->where('out_of_inventory', 0)
@@ -120,12 +120,12 @@ class CronController extends Controller
 
                 $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
 
-                if($property->website_status == config('constants.available')){
+                // if($property->website_status == config('constants.available')){
 
-                    logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
-                }else{
-                    logActivity('Property Update as project updated', $property->id, Property::class, $properties);
-                }
+                //     logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
+                // }else{
+                //     logActivity('Property Update as project updated', $property->id, Property::class, $properties);
+                // }
                 
             }
         } catch (\Exception $error) {
