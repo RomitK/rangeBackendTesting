@@ -47,7 +47,7 @@ class CronController extends Controller
     public function makePropertiesUpdated()
     {
         
-        $projectIds = [ 840, 868, 872,  ];
+        $projectIds = [ 1079];
         try {
             $properties = Property::whereIn('project_id', $projectIds)
             // ->where('out_of_inventory', 0)
