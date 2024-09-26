@@ -755,7 +755,7 @@ class ProjectRepository implements ProjectRepositoryInterface
             ->where('out_of_inventory', 0)
             ->where('property_source', 'crm')
             ->latest()->get();
-            //dd($properties);
+          
             foreach ($properties as $property) {
 
 
@@ -772,6 +772,7 @@ class ProjectRepository implements ProjectRepositoryInterface
                 $property->permit_number = $project->permit_number;
 
                 if(!empty($project->qr_link)){
+                    $property->clearMediaCollection('qrs');
                     $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
                 }
 
