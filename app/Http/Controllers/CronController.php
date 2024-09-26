@@ -43,6 +43,101 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class CronController extends Controller
 {
+
+    public function makePropertiesUpdated()
+    {
+        
+        $projectIds = [120, 125, 132, 226, 235];
+        try {
+            $properties = Property::whereIn('project_id', $projectIds)
+            ->where('out_of_inventory', 0)
+            ->where('property_source', 'crm')
+            ->latest()->get();
+          
+            foreach ($properties as $property) {
+
+                $project = Project::find($property->project_id);
+
+
+                $originalAttributes = $property->getOriginal();
+                $originalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                $originalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+
+                if ($property->amenities) {
+                    $originalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $originalAttributes['amenityIds'] = [];
+                }
+
+                $property->permit_number = $project->permit_number;
+
+                if(!empty($project->qr_link)){
+                    $property->clearMediaCollection('qrs');
+                    $property->addMediaFromUrl($project->qr_link)->toMediaCollection('qrs', 'propertyFiles' );
+                }
+
+                $property->save();
+                if($property->qr){
+                    $property->qr_link = $property->qr;
+                }
+                $property->save();
+
+               
+                if (!empty($property->permit_number) && !empty($property->qr_link)) {
+                    if($property->qr_link){
+                        $property->is_valid = 1;
+                    }else{
+                        $property->is_valid = 0; // Optionally set to false if not valid
+                    }
+                   
+                } else {
+                    $property->is_valid = 0; // Optionally set to false if not valid
+                }
+                $property->save();
+                if($property->is_valid == 1 && $property->website_status == config('constants.NA')){
+                    $property->status = config('constants.active');
+                    $property->website_status = config('constants.available');
+                }elseif($property->is_valid == 0 && $property->website_status == config('constants.available')){
+                    $property->status = config('constants.Inactive');
+                    $property->website_status = config('constants.NA');
+                }
+                
+                $property->save();
+
+                $newPropertyOriginalAttributes = $property->getOriginal();
+                if ($property->amenities) {
+                    $newPropertyOriginalAttributes['amenityIds'] = $property->amenities->pluck('id')->toArray();
+                } else {
+                    $newPropertyOriginalAttributes['amenityIds'] = [];
+                }
+
+                if (isset($property->description)) {
+                    $newPropertyOriginalAttributes['description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->description))));
+                }
+                if (isset($property->short_description)) {
+                    $newPropertyOriginalAttributes['short_description'] = trim(strip_tags(str_replace('&#13;', '', trim($property->short_description))));
+                }
+
+                $properties = $this->getUpdatedProperties($newPropertyOriginalAttributes, $originalAttributes);
+
+                if($property->website_status == config('constants.available')){
+
+                    logActivity('Property marked as Available as Permit Number and QR Exist', $property->id, Property::class, $properties);
+                }else{
+                    logActivity('Property Update as project updated', $property->id, Property::class, $properties);
+                }
+                
+            }
+        } catch (\Exception $error) {
+            // Return error response
+            return [
+                'success' => false,
+                'message' => $error->getMessage(),
+            ];
+        }
+    }
+
+
     public function webQRCode()
     {
         try{
