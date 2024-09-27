@@ -208,8 +208,8 @@ class AgentController extends Controller
     {
         try {
 
-            if (Agent::where('slug', $slug)->active()->exists()) {
-                $management = Agent::where('slug', $slug)->active()->first();
+            if (Agent::where('slug', $slug)->exists()) {
+                $management = Agent::where('slug', $slug)->first();
                 $management = new SingleAgentResource($management);
 
                 return $this->success('Single Team', $management, 200);
