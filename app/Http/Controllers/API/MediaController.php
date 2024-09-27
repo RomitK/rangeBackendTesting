@@ -53,7 +53,7 @@ class MediaController extends Controller
     {
         try {
             if (Article::where('slug', $slug)->exists()) {
-                $article = DB::table('articles')->select('meta_title', 'title', 'meta_description', 'meta_keywords')->where('slug', $slug)->first();
+                $article = Article::where('slug', $slug)->first();
                 $singleArticle = (object)[];
 
                 if ($article->meta_title) {
@@ -73,6 +73,10 @@ class MediaController extends Controller
                     $singleArticle->meta_keywords = WebsiteSetting::getSetting('keywords') ? WebsiteSetting::getSetting('keywords') : '';
                 }
 
+                if ($article->article_banner) {
+                    $singleArticle->banner = $article->article_banner;
+                }
+                
                 return $this->success('Single Article Meta', $singleArticle, 200);
             } else {
                 return $this->success('Single Article Meta', [], 200);
