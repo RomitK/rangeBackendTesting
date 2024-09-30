@@ -50,6 +50,27 @@ class HomeController extends Controller
     {
         Log::info('websiteWhatsappResponse');
         Log::info($request->all());
+
+        // if($request->stept1 == "Buy Property"){
+        //     if($request->status == "Offplan"){
+        //         if($request->accommodation == "Apartment"){
+
+        //         }elseif($request->accommodation == "Villa"){
+
+        //         }elseif( $request->accommodation == "Townhouse"){
+                    
+        //         }
+        //     }
+            
+        // }elseif(){
+
+        // }elseif(){
+
+        // }elseif(){
+
+        // }elseif(){
+
+        // }
         return $this->success('Data', $request->all(), 200);
     }
     

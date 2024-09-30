@@ -310,6 +310,10 @@
         array_shift($gallery);
         $amenities = $project->amenities()->get()->toArray();
         [$amenitiePieces2, $amenitiePieces1] = array_chunk($amenities, ceil(count($amenities) / 2));
+
+        $amenitiePieces1 = array_slice($amenitiePieces1, 0, 6);
+        $amenitiePieces2 = array_slice($amenitiePieces2, 0, 6);
+
     @endphp
     <header class="header">
         <img src="{{ $bannerImage['path'] }}" class="headerbannerImg" />
@@ -344,6 +348,7 @@
                     <td>
                         <h4>Starting Price</h4>
                     </td>
+                    
                     <td>
                         <h4>Available Units</h4>
                     </td>

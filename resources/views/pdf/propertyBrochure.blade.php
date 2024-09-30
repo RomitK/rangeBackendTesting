@@ -445,6 +445,8 @@
 
         if (count($amenities) > 0) {
             [$amenitiePieces2, $amenitiePieces1] = array_chunk($amenities, ceil(count($amenities) / 2));
+            $amenitiePieces1 = array_slice($amenitiePieces1, 0, 6);
+            $amenitiePieces2 = array_slice($amenitiePieces2, 0, 6);
         } else {
             $amenitiePieces1 = [];
             $amenitiePieces2 = [];
