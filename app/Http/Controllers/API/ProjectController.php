@@ -972,8 +972,10 @@ class ProjectController extends Controller
                     }
                 }
             }
-            $collection = Project::with(['subProjects', 'accommodation', 'mainCommunity', 'amenities'])->approved()->active()->mainProject();
-            return $this->success('Projects',$collection->get(), 200);
+            
+            $collection = Project::with(['subProjects', 'accommodation', 'mainCommunity', 'amenities'])->where('website_status', 'available')->mainProject();
+         
+           
 
             $collection->where(function ($query) use ($projectArrays, $developers, $communities) {
 
@@ -1122,7 +1124,7 @@ class ProjectController extends Controller
                 $collection->whereRaw("ST_Within(Point(address_longitude, address_latitude), ST_GeomFromText(?))", [$multiPolygonString]);
             }
             
-            $amenities = $collection->get()->flatMap->amenities->unique('id');
+            $amenities = $collection->take(100)->get()->flatMap->amenities->unique('id');
             
             $projects = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->paginate(100);
             
