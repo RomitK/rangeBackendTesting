@@ -924,6 +924,7 @@ class ProjectController extends Controller
     {
 
         try {
+            return $this->success('Projects',[], 200);
             
             $developers = [];
             $communities = [];
