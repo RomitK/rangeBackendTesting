@@ -924,7 +924,7 @@ class ProjectController extends Controller
     {
 
         try {
-            return $this->success('Projects',[], 200);
+            
             
             $developers = [];
             $communities = [];
@@ -956,7 +956,7 @@ class ProjectController extends Controller
 
                 }
             }
-            
+            return $this->success('Projects',[], 200);
             if (isset($request->searchBy)) {
 
                 foreach (json_decode($request->searchBy, true) as $search) {
