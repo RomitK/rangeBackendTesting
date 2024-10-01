@@ -1123,9 +1123,9 @@ class ProjectController extends Controller
             }
 
             $amenities = $collection->get()->flatMap->amenities->unique('id');
-
+            return $this->success('Projects',$collection->get(), 200);
             $projects = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->paginate(100);
-            return $this->success('Projects',$projects, 200);
+            
             $projects = $projects->appends(request()->query());
 
 
