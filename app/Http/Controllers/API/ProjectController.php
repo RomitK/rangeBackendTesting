@@ -973,7 +973,7 @@ class ProjectController extends Controller
                 }
             }
             
-            $collection = Project::with(['subProjects', 'accommodation', 'mainCommunity', 'amenities'])->where('website_status', 'available')->mainProject();
+            $collection = Project::where('website_status', 'available')->mainProject();
          
            
 
@@ -1126,7 +1126,7 @@ class ProjectController extends Controller
             
             $amenities = $collection->take(100)->get()->flatMap->amenities->unique('id');
             
-            $projects = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->paginate(100);
+            $projects = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->paginate(1000);
             
             $projects = $projects->appends(request()->query());
 
