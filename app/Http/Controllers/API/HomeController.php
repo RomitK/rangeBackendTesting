@@ -51,7 +51,7 @@ class HomeController extends Controller
         Log::info('websiteWhatsappResponse');
         Log::info($request->all());
 
-        if($request->stept1 == "Buy Property"){
+        if($request->step1 == "Buy Property"){
 
             return $this->success('Data', 'Buy Property', 200);
 
@@ -77,7 +77,7 @@ class HomeController extends Controller
                 }
             }
             
-        }elseif($request->stept1 == "Rent Property"){
+        }elseif($request->step1 == "Rent Property"){
             if($request->accommodation == "Apartment"){
 
             }elseif($request->accommodation == "Villa"){
@@ -85,7 +85,7 @@ class HomeController extends Controller
             }elseif( $request->accommodation == "Townhouse"){
                 
             }
-        }elseif($request->stept1 == "Sell Property"){
+        }elseif($request->step1 == "Sell Property"){
 
             if($request->accommodation == "Apartment"){
                 $request->location;
@@ -97,7 +97,7 @@ class HomeController extends Controller
                 $request->location;
                 $request->price;
             }
-        }elseif($request->stept1 == "Mortage"){
+        }elseif($request->step1 == "Mortage"){
 
             if($request->mortgage_query == "New Purchase"){
 
@@ -125,7 +125,7 @@ class HomeController extends Controller
                     $request->given_name;
 
             }
-        }elseif($request->stept1 =="General Inquiry"){
+        }elseif($request->step1 =="General Inquiry"){
             $request->service;
         }
         return $this->success('Data', $request->all(), 200);
