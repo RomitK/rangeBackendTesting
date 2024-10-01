@@ -973,7 +973,7 @@ class ProjectController extends Controller
                 }
             }
             $collection = Project::with(['subProjects', 'accommodation', 'mainCommunity', 'amenities'])->approved()->active()->mainProject();
-
+            return $this->success('Projects',$collection->get(), 200);
 
             $collection->where(function ($query) use ($projectArrays, $developers, $communities) {
 
@@ -1105,7 +1105,7 @@ class ProjectController extends Controller
             //     $collection->orderBy("id");
             // }
 
-            return $this->success('Projects',$collection->get(), 200);
+            
             if ($request->coordinates) {
                 $allPolygons = $request->coordinates;
                 $polygons = [];
