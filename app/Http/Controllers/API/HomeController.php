@@ -53,6 +53,9 @@ class HomeController extends Controller
 
         if($request->step1 == "Buy Property"){
 
+
+            Log::info("----Buy Property----");
+
             return $this->success('Data', 'Buy Property', 200);
 
 
@@ -127,8 +130,10 @@ class HomeController extends Controller
             }
         }elseif($request->step1 =="General Inquiry"){
             $request->service;
+        }else{
+            return $this->success('Data', $request->all(), 200);
         }
-        return $this->success('Data', $request->all(), 200);
+        
     }
     
     public function sendSMS()
