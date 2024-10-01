@@ -1105,7 +1105,7 @@ class ProjectController extends Controller
             //     $collection->orderBy("id");
             // }
 
-
+            return $this->success('Projects',$collection->get(), 200);
             if ($request->coordinates) {
                 $allPolygons = $request->coordinates;
                 $polygons = [];
@@ -1121,9 +1121,9 @@ class ProjectController extends Controller
                 $multiPolygonString = 'MULTIPOLYGON(' . implode(',', $polygons) . ')';
                 $collection->whereRaw("ST_Within(Point(address_longitude, address_latitude), ST_GeomFromText(?))", [$multiPolygonString]);
             }
-
+            
             $amenities = $collection->get()->flatMap->amenities->unique('id');
-            return $this->success('Projects',$collection->get(), 200);
+            
             $projects = $collection->orderByRaw('ISNULL(projectOrder)')->orderBy('projectOrder', 'asc')->paginate(100);
             
             $projects = $projects->appends(request()->query());
