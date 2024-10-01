@@ -51,26 +51,83 @@ class HomeController extends Controller
         Log::info('websiteWhatsappResponse');
         Log::info($request->all());
 
-        // if($request->stept1 == "Buy Property"){
-        //     if($request->status == "Offplan"){
-        //         if($request->accommodation == "Apartment"){
+        if($request->stept1 == "Buy Property"){
 
-        //         }elseif($request->accommodation == "Villa"){
+            return $this->success('Data', 'Buy Property', 200);
 
-        //         }elseif( $request->accommodation == "Townhouse"){
+
+
+            if($request->status == "Offplan"){
+                if($request->accommodation == "Apartment"){
+
+                }elseif($request->accommodation == "Villa"){
+
+                }elseif( $request->accommodation == "Townhouse"){
                     
-        //         }
-        //     }
+                }
+            }elseif($request->status == "Ready"){
+                if($request->accommodation == "Apartment"){
+
+                }elseif($request->accommodation == "Villa"){
+
+                }elseif( $request->accommodation == "Townhouse"){
+                    
+                }elseif( $request->accommodation == "Penthouse"){
+                    
+                }
+            }
             
-        // }elseif(){
+        }elseif($request->stept1 == "Rent Property"){
+            if($request->accommodation == "Apartment"){
 
-        // }elseif(){
+            }elseif($request->accommodation == "Villa"){
 
-        // }elseif(){
+            }elseif( $request->accommodation == "Townhouse"){
+                
+            }
+        }elseif($request->stept1 == "Sell Property"){
 
-        // }elseif(){
+            if($request->accommodation == "Apartment"){
+                $request->location;
+                $request->price;
+            }elseif($request->accommodation == "Villa"){
+                $request->location;
+                $request->price;
+            }elseif( $request->accommodation == "Townhouse"){
+                $request->location;
+                $request->price;
+            }
+        }elseif($request->stept1 == "Mortage"){
 
-        // }
+            if($request->mortgage_query == "New Purchase"){
+
+                if($request->mortage_property =="Villa"){
+                    $request->budget;
+                    $request->given_email;
+                    $request->given_name;
+
+                }elseif($request->mortage_property =="Apartment"){
+                    $request->budget;
+                    $request->given_email;
+                    $request->given_name;
+                }elseif($request->mortage_property =="Undecided"){
+
+                    $request->budget;
+                    $request->given_email;
+                    $request->given_name;
+                }
+            }elseif($request->mortgage_query == "Mortgage refinances"){
+
+                $request->bank_name;
+                $request->property_value;
+                $request->mortgage_term;
+                $request->given_email;
+                    $request->given_name;
+
+            }
+        }elseif($request->stept1 =="General Inquiry"){
+            $request->service;
+        }
         return $this->success('Data', $request->all(), 200);
     }
     
