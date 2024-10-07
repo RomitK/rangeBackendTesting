@@ -1045,7 +1045,7 @@ class PropertyController extends Controller
                 $collection->whereRaw("ST_Within(Point(address_longitude, address_latitude), ST_GeomFromText(?))", [$multiPolygonString]);
             }
             
-            $amenities = $collection->get()->flatMap->amenities->unique('id');
+            $amenities = $collection->take(100)->get()->flatMap->amenities->unique('id');
 
             $accommodations = $collection->get()->unique('accommodation_id')->pluck('accommodation_id');
 
@@ -1080,7 +1080,7 @@ class PropertyController extends Controller
                 }
                 
 
-            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy('propertyOrder', 'asc')->paginate(100);
+            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy('propertyOrder', 'asc')->paginate(1000);
 
             $properties->appends(request()->query());
 
