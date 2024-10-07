@@ -1080,7 +1080,7 @@ class PropertyController extends Controller
                 }
                 
 
-            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy('propertyOrder', 'asc')->paginate(1000);
+            $properties = $collection->orderByRaw('ISNULL(propertyOrder)')->orderBy('propertyOrder', 'asc')->paginate(100);
 
             $properties->appends(request()->query());
 
