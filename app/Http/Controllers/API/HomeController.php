@@ -631,7 +631,7 @@ echo $curl_scraped_page;
                     $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
                 }
 
-                //$mapProjects = new HomeMapProjectsCollectionResource($projectsWithSubProjects, $currencyINR);
+                $mapProjects = new HomeMapProjectsCollectionResource($projectsWithSubProjects, $currencyINR);
 
                 
                 $results = DB::select("
@@ -683,7 +683,7 @@ echo $curl_scraped_page;
                     'formattedNumbers' => $text,
                     'projects' => $projects,
                     'newProjects' => $newProjects,
-                    'mapProjects' => [],
+                    'mapProjects' => $mapProjects,
                     'communities' => $communities,
                     'testimonials' => $testimonials,
                     'developers' => $developers,
