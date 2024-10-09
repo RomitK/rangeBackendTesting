@@ -538,7 +538,7 @@ echo $curl_scraped_page;
     {
         try {
           
-            return $this->success('Home Data', Cache::remember('homeData123', 3 * 60 * 60, function () {
+            return $this->success('Home Data', Cache::remember('homeData', 3 * 60 * 60, function () {
                 // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
                 $communities =  HomeCommunitiesResource::collection(DB::table('communities')
                     ->select('name', 'slug', 'banner_image', 'id')
@@ -631,7 +631,7 @@ echo $curl_scraped_page;
                     $currencyINR = WebsiteSetting::getSetting(config('constants.INR_Currency')) ? WebsiteSetting::getSetting(config('constants.INR_Currency')) : '';
                 }
 
-                $mapProjects = new HomeMapProjectsCollectionResource($projectsWithSubProjects, $currencyINR);
+                //$mapProjects = new HomeMapProjectsCollectionResource($projectsWithSubProjects, $currencyINR);
 
                 
                 $results = DB::select("
@@ -683,7 +683,7 @@ echo $curl_scraped_page;
                     'formattedNumbers' => $text,
                     'projects' => $projects,
                     'newProjects' => $newProjects,
-                    'mapProjects' => $mapProjects,
+                    'mapProjects' => [],
                     'communities' => $communities,
                     'testimonials' => $testimonials,
                     'developers' => $developers,
