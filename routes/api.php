@@ -18,9 +18,9 @@ use App\Http\Controllers\API\AgentController;
 |
 */
 
-Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
-    Route::post('/teams', [AgentController::class, 'storeTeam']);
-});
+// Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
+//     Route::post('/teams', [AgentController::class, 'storeTeam']);
+// });
 
 Route::get('/test', function () {
     return [
