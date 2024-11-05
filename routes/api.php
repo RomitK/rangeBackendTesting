@@ -18,10 +18,6 @@ use App\Http\Controllers\API\AgentController;
 |
 */
 
-// Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
-//     Route::post('/teams', [AgentController::class, 'storeTeam']);
-// });
-
 Route::get('/test', function () {
     return [
         'title' => 'Hello',
@@ -65,6 +61,9 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/communities/{slug}', 'CommunityController@singleCommunity');
     Route::get('/communities/{slug}/detail', 'CommunityController@singleCommunityDetail');
     Route::get('/communities/{slug}/meta', 'CommunityController@singleCommunityMeta');
+
+
+    Route::get('/team', 'AgentController@storeTeam')->middleware('ApiAuthentication');
 
     Route::get('/managements', 'AgentController@managements');
     Route::get('/managements/{slug}', 'AgentController@singleManagement');
