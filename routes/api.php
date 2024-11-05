@@ -15,11 +15,11 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
+// Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
 
-    Route::post('/teams', 'AgentController@storeTeam');
+//     Route::post('/teams', 'AgentController@storeTeam');
 
-});
+// });
 
 Route::get('/test', function () {
     return [
