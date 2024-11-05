@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AgentController;
+
 // header('Access-Control-Allow-Origin:  *');
 // header('Access-Control-Allow-Methods:  POST, GET, OPTIONS, PUT, DELETE');
 // header('Access-Control-Allow-Headers:  Content-Type, X-Auth-Token, Origin, Authorization');
@@ -15,11 +17,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
 
-//     Route::post('/teams', 'AgentController@storeTeam');
-
-// });
+Route::namespace('App\Http\Controllers\API')->group(['middleware' => 'ApiAuthentication'], function () {
+    Route::post('/teams', [AgentController::class, 'storeTeam']);
+});
 
 Route::get('/test', function () {
     return [
