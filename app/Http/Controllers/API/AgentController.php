@@ -26,9 +26,23 @@ use App\Http\Resources\{
     
 };
 use PDF;
+use Illuminate\Support\Facades\Log;
 
 class AgentController extends Controller
 {
+
+    public function storeTeam(Request $request)
+    {
+        try {
+            $data = $request->all();
+            Log::info('storeTeam start');
+            Log::info($data);
+            Log::info('storeTeam end');
+            return $this->success('Store Team', $data, 200);
+        } catch (\Exception $exception) {
+            return $this->failure($exception->getMessage());
+        }
+    }
 
     public function managements(Request $request)
     {
