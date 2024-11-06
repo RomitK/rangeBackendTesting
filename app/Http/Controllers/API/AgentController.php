@@ -35,10 +35,23 @@ class AgentController extends Controller
     {
         try {
             $data = $request->all();
-            Log::info('storeTeam start');
             Log::info($data);
+            Log::info('storeTeam start');
+
+            $agent = new Agent;
+            $agent->crm_id = $request->id;
+            $agent->name = $request->full_name;
+            $agent->status = 'Inactive';
+            $agent->email = $request->email;
+            $agent->is_display_home = 0;
+            $agent->contact_number = $request->phone;
+            $agent->whatsapp_number = $request->phone;
+            $agent->user_id = 1;
+            $agent->save();
+
+            Log::info($agent);
             Log::info('storeTeam end');
-            return $this->success('Store Team', $data, 200);
+            return $this->success('Store Team', $agent, 200);
         } catch (\Exception $exception) {
             return $this->failure($exception->getMessage());
         }
