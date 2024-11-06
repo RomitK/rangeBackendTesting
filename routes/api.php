@@ -63,7 +63,7 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::get('/communities/{slug}/meta', 'CommunityController@singleCommunityMeta');
 
 
-    Route::get('/team', 'AgentController@storeTeam')->middleware('ApiAuthentication');
+    Route::get('/team', 'AgentController@storeTeam');
 
     Route::get('/managements', 'AgentController@managements');
     Route::get('/managements/{slug}', 'AgentController@singleManagement');
