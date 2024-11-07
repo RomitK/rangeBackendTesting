@@ -66,7 +66,8 @@ class AgentController extends Controller
             $agent->orderBy = $request->orderBy;
             $agent->user_id = 1;
             $agent->save();
-
+            Log::info('storeTeam save');
+            Log::info($agent);
 
             
             foreach($request->languages as $key=>$language){
@@ -84,7 +85,9 @@ class AgentController extends Controller
                     $agent->languages()->attach($language->id);
                 }
             }
-
+            Log::info('storeTeam languages');
+            Log::info($agent);
+            
             if($request->profile_url){
                 Log::info("ll---.$request->profile_url");
                 if($request->method === "update"){
