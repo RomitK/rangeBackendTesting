@@ -27,6 +27,8 @@ use App\Http\Resources\{
 };
 use PDF;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class AgentController extends Controller
 {
@@ -46,8 +48,68 @@ class AgentController extends Controller
             $agent->is_display_home = 0;
             $agent->contact_number = $request->phone;
             $agent->whatsapp_number = $request->phone;
+            $agent->employeeId = $request->employeeId;
+            $agent->designation = $request->designation;
+            $agent->department = $request->department;
             $agent->user_id = 1;
             $agent->save();
+
+
+            foreach($request->languages as $key=>$language){
+                if(Language::where('name', $language)->exists()){
+                    $language = Language::where('name', $language)->first();
+                    if ($language) {
+                        $agent->languages()->attach($language->id);
+                    }
+                }else{
+                    $language = new Language;
+                    $language->name = $request->name;
+                    $language->status = config('constants.active');
+                    $language->user_id = 1;
+                    $language->save();
+                    $agent->languages()->attach($language->id);
+                }
+            }
+            if($request->profile){
+                $agent->addMediaFromUrl($request->profile)->withResponsiveImages()->toMediaCollection('images', 'agentFiles');
+            }
+
+            $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
+            $qrCode = QrCode::format('png')->size(200)->generate($url);
+
+            $imageName = $agent->slug . '.png';
+            Storage::disk('agentQRFiles')->put($imageName, $qrCode);
+            $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
+            $agent->clearMediaCollection('QRs');
+            $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
+
+            $contact = [
+                'version' => '3.0',
+                'fn' =>$agent->name,
+                'tel' => $agent->contact_number,
+                'email' => $agent->email,
+                'adr' => '1601, 16th Floor, Control Tower, Motor City, Dubai',
+            ];
+
+            $vcfContent = "BEGIN:VCARD\n";
+            $vcfContent .= "VERSION:{$contact['version']}\n";
+            $vcfContent .= "FN:{$contact['fn']}\n";
+            $vcfContent .= "TEL:{$contact['tel']}\n";
+            $vcfContent .= "EMAIL:{$contact['email']}\n";
+            $vcfContent .= "ADR:{$contact['adr']}\n";
+            $vcfContent .= "END:VCARD\n";
+
+            $fileName = $agent->slug.'-contact.vcf';
+
+            Storage::disk('agentCardFiles')->put($fileName, $vcfContent);
+
+
+            $cardCodeUrl = Storage::disk('agentCardFiles')->url($fileName);
+            
+            $agent->addMediaFromUrl($cardCodeUrl)->usingFileName($fileName)->toMediaCollection('cards', 'agentFiles');
+
+            $agent->save();
+
 
             Log::info($agent);
             Log::info('storeTeam end');

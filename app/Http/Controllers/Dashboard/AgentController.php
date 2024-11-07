@@ -176,7 +176,7 @@ class AgentController extends Controller
                 $agent->is_approved = config('constants.requested');
             }
             $agent->updated_by = Auth::user()->id;
-		$agent->department = $request->department;
+		    $agent->department = $request->department;
             $agent->save();
 
             $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
