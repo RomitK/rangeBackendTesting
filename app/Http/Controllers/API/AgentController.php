@@ -40,12 +40,24 @@ class AgentController extends Controller
             Log::info($data);
             Log::info('storeTeam start');
 
+            $newAgent = 0; 
             if($request->method === "store"){
+                $newAgent = 1;
+            }
+
+            if($newAgent === 1){
                 $agent = new Agent;
             }else{
                 $agent = Agent::where('crm_id', $request->id)->first();
-                $agent->languages()->detach();
-                $agent->generateSlug();
+
+                if($agent){
+                    $agent->languages()->detach();
+                    $agent->generateSlug();
+                }else{
+                    $agent = new Agent;
+                    $newAgent = 1;
+                }
+                
             }
             
             $agent->crm_id = $request->id;
@@ -91,11 +103,9 @@ class AgentController extends Controller
             Log::info($agent);
 
             if($request->profile_url){
-                Log::info("ll---.$request->profile_url");
-                if($request->method === "update"){
+                if($newAgent === 0){
                     $agent->clearMediaCollection('images');
                 }
-
                 $agent->addMediaFromUrl($request->profile_url)->withResponsiveImages()->toMediaCollection('images', 'agentFiles');
             }
 
@@ -133,7 +143,7 @@ class AgentController extends Controller
 
             $cardCodeUrl = Storage::disk('agentCardFiles')->url($fileName);
             
-            if($request->method === "update"){
+            if($newAgent === 0){
                 $agent->clearMediaCollection('cards');
             }
 
