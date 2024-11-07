@@ -86,6 +86,7 @@ class AgentController extends Controller
             }
 
             if($request->profile_url){
+                Log::info("ll---.$request->profile_url");
                 if($request->method === "update"){
                     $agent->clearMediaCollection('images');
                 }
