@@ -78,7 +78,8 @@ class AgentController extends Controller
             $agent->designation = $request->designation;
             $agent->department = $request->department;
             $agent->orderBy = $request->orderBy;
-            $agent->user_id = 1;
+            $agent->user_id = 19;
+            $agent->updated_by = 19;
             $agent->save();
             Log::info('storeTeam save');
             Log::info($agent);
@@ -94,7 +95,7 @@ class AgentController extends Controller
                         $language = new Language;
                         $language->name = $request->name;
                         $language->status = config('constants.active');
-                        $language->user_id = 1;
+                        $language->user_id = 19;
                         $language->save();
                         $agent->languages()->attach($language->id);
                     }
