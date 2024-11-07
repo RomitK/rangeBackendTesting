@@ -63,7 +63,7 @@ class AgentController extends Controller
             $agent->crm_id = $request->id;
             $agent->name = $request->full_name;
             Log::info("is_display_website".$request->is_display_website);
-            if($request->is_display_website === 1){
+            if($request->is_display_website == 1){
                 Log::info("is display 1");
                 $agent->status = 'active';
             }else{
@@ -108,7 +108,7 @@ class AgentController extends Controller
                 if($newAgent === 0){
                     $agent->clearMediaCollection('images');
                 }
-                $agent->addMediaFromUrl($request->profile_url)->withResponsiveImages()->toMediaCollection('images', 'agentFiles');
+                $agent->addMediaFromUrl($request->profile_url)->toMediaCollection('images', 'agentFiles');
             }
 
             $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
