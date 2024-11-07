@@ -64,8 +64,10 @@ class AgentController extends Controller
             $agent->name = $request->full_name;
             Log::info("is_display_website".$request->is_display_website);
             if($request->is_display_website === 1){
+                Log::info("is display 1");
                 $agent->status = 'active';
             }else{
+                Log::info("is display 0");
                 $agent->status = 'Inactive';
             }
             $agent->email = $request->email;
