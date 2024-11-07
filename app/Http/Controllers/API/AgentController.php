@@ -47,6 +47,7 @@ class AgentController extends Controller
 
             if($newAgent === 1){
                 $agent = new Agent;
+                $agent->user_id = 19;
             }else{
                 $agent = Agent::where('crm_id', $request->id)->first();
 
@@ -56,6 +57,7 @@ class AgentController extends Controller
                 }else{
                     $agent = new Agent;
                     $newAgent = 1;
+                    $agent->user_id = 19;
                 }
                 
             }
@@ -78,7 +80,7 @@ class AgentController extends Controller
             $agent->designation = $request->designation;
             $agent->department = $request->department;
             $agent->orderBy = $request->orderBy;
-            $agent->user_id = 19;
+           
             $agent->updated_by = 19;
             $agent->save();
             Log::info('storeTeam save');
