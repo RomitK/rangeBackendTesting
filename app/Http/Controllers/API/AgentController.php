@@ -62,7 +62,7 @@ class AgentController extends Controller
             
             $agent->crm_id = $request->id;
             $agent->name = $request->full_name;
-
+            Log::info("is_display_website".$request->is_display_website);
             if($request->is_display_website === 1){
                 $agent->status = 'active';
             }else{
