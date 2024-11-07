@@ -69,25 +69,27 @@ class AgentController extends Controller
             Log::info('storeTeam save');
             Log::info($agent);
 
-            
-            foreach($request->languages as $key=>$language){
-                if(Language::where('name', $language)->exists()){
-                    $language = Language::where('name', $language)->first();
-                    if ($language) {
+            if($request->languages){
+                foreach($request->languages as $key=>$language){
+                    if(Language::where('name', $language)->exists()){
+                        $language = Language::where('name', $language)->first();
+                        if ($language) {
+                            $agent->languages()->attach($language->id);
+                        }
+                    }else{
+                        $language = new Language;
+                        $language->name = $request->name;
+                        $language->status = config('constants.active');
+                        $language->user_id = 1;
+                        $language->save();
                         $agent->languages()->attach($language->id);
                     }
-                }else{
-                    $language = new Language;
-                    $language->name = $request->name;
-                    $language->status = config('constants.active');
-                    $language->user_id = 1;
-                    $language->save();
-                    $agent->languages()->attach($language->id);
                 }
             }
+           
             Log::info('storeTeam languages');
             Log::info($agent);
-            
+
             if($request->profile_url){
                 Log::info("ll---.$request->profile_url");
                 if($request->method === "update"){
