@@ -40,10 +40,22 @@ class AgentController extends Controller
             Log::info($data);
             Log::info('storeTeam start');
 
-            $agent = new Agent;
+            if($request->method === "store"){
+                $agent = new Agent;
+            }else{
+                $agent = Agent::where('crm_id', $request->id)->first();
+                $agent->languages()->detach();
+                $agent->generateSlug();
+            }
+            
             $agent->crm_id = $request->id;
             $agent->name = $request->full_name;
-            $agent->status = 'Inactive';
+
+            if($request->is_display_website === 1){
+                $agent->status = 'active';
+            }else{
+                $agent->status = 'Inactive';
+            }
             $agent->email = $request->email;
             $agent->is_display_home = 0;
             $agent->contact_number = $request->phone;
@@ -51,10 +63,12 @@ class AgentController extends Controller
             $agent->employeeId = $request->employeeId;
             $agent->designation = $request->designation;
             $agent->department = $request->department;
+            $agent->orderBy = $request->orderBy;
             $agent->user_id = 1;
             $agent->save();
 
 
+            
             foreach($request->languages as $key=>$language){
                 if(Language::where('name', $language)->exists()){
                     $language = Language::where('name', $language)->first();
@@ -70,8 +84,13 @@ class AgentController extends Controller
                     $agent->languages()->attach($language->id);
                 }
             }
-            if($request->profile){
-                $agent->addMediaFromUrl($request->profile)->withResponsiveImages()->toMediaCollection('images', 'agentFiles');
+
+            if($request->profile_url){
+                if($request->method === "update"){
+                    $agent->clearMediaCollection('images');
+                }
+
+                $agent->addMediaFromUrl($request->profile_url)->withResponsiveImages()->toMediaCollection('images', 'agentFiles');
             }
 
             $url = config('app.frontend_url') . 'profile/' . Str::slug($agent->profileUrl) . '/' . $agent->slug;
@@ -80,7 +99,9 @@ class AgentController extends Controller
             $imageName = $agent->slug . '.png';
             Storage::disk('agentQRFiles')->put($imageName, $qrCode);
             $qrCodeUrl = Storage::disk('agentQRFiles')->url($imageName);
-            $agent->clearMediaCollection('QRs');
+            if($request->method === "update"){
+                $agent->clearMediaCollection('QRs');
+            }
             $agent->addMediaFromUrl($qrCodeUrl)->usingFileName($imageName)->toMediaCollection('QRs', 'agentFiles');
 
             $contact = [
@@ -106,10 +127,12 @@ class AgentController extends Controller
 
             $cardCodeUrl = Storage::disk('agentCardFiles')->url($fileName);
             
+            if($request->method === "update"){
+                $agent->clearMediaCollection('cards');
+            }
+
             $agent->addMediaFromUrl($cardCodeUrl)->usingFileName($fileName)->toMediaCollection('cards', 'agentFiles');
-
             $agent->save();
-
 
             Log::info($agent);
             Log::info('storeTeam end');
