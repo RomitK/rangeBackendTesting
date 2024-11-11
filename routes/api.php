@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\EnquiryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AgentController;
@@ -141,6 +142,7 @@ Route::namespace('App\Http\Controllers\API')->group(function () {
     Route::post('/verifyOtp', 'HomeController@verifyOtp');
 
     Route::get('/meta/{pageName}', 'MetaController@homeMeta');
+    Route::post('enquiry', EnquiryController::class);
 });
 
 Route::namespace('App\Http\Controllers\Frontend')->group(function () {
