@@ -85,7 +85,7 @@
                                     </a>
                                 </li>
 
-                            
+
                                 <!--<li class="nav-item">-->
                                 <!--    <a href="{{ url('dashboard/floorPlans') }}"-->
                                 <!--        class="nav-link {{ activeChildNavBar('dashboard.floorPlans') }}">-->
@@ -202,6 +202,15 @@
                                     class="nav-link {{ activeChildNavBar('dashboard.leads') }} ">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Lead List</p>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{ route('dashboard.enquiries.index') }}"
+                                    class="nav-link {{ activeChildNavBar('dashboard.enquiries.index') }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Enquiries List</p>
                                 </a>
                             </li>
                         </ul>
@@ -371,7 +380,7 @@
 
                 <li class="nav-item {{ activeParentNavBar('reports', 'menu-open') }}">
                     <a href="#" class="nav-link {{ activeParentNavBar('reports', 'active') }}">
-                       
+
                         <i class="fas fa-clipboard-list nav-icon"></i>
 
                         <p>

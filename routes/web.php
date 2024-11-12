@@ -123,7 +123,7 @@ Route::namespace('App\Http\Controllers\Frontend')->group(function () {
 
 
     Route::get('/converter', 'HomeController@converter');
-    
+
     Route::get('/export-api-response', 'HomeController@DLDTransaction');
 
     Route::any('/', 'HomeController@showLoginPage')->name('home');
@@ -429,13 +429,14 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::resource('languages', LanguageController::class, ['as' => 'dashboard']);
     Route::resource('services', ServiceController::class, ['as' => 'dashboard']);
     Route::resource('articles', ArticleController::class, ['as' => 'dashboard']);
+    Route::resource('enquiries', \App\Http\Controllers\Dashboard\Enquiries\EnquiriesController::class, ['as' => 'dashboard']);
 
     Route::get('articles/{article}/media/{media}', 'ArticleController@mediaDestroy')->name('dashboard.articles.media.delete');
 
     Route::resource('video-gallery', VideoGalleryController::class, ['as' => 'dashboard']);
     Route::resource('users', UserController::class, ['as' => 'dashboard']);
 
-    Route::resource('leads', LeadController::class, ['as' => 'dashboard']);
+    Route::resource('leads', \App\Http\Controllers\Dashboard\LeadController::class, ['as' => 'dashboard']);
     Route::post('leads/{lead}/moveToCRM', 'LeadController@moveToCRM')->name('dashboard.leads.moveToCRM');
     Route::get('profileSettings', 'ProfileSettingController@get')->name('dashboard.profileSettings');
     Route::put('profileSettings', 'ProfileSettingController@update')->name('dashboard.profileSettings.update');

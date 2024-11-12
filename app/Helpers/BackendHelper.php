@@ -15,7 +15,8 @@ use App\Models\{
     Career,
     Guide,
     Agent,
-    LogActivity
+    LogActivity,
+    Enquiry
 };
 
 if (!function_exists('activeParentNavBar')) {
@@ -43,6 +44,7 @@ if (!function_exists('activeParentNavBar')) {
         } elseif ($parentNav == 'leadManagement') {
             $childElements = [
                 'dashboard.leads',
+                'dashboard.enquiries.index',
             ];
         } elseif ($parentNav == 'contentManagement') {
             $childElements = [
@@ -174,7 +176,7 @@ if (!function_exists('sendWebsiteStatReport')) {
             $celebrations = clone $collection;
 
             $propertiesCollection = Property::where('website_status',  config('constants.available'));
-            
+
             $propertiesCount = clone $propertiesCollection;
             $ready = clone $propertiesCollection;
             $offplan = clone $propertiesCollection;
@@ -204,13 +206,13 @@ if (!function_exists('sendWebsiteStatReport')) {
                 ],
                 'new_last_week' =>
                 (array) DB::select("
-                            SELECT 
+                            SELECT
                                 DATE_SUB(CURDATE(), INTERVAL 7 DAY) AS start_date,
                                 DATE_SUB(CURDATE(), INTERVAL 1 DAY) AS end_date
                         ")[0],
                 'prev_last_week' =>
                 (array) DB::select("
-                        SELECT 
+                        SELECT
                         DATE_SUB(CURDATE(), INTERVAL 14 DAY) AS start_date,
                         DATE_SUB(CURDATE(), INTERVAL 8 DAY) AS end_date
                     ")[0],
