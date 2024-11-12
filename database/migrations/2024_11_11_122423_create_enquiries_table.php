@@ -14,6 +14,7 @@ return new class extends Migration
             $propertyStatusEnumValues = array_values(PropertyStatusEnum::toValues());
             $propertyTypeEnumValues = array_values(PropertyTypeEnum::toValues());
             $table->id();
+            $table->string('campaign_id')->nullable();
             $table->string('name');
             $table->string('email');
             $table->string('mobile_country_code');

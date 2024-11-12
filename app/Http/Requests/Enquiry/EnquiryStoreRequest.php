@@ -16,6 +16,7 @@ class EnquiryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'campaign_id' => ['nullable', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'mobile_country_code' => ['required', 'string', 'max:5'],

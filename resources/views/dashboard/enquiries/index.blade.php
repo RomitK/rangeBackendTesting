@@ -27,6 +27,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Campaign Id</th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
@@ -41,6 +42,7 @@
                                 @foreach ($enquiries as $key => $enquiry)
                                     <tr>
                                         <td>{{ $key + 1 }}</td>
+                                        <td>{{ $enquiry->campaign_id }}</td>
                                         <td>{{ $enquiry->name }}</td>
                                         <td>{{ $enquiry->email }}</td>
                                         <td>{{ $enquiry->mobile_country_code }} {{$enquiry->mobile}}</td>

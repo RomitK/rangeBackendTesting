@@ -12,6 +12,7 @@ class Enquiry extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'campaign_id',
         'name',
         'email',
         'mobile_country_code',
