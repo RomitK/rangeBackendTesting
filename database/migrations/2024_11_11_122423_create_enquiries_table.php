@@ -22,8 +22,8 @@ return new class extends Migration
             $table->enum('property_status', $propertyStatusEnumValues);
             $table->enum('property_type', $propertyTypeEnumValues);
             $table->integer('number_of_rooms')->default(0);
-            $table->decimal('min_price');
-            $table->decimal('max_price');
+            $table->double('min_price');
+            $table->double('max_price');
             $table->timestamps();
             $table->softDeletes();
         });
