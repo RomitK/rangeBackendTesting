@@ -694,7 +694,8 @@
         })
     </script>
 
-    @yield('js')
+@yield('js')
+@stack('scripts')
 </body>
 
 </html>

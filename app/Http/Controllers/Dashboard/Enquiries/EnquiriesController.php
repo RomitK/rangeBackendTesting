@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Dashboard\Enquiries;
 
+use App\DataTables\EnquiriesDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Enquiry;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class EnquiriesController extends Controller
 {
-    public function index(): View
+    public function index(EnquiriesDataTable $dataTable): JsonResponse|View
     {
-        $enquiries = Enquiry::query()->cursor();
-
-        return view('dashboard.enquiries.index', compact('enquiries'));
+        return $dataTable->render('dashboard.enquiries.index', compact('dataTable'));
     }
 }
