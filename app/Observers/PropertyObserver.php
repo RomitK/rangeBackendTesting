@@ -2,63 +2,40 @@
 
 namespace App\Observers;
 
+use App\Actions\RevalidationHandler\CampaignRevalidationHandlerAction;
+use App\Actions\RevalidationHandler\WebsiteRevalidationHandlerAction;
+use App\Enums\RevalidationHandler\TagEnum;
 use App\Models\Property;
-use Auth;
 
 class PropertyObserver
 {
-    /**
-     * Handle the Property "created" event.
-     *
-     * @param  \App\Models\Property  $property
-     * @return void
-     */
-    public function created(Property $property)
+    protected WebsiteRevalidationHandlerAction $websiteAction;
+    protected CampaignRevalidationHandlerAction $campaignAction;
+
+    public function __construct(
+        WebsiteRevalidationHandlerAction $websiteAction,
+        CampaignRevalidationHandlerAction $campaignAction
+    )
     {
-        
+        $this->websiteAction = $websiteAction;
+        $this->campaignAction = $campaignAction;
+    }
+    public function created(Property $property): void
+    {
+        $this->websiteAction->execute(TagEnum::Property()->value);
+        $this->campaignAction->execute(TagEnum::Community()->value);
     }
 
-    /**
-     * Handle the Property "updated" event.
-     *
-     * @param  \App\Models\Property  $property
-     * @return void
-     */
-    public function updated(Property $property)
+    public function updated(Property $property): void
     {
-        //
+        $this->websiteAction->execute(TagEnum::Property()->value);
+        $this->campaignAction->execute(TagEnum::Community()->value);
     }
 
-    /**
-     * Handle the Property "deleted" event.
-     *
-     * @param  \App\Models\Property  $property
-     * @return void
-     */
-    public function deleted(Property $property)
+    public function deleted(Property $property): void
     {
-        //
+        $this->websiteAction->execute(TagEnum::Property()->value);
+        $this->campaignAction->execute(TagEnum::Community()->value);
     }
 
-    /**
-     * Handle the Property "restored" event.
-     *
-     * @param  \App\Models\Property  $property
-     * @return void
-     */
-    public function restored(Property $property)
-    {
-        //
-    }
-
-    /**
-     * Handle the Property "force deleted" event.
-     *
-     * @param  \App\Models\Property  $property
-     * @return void
-     */
-    public function forceDeleted(Property $property)
-    {
-        //
-    }
 }

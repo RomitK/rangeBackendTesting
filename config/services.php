@@ -31,4 +31,11 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'revalidate_api' => [
+        'range_website_url' => env('RANGE_WEBSITE_URL'),
+        'range_campaign_url' => env('RANGE_CAMPAIGN_URL'),
+        'range_website_revalidate_token' => env('RANGE_WEBSITE_REVALIDATE_TOKEN'),
+        'range_campaign_revalidate_token' => env('RANGE_CAMPAIGN_REVALIDATE_TOKEN'),
+    ],
+
 ];

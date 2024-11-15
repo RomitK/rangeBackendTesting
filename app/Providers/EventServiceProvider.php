@@ -5,30 +5,22 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
-use App\Models\{
-    Community,
-    Developer,
-    Testimonial,
-    Project
-};
-use App\Observers\{
-    CommunityObserver,
-    DeveloperObserver,
-    TestimonialObserver,
-    ProjectObserver
-};
-
-use Illuminate\Queue\Events\{
-    JobFailed,
-    JobProcessed,
-    JobProcessing
-};
-use App\Listeners\{
-    SendJobStartedNotification,
-    SendJobCompletedNotification,
-    SendJobFailedNotification
-};
+use App\Models\Community;
+use App\Models\Developer;
+use App\Models\Property;
+use App\Models\Testimonial;
+use App\Models\Project;
+use App\Observers\CommunityObserver;
+use App\Observers\DeveloperObserver;
+use App\Observers\PropertyObserver;
+use App\Observers\TestimonialObserver;
+use App\Observers\ProjectObserver;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobProcessing;
+use App\Listeners\SendJobStartedNotification;
+use App\Listeners\SendJobCompletedNotification;
+use App\Listeners\SendJobFailedNotification;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -57,13 +49,14 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         parent::boot();
         Community::observe(CommunityObserver::class);
         Developer::observe(DeveloperObserver::class);
         Testimonial::observe(TestimonialObserver::class);
         Project::observe(ProjectObserver::class);
+        Property::observe(PropertyObserver::class);
     }
 
     /**
@@ -71,7 +64,7 @@ class EventServiceProvider extends ServiceProvider
      *
      * @return bool
      */
-    public function shouldDiscoverEvents()
+    public function shouldDiscoverEvents(): bool
     {
         return false;
     }
