@@ -32,13 +32,13 @@ class CommunityObserver
 
     public function updated(Community $community): void
     {
+        $this->websiteAction->execute(TagEnum::Community()->value, $community->slug);
+        $this->campaignAction->execute(TagEnum::Community()->value, $community->slug);
+
         $attributesToCheck = ['name', 'slug', 'banner_image', 'status', 'is_approved', 'display_on_home', 'communityOrder', 'deleted_at'];
         if ($community->isDirty($attributesToCheck)) {
             Cache::forget('homeCommunities');
         }
-
-        $this->websiteAction->execute(TagEnum::Community()->value, $community->slug);
-        $this->campaignAction->execute(TagEnum::Community()->value, $community->slug);
     }
 
     public function deleted(Community $community): void
