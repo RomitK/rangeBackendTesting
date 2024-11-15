@@ -24,7 +24,7 @@ class CampaignRevalidationHandlerAction
 
         try {
             Http::withHeaders(['X-Revalidate-Key' => $this->token])
-                ->post($this->websiteUrl, ['tags' => [$tag, $tag . ':' . $slug]]);
+                ->post($this->websiteUrl, ['tags' => array_filter([$tag, $slug ? $tag . ':' . $slug : null])]);
         } catch (\Exception $exception) {
             info($exception->getMessage());
         }
