@@ -20,6 +20,7 @@ class PropertyObserver
         $this->websiteAction = $websiteAction;
         $this->campaignAction = $campaignAction;
     }
+
     public function created(Property $property): void
     {
         $this->websiteAction->execute(TagEnum::Property()->value, $property->slug);

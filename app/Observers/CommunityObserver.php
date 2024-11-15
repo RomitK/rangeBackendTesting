@@ -13,13 +13,23 @@ class CommunityObserver
     protected WebsiteRevalidationHandlerAction $websiteAction;
     protected CampaignRevalidationHandlerAction $campaignAction;
 
-    public $afterCommit = true;
+    public bool $afterCommit = true;
+
+    public function __construct(
+        WebsiteRevalidationHandlerAction $websiteAction,
+        CampaignRevalidationHandlerAction $campaignAction
+    )
+    {
+        $this->websiteAction = $websiteAction;
+        $this->campaignAction = $campaignAction;
+    }
 
     public function created(Community $community): void
     {
         $this->websiteAction->execute(TagEnum::Community()->value, $community->slug);
         $this->campaignAction->execute(TagEnum::Community()->value, $community->slug);
     }
+
     public function updated(Community $community): void
     {
         $attributesToCheck = ['name', 'slug', 'banner_image', 'status', 'is_approved', 'display_on_home', 'communityOrder', 'deleted_at'];
@@ -30,6 +40,7 @@ class CommunityObserver
         $this->websiteAction->execute(TagEnum::Community()->value, $community->slug);
         $this->campaignAction->execute(TagEnum::Community()->value, $community->slug);
     }
+
     public function deleted(Community $community): void
     {
         $this->websiteAction->execute(TagEnum::Community()->value, $community->slug);
