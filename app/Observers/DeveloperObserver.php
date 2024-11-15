@@ -31,13 +31,13 @@ class DeveloperObserver
 
     public function updated(Developer $developer): void
     {
+        $this->websiteAction->execute(TagEnum::Property()->value, $developer->slug);
+        $this->campaignAction->execute(TagEnum::Property()->value, $developer->slug);
+
         $attributesToCheck = ['name', 'slug', 'logo_image', 'status', 'is_approved', 'display_on_home', 'developerOrder', 'deleted_at'];
         if ($developer->isDirty($attributesToCheck)) {
             Cache::forget('homeDevelopers');
         }
-
-        $this->websiteAction->execute(TagEnum::Property()->value, $developer->slug);
-        $this->campaignAction->execute(TagEnum::Property()->value, $developer->slug);
     }
 
     public function deleted(Developer $developer): void

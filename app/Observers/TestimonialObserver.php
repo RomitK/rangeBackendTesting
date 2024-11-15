@@ -31,13 +31,14 @@ class TestimonialObserver
 
     public function updated(Testimonial $testimonial): void
     {
+        $this->websiteAction->execute(TagEnum::Testimonials()->value);
+        $this->campaignAction->execute(TagEnum::Testimonials()->value);
+
         $attributesToCheck = ['feedback', 'client_name', 'rating', 'status', 'deleted_at'];
         if ($testimonial->isDirty($attributesToCheck)) {
             Cache::forget('homeTestimonials');
         }
 
-        $this->websiteAction->execute(TagEnum::Testimonials()->value);
-        $this->campaignAction->execute(TagEnum::Testimonials()->value);
     }
     public function deleted(Testimonial $testimonial): void
     {
