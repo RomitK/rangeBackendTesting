@@ -15,15 +15,15 @@ class WebsiteRevalidationHandlerAction
         $this->token = config('services.revalidate_api.range_website_revalidate_token');
     }
 
-    public function execute(string $tag): void
+    public function execute(string $tag, ?string $slug = null): void
     {
         if (empty($this->websiteUrl) || empty($this->token)) {
             return;
         }
 
         try {
-              Http::withHeaders(['key' => $this->token])
-                  ->post($this->websiteUrl, ['tags' => $tag]);
+              Http::withHeaders(['X-Revalidate-Key' => $this->token])
+                  ->post($this->websiteUrl, ['tags' => [$tag, $tag . ':' . $slug]]);
         } catch (\Exception $exception) {
             info($exception->getMessage());
         }

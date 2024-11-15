@@ -5,9 +5,9 @@ namespace App\Observers;
 use App\Actions\RevalidationHandler\CampaignRevalidationHandlerAction;
 use App\Actions\RevalidationHandler\WebsiteRevalidationHandlerAction;
 use App\Enums\RevalidationHandler\TagEnum;
-use App\Models\Project;
+use App\Models\Agent;
 
-class ProjectObserver
+class AgentObserver
 {
     protected WebsiteRevalidationHandlerAction $websiteAction;
     protected CampaignRevalidationHandlerAction $campaignAction;
@@ -20,14 +20,22 @@ class ProjectObserver
         $this->websiteAction = $websiteAction;
         $this->campaignAction = $campaignAction;
     }
-    public function created(Project $project): void
+    public function created(Agent $agent): void
     {
-        $this->websiteAction->execute(TagEnum::Projects()->value, $project->slug);
-        $this->campaignAction->execute(TagEnum::Projects()->value, $project->slug);
+        $this->websiteAction->execute(TagEnum::Agents()->value);
+        $this->campaignAction->execute(TagEnum::Agents()->value);
     }
-    public function updated(Project $project): void
+
+    public function updated(Agent $agent): void
     {
-        $this->websiteAction->execute(TagEnum::Projects()->value, $project->slug);
-        $this->campaignAction->execute(TagEnum::Projects()->value, $project->slug);
+        $this->websiteAction->execute(TagEnum::Agents()->value);
+        $this->campaignAction->execute(TagEnum::Agents()->value);
     }
+
+    public function deleted(Agent $agent): void
+    {
+        $this->websiteAction->execute(TagEnum::Agents()->value);
+        $this->campaignAction->execute(TagEnum::Agents()->value);
+    }
+
 }

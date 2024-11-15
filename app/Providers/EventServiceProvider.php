@@ -2,6 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Agent;
+use App\Models\Article;
+use App\Models\Career;
+use App\Models\Faq;
+use App\Observers\AgentObserver;
+use App\Observers\CareerObserver;
+use App\Observers\FaqObserver;
+use App\Observers\ArticleObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -57,6 +65,10 @@ class EventServiceProvider extends ServiceProvider
         Testimonial::observe(TestimonialObserver::class);
         Project::observe(ProjectObserver::class);
         Property::observe(PropertyObserver::class);
+        Career::observe(CareerObserver::class);
+        Agent::observe(AgentObserver::class);
+        Article::observe(ArticleObserver::class);
+        Faq::observe(FaqObserver::class);
     }
 
     /**

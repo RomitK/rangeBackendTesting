@@ -22,20 +22,20 @@ class PropertyObserver
     }
     public function created(Property $property): void
     {
-        $this->websiteAction->execute(TagEnum::Property()->value);
-        $this->campaignAction->execute(TagEnum::Community()->value);
+        $this->websiteAction->execute(TagEnum::Property()->value, $property->slug);
+        $this->campaignAction->execute(TagEnum::Property()->value, $property->slug);
     }
 
     public function updated(Property $property): void
     {
-        $this->websiteAction->execute(TagEnum::Property()->value);
-        $this->campaignAction->execute(TagEnum::Community()->value);
+        $this->websiteAction->execute(TagEnum::Property()->value, $property->slug);
+        $this->campaignAction->execute(TagEnum::Property()->value, $property->slug);
     }
 
     public function deleted(Property $property): void
     {
-        $this->websiteAction->execute(TagEnum::Property()->value);
-        $this->campaignAction->execute(TagEnum::Community()->value);
+        $this->websiteAction->execute(TagEnum::Property()->value, $property->slug);
+        $this->campaignAction->execute(TagEnum::Property()->value, $property->slug);
     }
 
 }
