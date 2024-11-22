@@ -35,6 +35,11 @@ class CampaignRevalidationHandlerAction
         if (empty($this->websiteUrl) || empty($this->token)) {
             return;
         }
+
+        info("logging in ",[
+            'tags' => $tags
+        ]);
+        
         try {
             Http::withHeaders(['X-Revalidate-Key' => $this->token])
                 ->post($this->websiteUrl, $tags);
