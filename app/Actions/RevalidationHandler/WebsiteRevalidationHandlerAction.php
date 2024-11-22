@@ -38,7 +38,7 @@ class WebsiteRevalidationHandlerAction
         }
         try {
             Http::withHeaders(['X-Revalidate-Key' => $this->token])
-                ->post($this->websiteUrl, $tags);
+                ->post($this->websiteUrl, ["tags" => $tags]);
         } catch (\Exception $exception) {
             info($exception->getMessage());
         }
