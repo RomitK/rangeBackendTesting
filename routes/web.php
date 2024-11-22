@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\RevalidateController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -449,6 +450,8 @@ Route::group(['namespace' => 'App\Http\Controllers\Dashboard', 'prefix' => 'dash
     Route::get('basic-info', 'WebsiteSettingController@getBasicInfo')->name('dashboard.basic-info');
     Route::put('basic-info', 'WebsiteSettingController@updateBasicInfo')->name('dashboard.basic-info.update');
     Route::resource('page-tags', PageTagController::class, ['as' => 'dashboard']);
+
+    Route::post('revalidate',RevalidateController::class)->name('dashboard.revalidate');
 });
 
 Route::namespace('App\Http\Controllers\Frontend')->group(function () {

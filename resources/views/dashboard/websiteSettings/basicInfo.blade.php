@@ -148,6 +148,7 @@
                             <!-- /.card-body -->
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-primary">Submit</button>
+                                <button class="float-right btn btn-warning text-light" id="revalidate" type="button">Re Validate</button>
                             </div>
                         </form>
                     </div>
@@ -221,5 +222,18 @@
             latitudeField.value = lat;
             longitudeField.value = lng;
         }
+
+        $('#revalidate').on('click', function() {
+            $.ajax({
+                url : "{{route('dashboard.revalidate')}}" ,
+                type : 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success : function(data) {
+                   location.reload();
+                }
+            })
+        });
     </script>
 @endsection

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
  */
 class WebsiteRevalidationHandlerAction
 {
+
     public function __construct()
     {
         $this->websiteUrl = config('services.revalidate_api.range_website_url');
@@ -20,7 +21,7 @@ class WebsiteRevalidationHandlerAction
         if (empty($this->websiteUrl) || empty($this->token)) {
             return;
         }
-
+// ['tag', 'tag:*'] ['property', 'property:*']
         try {
               Http::withHeaders(['X-Revalidate-Key' => $this->token])
                   ->post($this->websiteUrl, ['tags' => array_filter([$tag, $slug ? $tag . ':' . $slug : null])]);
@@ -28,5 +29,18 @@ class WebsiteRevalidationHandlerAction
             info($exception->getMessage());
         }
 
+    }
+
+    public function executeSetsOfTags(array $tags): void
+    {
+        if (empty($this->websiteUrl) || empty($this->token)) {
+            return;
+        }
+        try {
+            Http::withHeaders(['X-Revalidate-Key' => $this->token])
+                ->post($this->websiteUrl, $tags);
+        } catch (\Exception $exception) {
+            info($exception->getMessage());
+        }
     }
 }

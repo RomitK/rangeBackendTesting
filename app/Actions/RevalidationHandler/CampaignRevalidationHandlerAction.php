@@ -29,4 +29,17 @@ class CampaignRevalidationHandlerAction
             info($exception->getMessage());
         }
     }
+
+    public function executeSetsOfTags(array $tags): void
+    {
+        if (empty($this->websiteUrl) || empty($this->token)) {
+            return;
+        }
+        try {
+            Http::withHeaders(['X-Revalidate-Key' => $this->token])
+                ->post($this->websiteUrl, $tags);
+        } catch (\Exception $exception) {
+            info($exception->getMessage());
+        }
+    }
 }
