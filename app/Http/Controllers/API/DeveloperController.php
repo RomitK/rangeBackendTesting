@@ -423,7 +423,7 @@ class DeveloperController extends Controller
                 if ($developer->meta_title) {
                     $singleDeveloper->meta_title = $developer->meta_title;
                 } else {
-                    $singleCommunity->meta_title = WebsiteSetting::getSetting('website_name') ? WebsiteSetting::getSetting('website_name') : '';
+                    $singleDeveloper->meta_title = WebsiteSetting::getSetting('website_name') ? WebsiteSetting::getSetting('website_name') : '';
                 }
                 if ($developer->meta_description) {
                     $singleDeveloper->meta_description = $developer->meta_description;
