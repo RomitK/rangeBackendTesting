@@ -335,7 +335,7 @@ if (!function_exists('countPropertiesForCommunity')) {
 }
 
 if (!function_exists('logActivity')) {
-    function logActivity($description, $subject_id = 0, $type, $model)
+    function logActivity($description, $subject_id = 0, $type = null, $model = null)
     {
 
         $obj                = new LogActivity;
