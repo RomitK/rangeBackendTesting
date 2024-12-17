@@ -68,6 +68,9 @@ class EnquiriesDataTable extends DataTable
         return [
             Column::make('id'),
             Column::make('campaign_id'),
+            Column::make('group_id'),
+            Column::make('campaign_name'),
+            Column::make('group_name'),
             Column::make('name'),
             Column::make('email'),
             Column::make('mobile'),

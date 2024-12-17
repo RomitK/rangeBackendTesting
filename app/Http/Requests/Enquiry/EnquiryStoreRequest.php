@@ -17,6 +17,9 @@ class EnquiryStoreRequest extends FormRequest
     {
         return [
             'campaign_id' => ['nullable', 'string', 'max:255'],
+            'group_id' => ['nullable', 'string', 'max:255'],
+            'campaign_name' => ['nullable', 'string', 'max:255'],
+            'group_name' => ['nullable', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'mobile_country_code' => ['required', 'string', 'max:5'],

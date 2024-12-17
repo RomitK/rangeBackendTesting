@@ -13,6 +13,9 @@ class Enquiry extends Model
 
     protected $fillable = [
         'campaign_id',
+        'group_id',
+        'campaign_name',
+        'group_name',
         'name',
         'email',
         'mobile_country_code',
