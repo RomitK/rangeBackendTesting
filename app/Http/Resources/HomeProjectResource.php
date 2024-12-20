@@ -34,7 +34,8 @@ class HomeProjectResource extends JsonResource
             'mainImage' => $this->banner_image,
             'accommodation' => $this->accommodation_name,
             'mainImage' => $this->banner_image,
-            'projectOrder' => $this->projectOrder
+            'projectOrder' => $this->projectOrder ,
+            'is_upcoming' => $this->upcoming_project,
         ];
     }
 }

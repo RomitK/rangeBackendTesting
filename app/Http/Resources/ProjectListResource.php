@@ -119,7 +119,8 @@ class ProjectListResource extends JsonResource
             'area_unit' => 'sq ft',
             'bedrooms'=> $bedroom,
             'bathrooms'=>$this->bathrooms,
-            'area' => $areaAvailable
+            'area' => $areaAvailable,
+            'is_upcoming' => $this->upcoming_project,
         ];
     }
 }

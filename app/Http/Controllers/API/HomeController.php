@@ -536,8 +536,8 @@ echo $curl_scraped_page;
 
     public function homeData()
     {
-        try {
-          
+        try {   
+
             return $this->success('Home Data', Cache::remember('homeData99', 3 * 60 * 60, function () {
                 // $communities = HomeCommunitiesResource::collection(Community::active()->approved()->home()->limit(12)->orderByRaw('ISNULL(communityOrder)')->orderBy('communityOrder', 'asc')->get() );
                 $communities =  HomeCommunitiesResource::collection(DB::table('communities')
@@ -588,6 +588,7 @@ echo $curl_scraped_page;
                         'projects.completion_date',
                         'projects.address_latitude',
                         'projects.address_longitude',
+                        'projects.upcoming_project',
                         'accommodations.name as accommodation_name',
                         'completion_statuses.name as completion_statuses_name'
                     )
