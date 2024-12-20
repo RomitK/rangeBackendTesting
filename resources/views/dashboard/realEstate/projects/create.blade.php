@@ -269,6 +269,25 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-sm-1">
+                                        <div class="form-group">
+                                            <label for="upcoming_project">Upcoming</label>
+                                            <div class="form-control d-flex justify-content-center align-items-center">
+                                                <input 
+                                                    type="checkbox" 
+                                                    class="form-check-input @error('upcoming_project') is-invalid @enderror" 
+                                                    id="upcoming_project" 
+                                                    name="upcoming_project" 
+                                                    style="margin-left: 1px;"
+                                                >
+                                            </div>
+                                            @error('upcoming_project')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                    </div>
 
 
 

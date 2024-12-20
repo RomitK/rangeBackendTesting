@@ -29,6 +29,7 @@ class Project extends Model implements HasMedia
      */
     protected $casts = [
         'inventory_update' => 'datetime',
+        'upcoming_project' => 'boolean'
     ];
     protected $dates = [
         'created_at',

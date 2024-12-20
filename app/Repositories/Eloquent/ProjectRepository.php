@@ -306,6 +306,7 @@ class ProjectRepository implements ProjectRepositoryInterface
             $project->long_description = $request->long_description;
             $project->user_id = Auth::user()->id;
             $project->projectOrder = $request->projectOrder;
+            $project->upcoming_project = (bool) $request->upcoming_project;
             $project->save();
 
             $reference_prefix = 'RIPI_' . strtoupper(substr(Str::slug($project->developer->name), 0, 3));
@@ -423,6 +424,7 @@ class ProjectRepository implements ProjectRepositoryInterface
             $project->updated_by = Auth::user()->id;
             $project->projectOrder = $request->projectOrder;
             $project->updated_brochure = 0;
+            $project->upcoming_project = (bool) $request->upcoming_project;
 
             if ($request->has('completion_status_id')) {
                 $project->completionStatus()->associate($request->completion_status_id);
