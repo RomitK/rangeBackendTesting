@@ -91,6 +91,8 @@ class Property extends Model implements HasMedia
         'formattedUpdatedAt'
     ];
 
+    public $registerMediaConversionsUsingModelInstance = true;
+
     /**
      * Get the options for generating the slug.
      */
@@ -262,7 +264,7 @@ class Property extends Model implements HasMedia
             ->nonQueued();
         }
 
-        
+
 
 
 
@@ -292,8 +294,8 @@ class Property extends Model implements HasMedia
         //     //->width(800)
         //     ->height(400)
         //     ->watermark(public_path('frontend/assets/images/logo_white.png'))
-        //      ->watermarkPosition(Manipulations::POSITION_TOP_LEFT) 
-        //     ->watermarkPadding(80, 20, Manipulations::UNIT_PIXELS) 
+        //      ->watermarkPosition(Manipulations::POSITION_TOP_LEFT)
+        //     ->watermarkPadding(80, 20, Manipulations::UNIT_PIXELS)
         //     ->watermarkHeight(8, Manipulations::UNIT_PERCENT)
         //     ->watermarkOpacity(60)
 
@@ -556,7 +558,7 @@ class Property extends Model implements HasMedia
         return DB::table('properties')
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
-           
+
             ->selectRaw('
                 COUNT(CASE WHEN properties.website_status = "available" AND properties.is_valid = 0 THEN 1 END) as without_permit_available,
                 COUNT(CASE WHEN properties.website_status = "NA" AND properties.is_valid = 0 THEN 1 END) as without_permit_NA,
@@ -576,7 +578,7 @@ class Property extends Model implements HasMedia
         return DB::table('properties')
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
-            
+
             ->selectRaw('
                 COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 286 AND properties.is_valid = 0 THEN 1 END) as without_permit_ready,
                 COUNT(CASE WHEN properties.category_id = 8 AND properties.completion_status_id = 287 AND properties.is_valid = 0 THEN 1 END) as without_permit_offplan,
@@ -597,7 +599,7 @@ class Property extends Model implements HasMedia
             ->whereNull('properties.deleted_at')
             ->whereBetween('properties.created_at', [$startDate, $endDate])
             ->selectRaw('
-           
+
                 COUNT(CASE WHEN  website_status = "available" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as available_ready,
                 COUNT(CASE WHEN website_status = "na" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as NA_ready,
                 COUNT(CASE WHEN website_status = "rejected" AND category_id = 8 AND completion_status_id = 286  THEN 1 END) as rejected_ready,
