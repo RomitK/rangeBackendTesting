@@ -1123,6 +1123,10 @@ class ProjectController extends Controller
                 $multiPolygonString = 'MULTIPOLYGON(' . implode(',', $polygons) . ')';
                 $collection->whereRaw("ST_Within(Point(address_longitude, address_latitude), ST_GeomFromText(?))", [$multiPolygonString]);
             }
+
+            if($request->isUpcoming){
+                $collection->where('upcoming_project', 1);
+            }
             
             $amenities = $collection->take(100)->get()->flatMap->amenities->unique('id');
             
