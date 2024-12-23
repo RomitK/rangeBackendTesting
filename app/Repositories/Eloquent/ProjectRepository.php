@@ -111,6 +111,11 @@ class ProjectRepository implements ProjectRepositoryInterface
             $collection->where('project_source', $request->project_source);
         }
 
+        $upcoming_project = (bool) $request->upcoming_project;
+        if ($upcoming_project) {
+            $collection->where('upcoming_project', true);
+        }
+        
         if (isset($request->orderby)) {
             $orderBy = $request->input('orderby', 'created_at'); // default_column is the default field to sort by
             $direction = $request->input('direction', 'asc'); // Default sorting direction

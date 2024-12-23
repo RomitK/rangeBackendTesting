@@ -264,7 +264,7 @@
                                             id="keyword" placeholder="Enter Name" name="keyword">
                                     </div>
 
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-1">
                                         <div class="form-group">
                                             <label for="date_range">Added At <span
                                                     id="date_range_show">{{ request()->data_range_input }}</span></label>
@@ -272,11 +272,32 @@
                                                 name="data_range_input" id="data_range_input">
                                             <div class="input-group">
                                                 <button type="button" class="btn btn-default float-right"
-                                                    id="date_range">
+                                                    id="date_range" style="font-size: 13px; padding: 9px;">
                                                     <i class="far fa-calendar-alt"></i> Date Range
                                                     <i class="fas fa-caret-down"></i>
                                                 </button>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-1">
+                                        <div class="form-group">
+                                            <label for="upcoming_project">Upcoming</label>
+                                            <div class="form-control d-flex justify-content-center align-items-center">
+                                                <input 
+                                                    type="checkbox" 
+                                                    class="form-check-input @error('upcoming_project') is-invalid @enderror" 
+                                                    id="upcoming_project" 
+                                                    name="upcoming_project" 
+                                                    style="margin-left: 1px;"
+                                                    @if (request()->upcoming_project) checked @endif
+                                                >
+                                            </div>
+                                            @error('upcoming_project')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
                                     </div>
 
