@@ -146,7 +146,7 @@
                                             @enderror
                                         </div>
                                     </div>
-                                    {{-- 
+                                    {{--
                                     <div class="col-sm-3">
                                         <div class="form-group">
                                             <label for="reference_number">Reference Number</label>
@@ -161,7 +161,7 @@
                                         </div>
                                     </div>
 
-                                    
+
                                     <div class="col-sm-2">
                                         <div class="form-group">
                                             <label for="status">Status</label>
@@ -308,13 +308,14 @@
                                         <div class="form-group">
                                             <label for="upcoming_project">Upcoming</label>
                                             <div class="form-control d-flex justify-content-center align-items-center">
-                                                <input 
-                                                    type="checkbox" 
-                                                    class="form-check-input @error('upcoming_project') is-invalid @enderror" 
-                                                    id="upcoming_project" 
-                                                    name="upcoming_project" 
+                                                <input
+                                                    type="checkbox"
+                                                    class="form-check-input @error('upcoming_project') is-invalid @enderror"
+                                                    id="upcoming_project"
+                                                    name="upcoming_project"
+                                                    value="1"
                                                     style="margin-left: 1px;"
-                                                    @if ($project->upcoming_project == 1) checked @endif
+                                                    @if ($project->upcoming_project) checked @endif
                                                 >
                                             </div>
                                             @error('upcoming_project')

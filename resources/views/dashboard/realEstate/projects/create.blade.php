@@ -273,11 +273,12 @@
                                         <div class="form-group">
                                             <label for="upcoming_project">Upcoming</label>
                                             <div class="form-control d-flex justify-content-center align-items-center">
-                                                <input 
-                                                    type="checkbox" 
-                                                    class="form-check-input @error('upcoming_project') is-invalid @enderror" 
-                                                    id="upcoming_project" 
-                                                    name="upcoming_project" 
+                                                <input
+                                                    type="checkbox"
+                                                    class="form-check-input @error('upcoming_project') is-invalid @enderror"
+                                                    id="upcoming_project"
+                                                    name="upcoming_project"
+                                                    value="1"
                                                     style="margin-left: 1px;"
                                                 >
                                             </div>

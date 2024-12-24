@@ -54,16 +54,16 @@ class ProjectRequest extends FormRequest
                         'video'=>['mimes:mp4,mov,ogx,oga,ogv,ogg,webm'],
                         // 'exteriorGallery'=>['array'],
                         // 'exteriorGallery.*' => ['image',  'max:2048'],
-                        
+
                         'exteriorGallery'=>['array'],
                         'exteriorGallery.*.file' => ['image','max:1048'],
-                        
+
                         'interiorGallery'=>['array'],
                         'interiorGallery.*.file' => ['image','max:1048'],
-                        
+
                         // 'interiorGallery'=>['array'],
                         // 'interiorGallery.*' => ['image',  'max:2048'],
-                        
+
                         'brochure'=>['mimes:pdf','max:24576'],
                         'factsheet'=>['mimes:pdf','max:24576'],
                         'paymentPlan'=>['mimes:pdf','max:24576'],
@@ -76,7 +76,7 @@ class ProjectRequest extends FormRequest
                         // 'emirate'=>['required', Rule::in(config('constants.emirates'))],
                         'address_longitude' => ['nullable','numeric','between:-180,180'],
                         'address_latitude' => ['nullable','numeric','between:-90,90'],
-                        'upcoming_project' => 'nullable'
+                        'upcoming_project' => ['boolean'],
                     ];
                 }
             case 'PATCH':
@@ -111,13 +111,13 @@ class ProjectRequest extends FormRequest
                         // 'exteriorGallery.*' => ['image', 'max:2048'],
                         // 'interiorGallery'=>['array'],
                         // 'interiorGallery.*' => ['image','max:2048'],
-                        
+
                         'exteriorGallery'=>['array'],
                         'exteriorGallery.*.file' => ['image','max:1048'],
-                        
+
                         'interiorGallery'=>['array'],
                         'interiorGallery.*.file' => ['image','max:1048'],
-                        
+
                         'brochure'=>['mimes:pdf','max:24576'],
                         'factsheet'=>['mimes:pdf','max:24576'],
                         'paymentPlan'=>['mimes:pdf','max:24576'],
